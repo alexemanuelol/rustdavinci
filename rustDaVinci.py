@@ -183,7 +183,7 @@ def main():
     paint_area_BR = pyautogui.position()
 
     # Set the console window as an overlay and place it on the left of the painting area
-    win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0, (paint_area_TL[0] - 25), screen_size[1],0)
+    #win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0, (paint_area_TL[0] - 25), screen_size[1],0)
 
     tool_area_width = tool_area_BR[0] - tool_area_TL[0]
     tool_area_height = tool_area_BR[1] - tool_area_TL[1]
@@ -341,12 +341,67 @@ def main():
         elif color >= 60 and color < 80: pyautogui.click(tool_opacity[2])
         time.sleep(.1)
 
+        # Current
+        #pyautogui.click(tool_color[color%20])
+        #time.sleep(.1)
+        #for y in range(dithered_image_height):
+        #    for x in range(dithered_image_width):
+        #        if pixel[x, y] == color:
+        #            pyautogui.click(paint_area_TL[0] + x_coordinate_correction + x, paint_area_TL[1] + y_coordinate_correction + y)
+
+        # New Test (including lines)
+
+        final_x_coordinate = paint_area_TL[0] + x_coordinate_correction
+        final_y_coordinate = paint_area_TL[1] + y_coordinate_correction
+
+        first_point = (0, 0)
+        is_first_point_of_row = True
+        is_last_point_of_row = False
+        prev_is_color = False
+        is_line = False
+
         pyautogui.click(tool_color[color%20])
         time.sleep(.1)
+
         for y in range(dithered_image_height):
+            is_first_point_of_row = True
+            is_last_point_of_row = False
+            is_prev_color = False
+            is_line = False
+
             for x in range(dithered_image_width):
+
+                if x == dithered_image_width:
+                    is_last_point_of_row = True
+
+                if is_first_point_of_row:
+                    is_first_point_of_row = False
+                    if pixel[x, y] == color:
+                        first_point = (final_x_coordinate + x, final_y_coordinate + y)
+                        prev_is_color = True
+                    continue
+
                 if pixel[x, y] == color:
-                    pyautogui.click(paint_area_TL[0] + x_coordinate_correction + x, paint_area_TL[1] + y_coordinate_correction + y)
+                    if prev_is_color:
+                        if is_last_point_of_row:
+                            draw_line(first_point, (final_x_coorindate + x, final_y_coordinate + y))
+                        else:
+                            is_line = True
+                    else:
+                        if is_last_point_of_row:
+                            pyautogui.click(final_x_coordinate + x, final_y_coordinate + y)
+                        else:
+                            prev_is_color = True
+                            first_point = (final_x_coordinate + x, final_y_coordinate + y)
+                else:
+                    if prev_is_color:
+                        if is_line:
+                            is_line = False
+                            draw_line(first_point, (final_x_coordinate + (x-1), final_y_coordinate + y))
+                        else:
+                            pyautogui.click(final_x_coordinate + (x-1), final_y_coordinate + y)
+                        prev_is_color = False
+
 
 
     #########################################################
