@@ -12,90 +12,30 @@ import colorama
 import termcolor
 
 rust_palette_data = (
-        46, 204, 113,
-        46, 157, 135, 
-        39, 174, 96,
-        22, 160, 133,
-        29, 224, 25,
-        52, 152, 218,
-        32, 203, 241,
-        74, 212, 189,
-        126, 76, 42,
-        68, 48, 34,
-        241, 195, 15,
-        175, 122, 195,
-        240, 67, 49,
-        142, 68, 173,
-        230, 126, 34,
-        152, 163, 163,
-        236, 240, 241,
-        49, 49, 49,
-        52, 73, 94,
-        2, 2, 2,
+        46, 204, 113,   46, 157, 135,   39, 174, 96,    22, 160, 133,   29, 224, 25,
+        52, 152, 218,   32, 203, 241,   74, 212, 189,   126, 76, 42,    68, 48, 34,
+        241, 195, 15,   175, 122, 195,  240, 67, 49,    142, 68, 173,   230, 126, 34,
+        152, 163, 163,  236, 240, 241,  49, 49, 49,     52, 73, 94,     2, 2, 2,
 
-        91, 175, 118,
-        91, 144, 130,
-        89, 155, 109,
-        91, 148, 132,
-        87, 189, 86,
-        93, 141, 185,
-        88, 174, 201,
-        99, 180, 164,
-        125, 100, 90,
-        98, 92, 88,
-        202, 171, 90,
-        157, 126, 171,
-        202, 101, 96,
-        137, 102, 156,
-        195, 128, 93,
-        143, 150, 150,
-        197, 200, 201,
-        92, 92, 92,
-        93, 100, 109,
-        84, 84, 84,
+        91, 175, 118,   91, 144, 130,   89, 155, 109,   91, 148, 132,   87, 189, 86,
+        93, 141, 185,   88, 174, 201,   99, 180, 164,   125, 100, 90,   98, 92, 88,
+        202, 171, 90,   157, 126, 171,  202, 101, 96,   137, 102, 156,  195, 128, 93,
+        143, 150, 150,  197, 200, 201,  92, 92, 92,     93, 100, 109,   84, 84, 84,
 
-        111, 149, 121,
-        117, 138, 132,
-        116, 143, 123,
-        109, 134, 126,
-        110, 157, 109,
-        111, 132, 155,
-        110, 149, 163,
-        114, 152, 144,
-        125, 114, 111,
-        113, 111, 110,
-        163, 146, 109,
-        139, 123, 146,
-        155, 102, 99,
-        129, 113, 138,
-        159, 125, 110,
-        137, 140, 140,
-        162, 163, 163,
-        111, 111, 111,
-        111, 114, 118,
-        109, 109, 109,
+        111, 149, 121,  117, 138, 132,  116, 143, 123,  109, 134, 126,  110, 157, 109,
+        111, 132, 155,  110, 149, 163,  114, 152, 144,  125, 114, 111,  113, 111, 110,
+        163, 146, 109,  139, 123, 146,  155, 102, 99,   129, 113, 138,  159, 125, 110,
+        137, 140, 140,  162, 163, 163,  111, 111, 111,  111, 114, 118,  109, 109, 109,
 
-        126, 140, 129,
-        119, 127, 125,
-        126, 136, 128,
-        125, 134, 131,
-        126, 143, 125,
-        120, 127, 136,
-        126, 139, 146,
-        127, 141, 138,
-        124, 120, 119,
-        120, 119, 119,
-        146, 139, 125,
-        136, 130, 139,
-        145, 127, 126,
-        132, 127, 135,
-        138, 124, 119,
-        127, 128, 128,
-        145, 145, 146,
-        119, 119, 119,
-        126, 127, 128,
-        119, 119, 119
+        126, 140, 129,  119, 127, 125,  126, 136, 128,  125, 134, 131,  126, 143, 125,
+        120, 127, 136,  126, 139, 146,  127, 141, 138,  124, 120, 119,  120, 119, 119,
+        146, 139, 125,  136, 130, 139,  145, 127, 126,  132, 127, 135,  138, 124, 119,
+        127, 128, 128,  145, 145, 146,  119, 119, 119,  126, 127, 128,  119, 119, 119
 )
+
+click_delay = 0.020
+line_delay = 0.001
+
 
 def quantize_to_palette(original_image, palette):
     """ Convert an RGB or L mode image to use a given P image's palette.
@@ -120,16 +60,17 @@ def draw_line(point_A, point_B):
     """ Draws a line between point_A and point_B.
 
     """
-    pyautogui.PAUSE = 0
+    pyautogui.PAUSE = line_delay
     pyautogui.mouseDown(button="left", x=point_A[0], y=point_A[1])
     pyautogui.keyDown("shift")
     pyautogui.moveTo(point_B[0], point_B[1])
     pyautogui.keyUp("shift")
     pyautogui.mouseUp(button="left")
-    pyautogui.PAUSE = 0.02
+    pyautogui.PAUSE = click_delay
 
-def sexy_banner():
-    """ 
+
+def main():
+    """ The main application
     
     """
     print("██████╗ ██╗   ██╗███████╗████████╗    ██████╗  █████╗     ██╗   ██╗██╗███╗   ██╗ ██████╗██╗")
@@ -139,50 +80,39 @@ def sexy_banner():
     print("██║  ██║╚██████╔╝███████║   ██║       ██████╔╝██║  ██║     ╚████╔╝ ██║██║ ╚████║╚██████╗██║")
     print("╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝       ╚═════╝ ╚═╝  ╚═╝      ╚═══╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚═╝\n")
 
-    
-def help_introduction():
-    """ Welcome message to introduce and help the user in the beginning.
-    
-    """
     print("Hello & Welcome to RustDaVinci!\n")
     
-    print("Beneath follows the application sequence:\n")
-    print("\t1. Firstly the application needs to be navigated to the rust palette tools area...")
-    print("\t2. Then it needs to be navigated to the area in which the image will be painted...")
-    print("NOTE! Make sure that the console window is in focus when identifying the areas.")
-    print("Make sure that the console window does not cover those two areas...\n")
-    print("Follow the instructions below to begin the area identifying...\n")
+    print("Beneath follows the application instructions:\n")
+    print("\t1. Firstly the application needs to capture the rust palette tools area.")
+    print("\t2. Then it needs to capture the area in which the image will be painted.")
+    print("\t3. Make sure that the console window is in focus when capturing the areas.")
+    print("\t4. Make sure that the console window does not cover those two areas.\n")
+    print("Follow the instructions below to begin the area capturing...\n")
 
 
-def main():
-    """ The main application
-    
-    """
     screen_size = pyautogui.size()
+
     palette_data = Image.new("P", (1, 1))
     palette_data.putpalette(rust_palette_data + (2,2,2)*176)
 
-    # To increase the clicking speed
-    click_delay = 0.02
     pyautogui.PAUSE = click_delay
 
     hwnd = win32gui.GetForegroundWindow()
 
 
-    sexy_banner()
-    help_introduction()
-
-    input("Move the mouse pointer to the top left corner of the tools area and click <ENTER>...")
+    input("1. Move the mouse pointer to the top left corner of the tools area and click <ENTER>...")
     tool_area_TL = pyautogui.position()
-    input("Move the mouse pointer to the bottom right corner of the tools area and click <ENTER>...")
+    input("2. Move the mouse pointer to the bottom right corner of the tools area and click <ENTER>...")
     tool_area_BR = pyautogui.position()
 
-    input("Move the mouse pointer to the top left corner of the paint window and click <ENTER>...")
+    input("3. Move the mouse pointer to the top left corner of the paint window and click <ENTER>...")
     paint_area_TL = pyautogui.position()
-    input("Move the mouse pointer to the bottom right corner of the paint window and click <ENTER>...")
+    input("4. Move the mouse pointer to the bottom right corner of the paint window and click <ENTER>...")
     paint_area_BR = pyautogui.position()
 
+
     # Set the console window as an overlay and place it on the left of the painting area
+    # Uncomment the line below at your own risk, this might be the reason why I got banned...
     #win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0, (paint_area_TL[0] - 25), screen_size[1],0)
 
     tool_area_width = tool_area_BR[0] - tool_area_TL[0]
@@ -197,35 +127,47 @@ def main():
     root.withdraw()
 
 
-    # Calculate the distance between two items on a row of six items
-    first_x_coordinate_of_six = tool_area_TL[0] + (tool_area_width/6.545454)
-    distance_between_x_coordinates_of_six = (tool_area_width - (2 * (tool_area_width/6.545454)))/5
+    # Calculate the distance between two items on a row of six items (Size)
+    first_x_coordinate_of_six_v1 = tool_area_TL[0] + (tool_area_width/6.7619)
+    second_x_coordinate_of_six_v1 = tool_area_TL[0] + (tool_area_width/3.4634)
+    distance_between_x_coordinates_of_six_v1 = second_x_coordinate_of_six_v1 - first_x_coordinate_of_six_v1
+
+    # Calculate the distance between two items on a row of six items (Opacity)
+    first_x_coordinate_of_six_v2 = tool_area_TL[0] + (tool_area_width/7.8888)
+    second_x_coordinate_of_six_v2 = tool_area_TL[0] + (tool_area_width/3.6410)
+    distance_between_x_coordinates_of_six_v2 = second_x_coordinate_of_six_v2 - first_x_coordinate_of_six_v2
 
     # Calculate the distance between two items on a row of four items
-    first_x_coordinate_of_four = tool_area_TL[0] + (tool_area_width/6)
-    distance_between_x_coordinates_of_four = (tool_area_width - (2 * (tool_area_width/6)))/3
+    first_x_coordinate_of_four = tool_area_TL[0] + (tool_area_width/6.1739)
+    second_x_coordinate_of_four = tool_area_TL[0] + (tool_area_width/2.5818)
+    distance_between_x_coordinates_of_four = second_x_coordinate_of_four - first_x_coordinate_of_four
 
     # Calculate the distance between two items on a column of eight items
-    first_y_coordinate_of_eight = tool_area_TL[1] + (36 * (tool_area_height/100))
-    distance_between_y_coordinates_of_eight = (tool_area_height)/12
+    first_y_coordinate_of_eight = tool_area_TL[1] + (tool_area_height/2.3238)
+    second_y_coordinate_of_eight = tool_area_TL[1] + (tool_area_height/1.9854)
+    distance_between_y_coordinates_of_eight = second_y_coordinate_of_eight - first_y_coordinate_of_eight
+
+    # Set the point location of the remove & update buttons
+    tool_remove = ((tool_area_TL[0] + (tool_area_width/2.7843)), (tool_area_TL[1] + (tool_area_height/20.45)))
+    tool_update = ((tool_area_TL[0] + (tool_area_width/1.5604)), (tool_area_TL[1] + (tool_area_height/20.45)))
 
 
     tool_size = []
     for size in range(6):
-        tool_size.append( (first_x_coordinate_of_six + (size * distance_between_x_coordinates_of_six), 
-                          (tool_area_TL[1] + (4 * (tool_area_height/100))))
+        tool_size.append( (first_x_coordinate_of_six_v1 + (size * distance_between_x_coordinates_of_six_v1), 
+                          (tool_area_TL[1] + (tool_area_height/7.0517)))
                         )
 
     tool_brush = []
     for brush in range(4):
         tool_brush.append( (first_x_coordinate_of_four + (brush * distance_between_x_coordinates_of_four), 
-                          (tool_area_TL[1] + (15 * (tool_area_height/100))))
+                          (tool_area_TL[1] + (tool_area_height/4.2604)))
                         )
 
     tool_opacity = []
     for opacity in range(6):
-        tool_opacity.append( ((first_x_coordinate_of_six) + (opacity * distance_between_x_coordinates_of_six), 
-                          (tool_area_TL[1] + (25 * (tool_area_height/100))))
+        tool_opacity.append( (first_x_coordinate_of_six_v2 + (opacity * distance_between_x_coordinates_of_six_v2), 
+                          (tool_area_TL[1] + (tool_area_height/3.0296)))
                         )
 
     tool_color = []
@@ -241,6 +183,10 @@ def main():
                                (first_y_coordinate_of_eight + (row * distance_between_y_coordinates_of_eight)))
                         )
 
+    #pyautogui.moveTo(tool_remove)
+    #time.sleep(1)
+    #pyautogui.moveTo(tool_update)
+    #time.sleep(1)
 
     #for i in range(6):
     #    pyautogui.moveTo(tool_size[i])
@@ -254,7 +200,7 @@ def main():
     #    pyautogui.moveTo(tool_opacity[i])
     #    time.sleep(1)
 
-    #for i in range(32):
+    #for i in range(20):
     #    pyautogui.moveTo(tool_color[i])
     #    time.sleep(1)
 
@@ -300,7 +246,8 @@ def main():
         
     pixel = dithered_image.load()
 
-    # Check all the image colors & number of pixels to be painted
+
+    print("Counting colors...\nCounting pixels...")
     image_colors = []
     number_of_pixels_to_paint = 0
     for y in range(dithered_image_height):
@@ -311,8 +258,45 @@ def main():
                 image_colors.append(pixel[x, y])
     number_of_image_colors = len(image_colors)
 
+    print("Counting lines...")
+    number_of_lines = 0
+    for color in image_colors:
+        if color == 16: continue
+        is_first_point_of_row = True
+        is_last_point_of_row = False
+        prev_is_color = False
+        is_line = False
+
+        for y in range(dithered_image_height):
+            is_first_point_of_row = True
+            is_last_point_of_row = False
+            is_prev_color = False
+            is_line = False
+
+            for x in range(dithered_image_width):
+                if x == dithered_image_width: is_last_point_of_row = True
+
+                if is_first_point_of_row:
+                    is_first_point_of_row = False
+                    if pixel[x, y] == color: prev_is_color = True
+                    continue
+
+                if pixel[x, y] == color:
+                    if prev_is_color:
+                        if is_last_point_of_row: number_of_lines += 1
+                        else: is_line = True
+                    else:
+                        if is_last_point_of_row: None
+                        else: prev_is_color = True
+                else:
+                    if prev_is_color:
+                        if is_line: is_line = False; number_of_lines += 1
+                        prev_is_color = False
+
+
     print("\nNumber of colors: " + str(number_of_image_colors))
     print("Number of pixels to paint: " + str(number_of_pixels_to_paint))
+    print("Number of lines: " + str(number_of_lines))
     estimated_time = int(1.056*((number_of_pixels_to_paint * click_delay) + 0.56 + (number_of_image_colors * 0.32)))
     print("Est. painting time: " + str(estimated_time))
 
@@ -340,16 +324,6 @@ def main():
         elif color >= 40 and color < 60: pyautogui.click(tool_opacity[3])
         elif color >= 60 and color < 80: pyautogui.click(tool_opacity[2])
         time.sleep(.1)
-
-        # Current
-        #pyautogui.click(tool_color[color%20])
-        #time.sleep(.1)
-        #for y in range(dithered_image_height):
-        #    for x in range(dithered_image_width):
-        #        if pixel[x, y] == color:
-        #            pyautogui.click(paint_area_TL[0] + x_coordinate_correction + x, paint_area_TL[1] + y_coordinate_correction + y)
-
-        # New Test (including lines)
 
         final_x_coordinate = paint_area_TL[0] + x_coordinate_correction
         final_y_coordinate = paint_area_TL[1] + y_coordinate_correction
@@ -415,15 +389,10 @@ def main():
     input("Press <ENTER> to exit...")
 
 
+
+
+
+
+
 if __name__ == "__main__":
     main()
-    #pyautogui.PAUSE = 0.02
-    #var, var1 = 0, 0
-    #start_time = time.time()
-    #for i in range(30):
-    #    var = 0
-    #    for i in range(10):
-    #        draw_line((150, 150 + var + var1), (400, 150 + var + var1))
-    #        var += 30
-    #    var1 += 1
-    #print("Elapsed Time: " + str(time.time() - start_time))
