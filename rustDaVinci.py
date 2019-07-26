@@ -34,7 +34,7 @@ rust_palette_data = (
 )
 
 click_delay = 0.020
-line_delay = 0.001
+line_delay = 0.020
 
 
 def quantize_to_palette(original_image, palette):
@@ -207,7 +207,7 @@ def main():
 
     image_path = filedialog.askopenfilename()
     if image_path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
-        print("\nDithering process started.")
+        print("\nDithering process started...")
         original_image = Image.open(image_path)
 
         original_image_width = original_image.size[0]
@@ -232,11 +232,8 @@ def main():
             original_image = original_image.resize((paint_area_width, paint_area_height), Image.ANTIALIAS)
 
         dithered_image = quantize_to_palette(original_image, palette_data)
-        #dithered_image.save("ouput_image.png")
-        dithered_image.show(title="Outcome preview")
-        print("Dithering process completed.\n")
-        print("Image Width  = " + str(dithered_image.size[0]))
-        print("Image Height = " + str(dithered_image.size[1]))
+        #dithered_image.save("Preview.png")
+        dithered_image.show(title="Preview")
     else:
         print("Invalid picture format...")
         exit()
@@ -246,19 +243,19 @@ def main():
         
     pixel = dithered_image.load()
 
-
     print("Counting colors...\nCounting pixels...")
     image_colors = []
-    number_of_pixels_to_paint = 0
+    total_number_of_pixels_to_paint = 0
     for y in range(dithered_image_height):
         for x in range(dithered_image_width):
             if pixel[x, y] is not 16:
-                number_of_pixels_to_paint += 1
+                total_number_of_pixels_to_paint += 1
             if pixel[x, y] not in image_colors:
                 image_colors.append(pixel[x, y])
     number_of_image_colors = len(image_colors)
 
     print("Counting lines...")
+    number_of_pixels_to_paint = 0
     number_of_lines = 0
     for color in image_colors:
         if color == 16: continue
@@ -286,19 +283,29 @@ def main():
                         if is_last_point_of_row: number_of_lines += 1
                         else: is_line = True
                     else:
-                        if is_last_point_of_row: None
+                        if is_last_point_of_row: number_of_pixels_to_paint += 1
                         else: prev_is_color = True
                 else:
                     if prev_is_color:
                         if is_line: is_line = False; number_of_lines += 1
+                        else: number_of_pixels_to_paint += 1
                         prev_is_color = False
 
 
-    print("\nNumber of colors: " + str(number_of_image_colors))
-    print("Number of pixels to paint: " + str(number_of_pixels_to_paint))
-    print("Number of lines: " + str(number_of_lines))
-    estimated_time = int(1.056*((number_of_pixels_to_paint * click_delay) + 0.56 + (number_of_image_colors * 0.32)))
-    print("Est. painting time: " + str(estimated_time))
+    # Calculate the estimated time of the paint
+    one_line_time = (line_delay + 0.0036) * 5
+    one_click_time = click_delay + 0.001
+    change_color_time = number_of_image_colors * 0.342
+    other_time = 0.563
+    estimated_time = int((number_of_pixels_to_paint * one_click_time) + (number_of_lines * one_line_time) + change_color_time + other_time)
+
+    # Information
+    print("\nImage Width  = " + str(dithered_image.size[0]))
+    print("Image Height = " + str(dithered_image.size[1]))
+    print("\nNumber of colors:\t\t" + str(number_of_image_colors))
+    print("Number of pixels to paint:\t" + str(number_of_pixels_to_paint))
+    print("Number of lines:\t\t" + str(number_of_lines))
+    print("Est. painting time:\t\t" + str(estimated_time))
 
     print("\nPress <ENTER> to start the painting process..."); input()
 
