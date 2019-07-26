@@ -14,7 +14,8 @@ REQUIRED = [
     "PyAutoGUI>=0.9.41",
     "pypiwin32>=223",
     "colorama>=0.4.1",
-    "termcolor>=1.1.0"
+    "termcolor>=1.1.0",
+    "pynput>=1.4.2"
 ]
 
 with open("README.md") as file:

@@ -11,6 +11,8 @@ import win32gui
 import win32con
 import colorama
 import termcolor
+import ctypes
+from pynput import keyboard
 
 rust_palette_data = (
         46, 204, 113,   46, 157, 135,   39, 174, 96,    22, 160, 133,   29, 224, 25,
@@ -36,6 +38,8 @@ rust_palette_data = (
 
 click_delay = 0.020
 line_delay = 0.020
+is_paused = False
+is_exit = False
 
 
 def quantize_to_palette(original_image, palette):
@@ -70,10 +74,23 @@ def draw_line(point_A, point_B):
     pyautogui.PAUSE = click_delay
 
 
+def on_press(key):
+    global is_paused, is_exit
+    if key == keyboard.Key.f10:
+        is_paused = not is_paused
+        if is_paused == True:
+            print("PAUSED\t\tF10 = Continue, ESC = Exit")
+    elif key == keyboard.Key.esc:
+        print("Exiting...")
+        is_paused = False
+        is_exit = True
+
+
 def main():
     """ The main application
     
     """
+    print("")
     print("██████╗ ██╗   ██╗███████╗████████╗    ██████╗  █████╗     ██╗   ██╗██╗███╗   ██╗ ██████╗██╗")
     print("██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗██╔══██╗    ██║   ██║██║████╗  ██║██╔════╝██║")
     print("██████╔╝██║   ██║███████╗   ██║       ██║  ██║███████║    ██║   ██║██║██╔██╗ ██║██║     ██║")
@@ -206,7 +223,7 @@ def main():
     #    time.sleep(1)
 
 
-    image_path = filedialog.askopenfilename()
+    image_path = filedialog.askopenfilename(title="Select the image to be painted")
     if image_path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
         print("\nDithering process started...")
         original_image = Image.open(image_path)
@@ -310,9 +327,15 @@ def main():
 
     input("\nPress <ENTER> to start the painting process...\n")
 
-    print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=estimated_time)).time().strftime("%H:%M:%S")))
+
+    print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=estimated_time)).time().strftime("%H:%M:%S")) + "\n")
+
+    print("F10 = Continue, ESC = Exit\n")
 
     start_time = time.time()
+
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()
 
 
     pyautogui.click(tool_size[0]); # To set focus on the rust window
@@ -355,6 +378,11 @@ def main():
 
             for x in range(dithered_image_width):
 
+                while is_paused:
+                    None
+                if is_exit:
+                    exit()
+
                 if x == dithered_image_width:
                     is_last_point_of_row = True
 
@@ -387,20 +415,20 @@ def main():
                         prev_is_color = False
 
 
-
-    #########################################################
+    listener.stop()
 
     elapsed_time = int(time.time() - start_time)
 
-    print("Elapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+    print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
 
     pyautogui.hotkey("alt", "tab")
 
-    input("Press <ENTER> to exit...")
+    input("\nPress <ENTER> to exit...")
 
 
 
 
 
 if __name__ == "__main__":
+    ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci")
     main()

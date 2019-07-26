@@ -13,4 +13,3 @@ Automatic Sign Painter for Rust
 - Automatically update the painting when switching colors
 - Test the line painting speed, is it satisfactory? Does everything get painted? Missing pixels?
 - Optimize the estimate time part
-
