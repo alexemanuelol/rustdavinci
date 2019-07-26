@@ -6,6 +6,7 @@ import tkinter
 from tkinter import filedialog
 import pyautogui
 import time
+import datetime
 import win32gui
 import win32con
 import colorama
@@ -305,9 +306,11 @@ def main():
     print("\nNumber of colors:\t\t" + str(number_of_image_colors))
     print("Number of pixels to paint:\t" + str(number_of_pixels_to_paint))
     print("Number of lines:\t\t" + str(number_of_lines))
-    print("Est. painting time:\t\t" + str(estimated_time))
+    print("Est. painting time:\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time))))
 
-    print("\nPress <ENTER> to start the painting process..."); input()
+    input("\nPress <ENTER> to start the painting process...\n")
+
+    print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=estimated_time)).time().strftime("%H:%M:%S")))
 
     start_time = time.time()
 
@@ -389,13 +392,11 @@ def main():
 
     elapsed_time = int(time.time() - start_time)
 
-    print("Elapsed time: {}".format(elapsed_time))
+    print("Elapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
 
     pyautogui.hotkey("alt", "tab")
 
     input("Press <ENTER> to exit...")
-
-
 
 
 
