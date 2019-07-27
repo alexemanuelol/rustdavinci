@@ -9,7 +9,11 @@ Automatic Sign Painter for Rust
 - Optimize area capturing, find another way to capture the tool area and painting area.
 - Maybe tweak the image generation, less pixels?
 - Create a howto guide
-- Set the window topmost (as an overlay to Rust)
+- Set the window topmost (as an overlay to Rust) then remove topmost when paint is done
 - Automatically update the painting when switching colors
+
 - Test the line painting speed, is it satisfactory? Does everything get painted? Missing pixels?
+- Test the min_pixels_for_line variable, which value is the most optimal? atm 7
+
+
 - Optimize the estimate time part

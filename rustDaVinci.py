@@ -36,8 +36,9 @@ rust_palette_data = (
         127, 128, 128,  145, 145, 146,  119, 119, 119,  126, 127, 128,  119, 119, 119
 )
 
-click_delay = 0.020
-line_delay = 0.020
+click_delay = 0.02
+line_delay = 0.02
+min_pixels_for_line = 7
 is_paused = False
 is_exit = False
 
@@ -67,8 +68,10 @@ def draw_line(point_A, point_B):
     """
     pyautogui.PAUSE = line_delay
     pyautogui.mouseDown(button="left", x=point_A[0], y=point_A[1])
+    time.sleep(.0005)
     pyautogui.keyDown("shift")
     pyautogui.moveTo(point_B[0], point_B[1])
+    time.sleep(.0005)
     pyautogui.keyUp("shift")
     pyautogui.mouseUp(button="left")
     pyautogui.PAUSE = click_delay
@@ -276,17 +279,19 @@ def main():
     number_of_pixels_to_paint = 0
     number_of_lines = 0
     for color in image_colors:
-        if color == 16: continue
+        if color in [16, 36, 56, 76]: continue
         is_first_point_of_row = True
         is_last_point_of_row = False
         prev_is_color = False
         is_line = False
+        pixels_in_line = 0
 
         for y in range(dithered_image_height):
             is_first_point_of_row = True
             is_last_point_of_row = False
             is_prev_color = False
             is_line = False
+            pixels_in_line = 0
 
             for x in range(dithered_image_width):
                 if x == dithered_image_width: is_last_point_of_row = True
@@ -298,32 +303,40 @@ def main():
 
                 if pixel[x, y] == color:
                     if prev_is_color:
-                        if is_last_point_of_row: number_of_lines += 1
-                        else: is_line = True
+                        if is_last_point_of_row:
+                            if pixels_in_line >= min_pixels_for_line: number_of_lines += 1
+                            else: number_of_pixels_to_paint += pixels_in_line
+                        else: is_line = True; pixels_in_line += 1
                     else:
                         if is_last_point_of_row: number_of_pixels_to_paint += 1
                         else: prev_is_color = True
                 else:
                     if prev_is_color:
-                        if is_line: is_line = False; number_of_lines += 1
+                        if is_line:
+                            is_line = False
+                            if pixels_in_line >= min_pixels_for_line: number_of_lines += 1
+                            else: number_of_pixels_to_paint += pixels_in_line
+                            pixels_in_line = 0
                         else: number_of_pixels_to_paint += 1
                         prev_is_color = False
 
 
     # Calculate the estimated time of the paint
-    one_line_time = (line_delay + 0.0036) * 5
+    one_line_time = (line_delay + 0.0036 +0.001) * 5
     one_click_time = click_delay + 0.001
     change_color_time = number_of_image_colors * 0.342
     other_time = 0.563
     estimated_time = int((number_of_pixels_to_paint * one_click_time) + (number_of_lines * one_line_time) + change_color_time + other_time)
+    estimated_time1 = int((total_number_of_pixels_to_paint * one_click_time) + change_color_time + other_time)
 
     # Information
-    print("\nImage Width  = " + str(dithered_image.size[0]))
-    print("Image Height = " + str(dithered_image.size[1]))
-    print("\nNumber of colors:\t\t" + str(number_of_image_colors))
-    print("Number of pixels to paint:\t" + str(number_of_pixels_to_paint))
-    print("Number of lines:\t\t" + str(number_of_lines))
-    print("Est. painting time:\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time))))
+    print("\nDimensions: \t\t\t\t" + str(dithered_image.size[0]) + " x " + str(dithered_image.size[1]))
+    print("\nNumber of colors:\t\t\t" + str(number_of_image_colors))
+    print("Total Number of pixels to paint: \t" + str(total_number_of_pixels_to_paint))
+    print("Number of pixels to paint:\t\t" + str(number_of_pixels_to_paint))
+    print("Number of lines:\t\t\t" + str(number_of_lines))
+    print("Est. painting time (click only):\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time1))))
+    print("Est. painting time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time))))
 
     input("\nPress <ENTER> to start the painting process...\n")
 
@@ -349,7 +362,7 @@ def main():
         print("(" + str((color_counter+1)) + "/" + str((number_of_image_colors)) + ") Current color: " + str(color))
         color_counter += 1
 
-        if color == 16: continue
+        if color in [16, 36, 56, 76]: continue
 
         time.sleep(.1)
         if   color >= 0  and color < 20: pyautogui.click(tool_opacity[5])
@@ -362,6 +375,7 @@ def main():
         final_y_coordinate = paint_area_TL[1] + y_coordinate_correction
 
         first_point = (0, 0)
+        pixels_in_line = 0
         is_first_point_of_row = True
         is_last_point_of_row = False
         prev_is_color = False
@@ -375,6 +389,7 @@ def main():
             is_last_point_of_row = False
             is_prev_color = False
             is_line = False
+            pixels_in_line = 0
 
             for x in range(dithered_image_width):
 
@@ -396,9 +411,14 @@ def main():
                 if pixel[x, y] == color:
                     if prev_is_color:
                         if is_last_point_of_row:
-                            draw_line(first_point, (final_x_coorindate + x, final_y_coordinate + y))
+                            if pixels_in_line >= min_pixels_for_line:
+                                draw_line(first_point, (final_x_coorindate + x, final_y_coordinate + y))
+                            else:
+                                for index in range(pixels_in_line):
+                                    pyautogui.click(final_x_coordinate + first_point[0] + index, final_y_coordinate + y)
                         else:
                             is_line = True
+                            pixels_in_line += 1
                     else:
                         if is_last_point_of_row:
                             pyautogui.click(final_x_coordinate + x, final_y_coordinate + y)
@@ -409,7 +429,13 @@ def main():
                     if prev_is_color:
                         if is_line:
                             is_line = False
-                            draw_line(first_point, (final_x_coordinate + (x-1), final_y_coordinate + y))
+                            if pixels_in_line >= min_pixels_for_line:
+                                draw_line(first_point, (final_x_coordinate + (x-1), final_y_coordinate + y))
+                            else:
+                                for index in range(pixels_in_line):
+                                    pyautogui.click(final_x_coordinate + first_point[0] + index, final_y_coordinate + y)
+                            pixels_in_line = 0
+
                         else:
                             pyautogui.click(final_x_coordinate + (x-1), final_y_coordinate + y)
                         prev_is_color = False
