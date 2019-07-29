@@ -1,6 +1,6 @@
 ![RustDaVinci logo](images/RustDaVinci-logo-2.png)
 
-Automatic Sign Painter for Rust
+An automatic sign painter for Rust Facepunch
 
 
 ## TODO
