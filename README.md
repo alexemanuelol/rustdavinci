@@ -1,4 +1,4 @@
-# RustDaVinci
+![RustDaVinci logo](/images/RustDaVinci-2.png)
 
 Automatic Sign Painter for Rust
 
