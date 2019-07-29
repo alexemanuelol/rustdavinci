@@ -1,20 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PIL import Image
 import tkinter
-from tkinter import filedialog
 import pyautogui
 import time
 import datetime
 import win32gui
 import win32con
-import colorama
-import termcolor
 import ctypes
+
+from tkinter import filedialog
+from PIL import Image
+from colorama import init, Fore, Back, Style
+from termcolor import colored
 from pynput import keyboard
 
 import rustPalette
+
+
+ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci")
+init()
 
 
 is_skip_colors = [16, 36, 56, 76]
@@ -62,7 +67,7 @@ def on_press(key):
     if key == keyboard.Key.f10:
         is_paused = not is_paused
         if is_paused == True:
-            print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit")
+            color_print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit", Fore.YELLOW)
     elif key == keyboard.Key.f11:
         is_paused = False
         is_skip_color = True
@@ -71,26 +76,33 @@ def on_press(key):
         is_exit = True
 
 
+def color_print(message, color):
+    """
+    Colors: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
+    """
+    print(color + message + Fore.RESET)
+
+
 def main():
     """ The main application
     
     """
     print("")
-    print("██████╗ ██╗   ██╗███████╗████████╗    ██████╗  █████╗     ██╗   ██╗██╗███╗   ██╗ ██████╗██╗")
-    print("██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗██╔══██╗    ██║   ██║██║████╗  ██║██╔════╝██║")
-    print("██████╔╝██║   ██║███████╗   ██║       ██║  ██║███████║    ██║   ██║██║██╔██╗ ██║██║     ██║")
-    print("██╔══██╗██║   ██║╚════██║   ██║       ██║  ██║██╔══██║    ╚██╗ ██╔╝██║██║╚██╗██║██║     ██║")
-    print("██║  ██║╚██████╔╝███████║   ██║       ██████╔╝██║  ██║     ╚████╔╝ ██║██║ ╚████║╚██████╗██║")
-    print("╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝       ╚═════╝ ╚═╝  ╚═╝      ╚═══╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚═╝\n")
+    color_print("██████╗ ██╗   ██╗███████╗████████╗    ██████╗  █████╗     ██╗   ██╗██╗███╗   ██╗ ██████╗██╗", Fore.RED)
+    color_print("██╔══██╗██║   ██║██╔════╝╚══██╔══╝    ██╔══██╗██╔══██╗    ██║   ██║██║████╗  ██║██╔════╝██║", Fore.RED)
+    color_print("██████╔╝██║   ██║███████╗   ██║       ██║  ██║███████║    ██║   ██║██║██╔██╗ ██║██║     ██║", Fore.RED)
+    color_print("██╔══██╗██║   ██║╚════██║   ██║       ██║  ██║██╔══██║    ╚██╗ ██╔╝██║██║╚██╗██║██║     ██║", Fore.RED)
+    color_print("██║  ██║╚██████╔╝███████║   ██║       ██████╔╝██║  ██║     ╚████╔╝ ██║██║ ╚████║╚██████╗██║", Fore.RED)
+    color_print("╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝       ╚═════╝ ╚═╝  ╚═╝      ╚═══╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚═╝\n", Fore.RED)
 
-    print("Hello & Welcome to RustDaVinci!\n")
+    color_print("Hello & Welcome to RustDaVinci!\n", Fore.RED)
     
-    print("Beneath follows the application instructions:\n")
-    print("\t1. Firstly the application needs to capture the rust palette tools area.")
-    print("\t2. Then it needs to capture the area in which the image will be painted.")
-    print("\t3. Make sure that the console window is in focus when capturing the areas.")
-    print("\t4. Make sure that the console window does not cover those two areas.\n")
-    print("Follow the instructions below to begin the area capturing...\n")
+    color_print("Beneath follows the application instructions:\n", Fore.RED)
+    color_print("\t1. Firstly the application needs to capture the rust palette tools area.", Fore.RED)
+    color_print("\t2. Then it needs to capture the area in which the image will be painted.", Fore.RED)
+    color_print("\t3. Make sure that the console window is in focus when capturing the areas.", Fore.RED)
+    color_print("\t4. Make sure that the console window does not cover those two areas.\n", Fore.RED)
+    color_print("Follow the instructions below to begin the area capturing...\n", Fore.RED)
 
     screen_size = pyautogui.size()
 
@@ -210,7 +222,7 @@ def main():
 
     image_path = filedialog.askopenfilename(title="Select the image to be painted")
     if image_path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
-        print("\nDithering process started...")
+        color_print("\nDithering process started...", Fore.YELLOW)
         original_image = Image.open(image_path)
 
         original_image_width = original_image.size[0]
@@ -238,7 +250,7 @@ def main():
         #dithered_image.save("Preview.png")
         dithered_image.show(title="Preview")
     else:
-        print("Invalid picture format...")
+        color_print("Invalid picture format...", Fore.RED)
         exit()
 
     dithered_image_width = dithered_image.size[0]
@@ -246,7 +258,7 @@ def main():
         
     pixel_array = dithered_image.load()
 
-    print("Counting colors...\nCounting pixels...")
+    color_print("Counting colors...\nCounting pixels...", Fore.YELLOW)
     image_colors = []
     total_number_of_pixels_to_paint = 0
     for y in range(dithered_image_height):
@@ -257,7 +269,7 @@ def main():
                 image_colors.append(pixel_array[x, y])
     number_of_image_colors = len(image_colors)
 
-    print("Counting lines...")
+    color_print("Counting lines...", Fore.YELLOW)
     number_of_pixels_to_paint = 0
     number_of_lines = 0
     for color in image_colors:
@@ -318,20 +330,20 @@ def main():
     estimated_time1 = int((total_number_of_pixels_to_paint * one_click_time) + change_color_time + other_time)
 
     # Information
-    print("\nDimensions: \t\t\t\t" + str(dithered_image.size[0]) + " x " + str(dithered_image.size[1]))
-    print("\nNumber of colors:\t\t\t" + str(number_of_image_colors))
-    print("Total Number of pixels to paint: \t" + str(total_number_of_pixels_to_paint))
-    print("Number of pixels to paint:\t\t" + str(number_of_pixels_to_paint))
-    print("Number of lines:\t\t\t" + str(number_of_lines))
-    print("Est. painting time (click only):\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time1))))
-    print("Est. painting time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time))))
+    color_print("\nDimensions: \t\t\t\t" + str(dithered_image.size[0]) + " x " + str(dithered_image.size[1]), Fore.GREEN)
+    color_print("\nNumber of colors:\t\t\t" + str(number_of_image_colors), Fore.GREEN)
+    color_print("Total Number of pixels to paint: \t" + str(total_number_of_pixels_to_paint), Fore.GREEN)
+    color_print("Number of pixels to paint:\t\t" + str(number_of_pixels_to_paint), Fore.GREEN)
+    color_print("Number of lines:\t\t\t" + str(number_of_lines), Fore.GREEN)
+    color_print("Est. painting time (click only):\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time1))), Fore.GREEN)
+    color_print("Est. painting time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time))), Fore.GREEN)
 
-    input("\nPress <ENTER> to start the painting process...\n")
+    color_print("\nPress <ENTER> to start the painting process...\n", Fore.YELLOW); input()
 
 
-    print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=estimated_time)).time().strftime("%H:%M:%S")) + "\n")
+    color_print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=estimated_time)).time().strftime("%H:%M:%S")) + "\n", Fore.GREEN)
 
-    print("F10 = Continue, F11 = Skip color, ESC = Exit\n")
+    color_print("F10 = Continue, F11 = Skip color, ESC = Exit\n", Fore.GREEN)
 
     start_time = time.time()
 
@@ -349,7 +361,7 @@ def main():
     color_counter = 0
     for color in image_colors:
         is_skip_color = False
-        print("(" + str((color_counter+1)) + "/" + str((number_of_image_colors)) + ") Current color: " + str(color))
+        color_print("(" + str((color_counter+1)) + "/" + str((number_of_image_colors)) + ") Current color: " + str(color), Fore.MAGENTA)
         color_counter += 1
 
         if color in is_skip_colors: continue
@@ -386,11 +398,11 @@ def main():
 
                 while is_paused: None
 
-                if is_skip_color: print("Skipping current color..."); break
+                if is_skip_color: color_print("Skipping current color...", Fore.YELLOW); break
                 if is_exit:
                     elapsed_time = int(time.time() - start_time)
-                    print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
-                    print("\nExiting...")
+                    color_print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))), Fore.GREEN)
+                    color_print("\nExiting...", Fore.RED)
                     exit()
 
                 if x == (dithered_image_width - 1):
@@ -448,16 +460,15 @@ def main():
 
     elapsed_time = int(time.time() - start_time)
 
-    print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+    color_print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))), Fore.GREEN)
 
     pyautogui.hotkey("alt", "tab")
 
-    input("\nPress <ENTER> to exit...")
+    color_print("\nPress <ENTER> to exit...", Fore.YELLOW); input()
 
 
 
 
 
 if __name__ == "__main__":
-    ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci")
     main()
