@@ -58,12 +58,12 @@ rust_palette_data_greyscale = (
         127, 128, 128,  145, 145, 146,  119, 119, 119,  236, 240, 241,  119, 119, 119
 )
 
-skip_colors = [16, 36, 56, 76]
+is_skip_colors = [16, 36, 56, 76]
 
 pag_delay = 0.02
 min_pixels_for_line = 6
 is_paused = False
-skip_color = False
+is_skip_color = False
 is_exit = False
 
 
@@ -99,14 +99,14 @@ def draw_line(point_A, point_B):
 
 
 def on_press(key):
-    global is_paused, skip_color, is_exit
+    global is_paused, is_skip_color, is_exit
     if key == keyboard.Key.f10:
         is_paused = not is_paused
         if is_paused == True:
             print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit")
     elif key == keyboard.Key.f11:
         is_paused = False
-        skip_color = True
+        is_skip_color = True
     elif key == keyboard.Key.esc:
         is_paused = False
         is_exit = True
@@ -302,7 +302,7 @@ def main():
     number_of_pixels_to_paint = 0
     number_of_lines = 0
     for color in image_colors:
-        if color in skip_colors: continue
+        if color in is_skip_colors: continue
         is_first_point_of_row = True
         is_last_point_of_row = False
         prev_is_color = False
@@ -386,14 +386,14 @@ def main():
     pyautogui.click(tool_brush[1]);
 
 
-    global skip_color
+    global is_skip_color
     color_counter = 0
     for color in image_colors:
-        skip_color = False
+        is_skip_color = False
         print("(" + str((color_counter+1)) + "/" + str((number_of_image_colors)) + ") Current color: " + str(color))
         color_counter += 1
 
-        if color in skip_colors: continue
+        if color in is_skip_colors: continue
 
         time.sleep(.1)
         if   color >= 0  and color < 20: pyautogui.click(tool_opacity[5])
@@ -416,7 +416,7 @@ def main():
         time.sleep(.1)
 
         for y in range(dithered_image_height):
-            if skip_color: break
+            if is_skip_color: break
             is_first_point_of_row = True
             is_last_point_of_row = False
             is_prev_color = False
@@ -427,7 +427,7 @@ def main():
 
                 while is_paused: None
 
-                if skip_color: print("Skipping current color..."); break
+                if is_skip_color: print("Skipping current color..."); break
                 if is_exit:
                     elapsed_time = int(time.time() - start_time)
                     print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
