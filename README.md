@@ -36,11 +36,17 @@ An automatic sign painter for Rust Facepunch
 
 
 ## Variables for the future config file
-- pag_delay
+- pag_delay, pag_line_delay?
 - min_pixels_for_line
 - which rust palette that should be used
 - quality of the image (needs to be investigated for PIL Image)
 - window as overlay always on top?
 - location for tool area, perhaps (None, None), (None, None) if it's not defined and add the values when define for the first time.
 - Show preview of image or not?
-
+- Set the default background, default white
+- Remember the tool area coordinates when it's been defined in the application
+- Save the image when it's done
+- Update the canvas while it's painting
+- draw lines?
+- double-click?
+- 
