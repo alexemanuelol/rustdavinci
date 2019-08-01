@@ -8,6 +8,9 @@ import datetime
 import win32gui
 import win32con
 import ctypes
+import cv2
+
+import numpy as np
 
 from tkinter import filedialog
 from PIL import Image
@@ -29,6 +32,42 @@ min_pixels_for_line = 6
 is_paused = False
 is_skip_color = False
 is_exit = False
+
+
+
+
+def locate_palette():
+    image_screenshot = pyautogui.screenshot()
+    screen_width, screen_height = image_screenshot.size
+
+    image_gray = cv2.cvtColor(np.array(image_screenshot), cv2.COLOR_BGR2GRAY)
+
+    template = cv2.imread("opencv_template/rust_palette_template.png", 0)
+    template_width, template_height = template.shape[::-1]
+
+    x_coordinate, y_coordinate = 0, 0
+    threshold = 0.8
+
+    for loop in range(50):
+        matches = cv2.matchTemplate(image_gray, template, cv2.TM_CCOEFF_NORMED)
+        loc = np.where(matches >= threshold)
+
+        x_list, y_list = [], []
+        for point in zip(*loc[::-1]):
+            x_list.append(point[0])
+            y_list.append(point[1])
+
+        if x_list:
+            x_coordinate = int(sum(x_list) / len(x_list))
+            y_coordinate = int(sum(y_list) / len(y_list))
+            return x_coordinate, y_coordinate, template_width, template_height
+    
+        template_width, template_height = int(template.shape[1]*1.035), int(template.shape[0]*1.035)
+        template = cv2.resize(template, (int(template_width), int(template_height)))
+
+        if template_width > screen_width or template_height > screen_height or loop == 49:
+            print("No tool area was found...\n")
+            return False
 
 
 def quantize_to_palette(original_image, palette):
@@ -114,11 +153,27 @@ def main():
 
     hwnd = win32gui.GetForegroundWindow()
 
+    tool_area_width = 0
+    tool_area_height = 0
 
-    input("1. Move the mouse pointer to the top left corner of the tools area and click <ENTER>...")
-    tool_area_TL = pyautogui.position()
-    input("2. Move the mouse pointer to the bottom right corner of the tools area and click <ENTER>...")
-    tool_area_BR = pyautogui.position()
+    print("Locating tool area automatically...\n")
+    tool_area = locate_palette()
+
+    if tool_area is not False:
+        print("Tool area found!\n")
+        tool_area_TL = (tool_area[0], tool_area[1])
+        tool_area_width = tool_area[2]
+        tool_area_height = tool_area[3]
+    else:
+        input("1. Move the mouse pointer to the top left corner of the tools area and click <ENTER>...")
+        tool_area_TL = pyautogui.position()
+        input("2. Move the mouse pointer to the bottom right corner of the tools area and click <ENTER>...")
+        tool_area_BR = pyautogui.position()
+        tool_area_width = tool_area_BR[0] - tool_area_TL[0]
+        tool_area_height = tool_area_BR[1] - tool_area_TL[1]
+
+
+
 
     input("3. Move the mouse pointer to the top left corner of the paint window and click <ENTER>...")
     paint_area_TL = pyautogui.position()
@@ -130,8 +185,6 @@ def main():
     # Uncomment the line below at your own risk, this might be the reason why I got banned...
     #win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0, (paint_area_TL[0] - 25), screen_size[1],0)
 
-    tool_area_width = tool_area_BR[0] - tool_area_TL[0]
-    tool_area_height = tool_area_BR[1] - tool_area_TL[1]
 
     paint_area_width = paint_area_BR[0] - paint_area_TL[0]
     paint_area_height = paint_area_BR[1] - paint_area_TL[1]
