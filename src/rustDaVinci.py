@@ -23,6 +23,7 @@ import rustPalette
 
 
 
+
 # Read from the configuration file
 config = configparser.ConfigParser(comment_prefixes="/", allow_no_value=True)
 config.read("config.ini")
@@ -38,13 +39,22 @@ init()  # Initilize colorama module
 
 
 is_skip_colors = [16, 36, 56, 76]
+is_skip_colors.append(config.getint("General", "default_background_color"))
 
-click_delay = float(config.getint("Experimental", "click_delay") / 1000)
-line_delay = float(config.getint("Experimental", "line_delay") / 1000)
+
+click_delay_ms = config.getint("Experimental", "click_delay")
+if click_delay_ms <= 0: click_delay = 0
+elif click_delay_ms > 0: click_delay = float(click_delay_ms / 1000)
+
+line_delay_ms = config.getint("Experimental", "line_delay")
+if line_delay_ms <= 0: line_delay = 0
+elif line_delay_ms > 0: line_delay = float(line_delay_ms / 1000)
 
 pyautogui.PAUSE = click_delay
 
+
 minimum_line_width = config.getint("Experimental", "minimum_line_width")
+
 
 is_paused = False
 is_skip_color = False
@@ -233,9 +243,9 @@ def select_image_for_painting(paint_area_width, paint_area_height):
 
         dithered_image = quantize_to_palette(original_image, palette_data)
 
-        if config.getboolean("Painting", "save_preview") == True:
+        if config.getboolean("Painting", "save_preview"):
             dithered_image.save(config("Painting", "path_for_preview_image") + "Preview.png")
-        if config.getboolean("Painting", "show_preview") == True:
+        if config.getboolean("Painting", "show_preview"):
             dithered_image.show(title="Preview")
 
         return dithered_image, x_coordinate_correction, y_coordinate_correction
@@ -378,7 +388,7 @@ def on_press(key):
     global is_paused, is_skip_color, is_exit
     if key == keyboard.Key.f10:
         is_paused = not is_paused
-        if is_paused == True:
+        if is_paused:
             color_print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit", Fore.YELLOW)
     elif key == keyboard.Key.f11:
         is_paused = False
@@ -447,7 +457,7 @@ def main():
 
     screen_size = pyautogui.size()
     # Set the console window as an overlay and place it on the left of the painting area
-    if config.getboolean("General", "window_on_top") == True:
+    if config.getboolean("General", "window_on_top"):
         hwnd = win32gui.GetForegroundWindow()
         win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0,0, (paint_area_TL[0] - 25), screen_size[1],0)
 
@@ -650,11 +660,14 @@ def main():
                     else:
                         is_line = False
                         pixels_in_line = 0
+        if config.getboolean("Painting", "save_while_painting"):
+            pyautogui.click(tool_update)
+
 
 
     listener.stop()
 
-    if config.getboolean("Painting", "save_when_completed") == True
+    if config.getboolean("Painting", "save_when_completed"):
         pyautogui.click(tool_update)
 
     elapsed_time = int(time.time() - start_time)
