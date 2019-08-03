@@ -14,7 +14,7 @@ import configparser
 import numpy as np
 
 from tkinter import filedialog
-from PIL import Image, ImageFilter
+from PIL import Image
 from colorama import init, Fore, Back, Style
 from termcolor import colored
 from pynput import keyboard
@@ -363,10 +363,13 @@ def quantize_to_palette(original_image, palette):
     original_image.load()
     palette.load()
 
+    if original_image.mode == "RGBA":
+        original_image = original_image.convert("RGB")
+
     if palette.mode != "P":
         raise ValueError("Bad mode for palette image")
 
-    if original_image.mode != "RGB" and silf.mode != "L":
+    if original_image.mode != "RGB" and original_image.mode != "L":
         raise ValueError("Only RGB or L mode images can be quantized to a palette")
 
 
