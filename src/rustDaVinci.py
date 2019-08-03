@@ -50,6 +50,15 @@ line_delay_ms = config.getint("Experimental", "line_delay")
 if line_delay_ms <= 0: line_delay = 0
 elif line_delay_ms > 0: line_delay = float(line_delay_ms / 1000)
 
+loop_delay_ms = config.getint("Experimental", "loop_delay")
+if loop_delay_ms <= 0: loop_delay = 0
+elif loop_delay_ms > 0: loop_delay = float(loop_delay_ms / 1000)
+
+control_area_delay_ms = config.getint("Experimental", "control_area_delay")
+if control_area_delay_ms <= 0: control_area_delay = 0
+elif control_area_delay_ms > 0: control_area_delay = float(control_area_delay_ms / 1000)
+
+
 pyautogui.PAUSE = click_delay
 
 
@@ -205,7 +214,7 @@ def calculate_control_positioning(x, y, width, height):
 
     # TODO: Experiment with positioning of new (hidden) colors. Append individual colors to the tool_color list
 
-    return tool_size, tool_brush, tool_opacity, tool_color
+    return tool_remove, tool_update, tool_size, tool_brush, tool_opacity, tool_color
 
 
 def select_image_for_painting(paint_area_width, paint_area_height):
@@ -336,9 +345,9 @@ def calculate_estimated_time(colors, tot_pixels, pixels, lines):
                 Estimated time for only clicking
     """
     one_line_time = (line_delay + 0.0036 +0.0025) * 5
-    one_click_time = click_delay + 0.001
-    change_color_time = colors * 0.342
-    other_time = 0.563
+    one_click_time = click_delay + loop_delay + 0.001
+    change_color_time = colors * (control_area_delay + (2 * click_delay))
+    other_time = 0.5 + (3 * click_delay) + (2 * loop_delay)
     estimated_time_lines = int((pixels * one_click_time) + (lines * one_line_time) + change_color_time + other_time)
     estimated_time_click = int((tot_pixels * one_click_time) + change_color_time + other_time)
 
@@ -467,10 +476,15 @@ def main():
     root.withdraw()
 
     # Calculate the control positions
-    tool_size, tool_brush, tool_opacity, tool_color = calculate_control_positioning(control_area_x, 
-                                                                                    control_area_y, 
-                                                                                    control_area_width, 
-                                                                                    control_area_height)
+    tool_remove, \
+    tool_update, \
+    tool_size, \
+    tool_brush, \
+    tool_opacity, \
+    tool_color = calculate_control_positioning( control_area_x, 
+                                                control_area_y, 
+                                                control_area_width, 
+                                                control_area_height)
 
     # Debug purposes
     #pyautogui.moveTo(tool_remove)
@@ -528,9 +542,11 @@ def main():
 
     prefer_lines = False
     if estimated_time_line < estimated_time_click:
+        print("\nGoing for lines...")
         prefer_lines = True
         estimated_time = estimated_time_line
     else:
+        print("\nGoing for clicks...")
         estimated_time = estimated_time_click
 
 
@@ -541,7 +557,7 @@ def main():
     color_print("Number of pixels to paint:\t\t" + str(num_pixels_to_paint), Fore.GREEN)
     color_print("Number of lines:\t\t\t" + str(num_of_lines), Fore.GREEN)
     color_print("Est. painting time (click only):\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time_click))), Fore.GREEN)
-    color_print("Est. painting time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time_line))), Fore.GREEN)
+    color_print("Est. painting time (with lines):\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time_line))), Fore.GREEN)
 
     color_print("\nPress <ENTER> to start the painting process...\n", Fore.YELLOW); input()
 
@@ -558,10 +574,10 @@ def main():
     listener.start()
 
 
-    pyautogui.click(tool_size[0]); # To set focus on the rust window
+    pyautogui.click(tool_size[0]) # To set focus on the rust window
     time.sleep(.5)
-    pyautogui.click(tool_size[0]);
-    pyautogui.click(tool_brush[config.getint("Painting", "default_brush")]);
+    pyautogui.click(tool_size[0]); time.sleep(loop_delay)
+    pyautogui.click(tool_brush[config.getint("Painting", "default_brush")]); time.sleep(loop_delay)
 
 
     color_counter = 0
@@ -572,12 +588,12 @@ def main():
 
         if color in is_skip_colors: continue
 
-        time.sleep(.1)
+        time.sleep(0 if control_area_delay == 0 else control_area_delay / 3)
         if   color >= 0  and color < 20: pyautogui.click(tool_opacity[5])
         elif color >= 20 and color < 40: pyautogui.click(tool_opacity[4])
         elif color >= 40 and color < 60: pyautogui.click(tool_opacity[3])
         elif color >= 60 and color < 80: pyautogui.click(tool_opacity[2])
-        time.sleep(.1)
+        time.sleep(0 if control_area_delay == 0 else control_area_delay / 3)
 
 
         first_point = (0, 0)
@@ -588,7 +604,7 @@ def main():
         pixels_in_line = 0
 
         pyautogui.click(tool_color[color%20])
-        time.sleep(.1)
+        time.sleep(0 if control_area_delay == 0 else control_area_delay / 3)
 
         for y in range(dithered_image_height):
             if is_skip_color: break
@@ -621,14 +637,14 @@ def main():
                     continue
 
                 if pixel_array[x, y] == color:
-                    if not prefer_lines: pyautogui.click(paint_area_x + x, paint_area_y + y); continue
+                    if not prefer_lines: pyautogui.click(paint_area_x + x, paint_area_y + y); time.sleep(loop_delay); continue
                     if prev_is_color:
                         if is_last_point_of_row:
                             if pixels_in_line >= minimum_line_width:
                                 draw_line(first_point, (paint_area_x + x, paint_area_y + y))
                             else:
                                 for index in range(pixels_in_line):
-                                    pyautogui.click(first_point[0] + index, paint_area_y + y)
+                                    pyautogui.click(first_point[0] + index, paint_area_y + y); time.sleep(loop_delay)
                                 pyautogui.click(paint_area_x + x, paint_area_y + y)
                         else:
                             is_line = True
@@ -636,6 +652,7 @@ def main():
                     else:
                         if is_last_point_of_row:
                             pyautogui.click(paint_area_x + x, paint_area_y + y)
+                            time.sleep(loop_delay)
                         else:
                             first_point = (paint_area_x + x, paint_area_y + y)
                             prev_is_color = True
@@ -647,28 +664,29 @@ def main():
                             is_line = False
                             if pixels_in_line >= minimum_line_width:
                                 draw_line(first_point, (paint_area_x + (x-1), paint_area_y + y))
-                                #print(str((paint_area_x + (x-1)) - first_point[0]))
                             else:
                                 for index in range(pixels_in_line):
                                     pyautogui.click(first_point[0] + index, paint_area_y + y)
+                                    time.sleep(loop_delay)
                                 pyautogui.click(paint_area_x + x, paint_area_y + y)
                             pixels_in_line = 0
 
                         else:
                             pyautogui.click(paint_area_x + (x-1), paint_area_y + y)
+                            time.sleep(loop_delay)
                         prev_is_color = False
                     else:
                         is_line = False
                         pixels_in_line = 0
         if config.getboolean("Painting", "save_while_painting"):
-            pyautogui.click(tool_update)
+            pyautogui.click(tool_update); time.sleep(loop_delay)
 
 
 
     listener.stop()
 
     if config.getboolean("Painting", "save_when_completed"):
-        pyautogui.click(tool_update)
+        pyautogui.click(tool_update); time.sleep(loop_delay)
 
     elapsed_time = int(time.time() - start_time)
 
