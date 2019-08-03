@@ -10,14 +10,14 @@ AUTHOR = "Alexander Emanuelsson"
 EMAIL = "Alexander.Emanuelsson94@gmail.com"
 URL = "https://github.com/alexemanuelol/RustDaVinci"
 REQUIRED = [
-    "Pillow>=5.4.1",
-    "PyAutoGUI>=0.9.41",
-    "pypiwin32>=223",
-    "colorama>=0.4.1",
-    "termcolor>=1.1.0",
-    "pynput>=1.4.2",
-    "numpy>=1.16.2",
-    "opencv-python>=4.0.0.21"
+    "Pillow==6.1.0",
+    "PyAutoGUI==0.9.41",
+    "pypiwin32==223",
+    "colorama==0.4.1",
+    "termcolor==1.1.0",
+    "pynput==1.4.2",
+    "numpy==1.16.2",
+    "opencv-python==4.0.0.21"
 ]
 
 with open("README.md") as file:

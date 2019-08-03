@@ -14,7 +14,7 @@ import configparser
 import numpy as np
 
 from tkinter import filedialog
-from PIL import Image
+from PIL import Image, ImageFilter
 from colorama import init, Fore, Back, Style
 from termcolor import colored
 from pynput import keyboard
@@ -30,7 +30,7 @@ config.read("config.ini")
 
 # Select the palette to be used
 palette_data = Image.new("P", (1, 1))
-palette_data.putpalette(rustPalette.palette_80)
+palette_data.putpalette(rustPalette.palette_20)
 #palette_data.putpalette(rustPalette.palette_greyscale)
 
 ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci")
@@ -251,6 +251,7 @@ def select_image_for_painting(paint_area_width, paint_area_height):
             original_image = original_image.resize((paint_area_width, paint_area_height), Image.ANTIALIAS)
 
         dithered_image = quantize_to_palette(original_image, palette_data)
+        if dithered_image == False: return False
 
         if config.getboolean("Painting", "save_preview"):
             dithered_image.save(config("Painting", "path_for_preview_image") + "Preview.png")
@@ -368,7 +369,15 @@ def quantize_to_palette(original_image, palette):
     if original_image.mode != "RGB" and silf.mode != "L":
         raise ValueError("Only RGB or L mode images can be quantized to a palette")
 
-    im = original_image.im.convert("P", 1, palette.im)
+
+    quality = config.getint("Painting", "painting_accuracy")
+    if quality == 1:
+        im = original_image.im.convert("P", 0, palette.im)
+    elif quality == 2:
+        im = original_image.im.convert("P", 1, palette.im) # Dithering
+    else:
+        color_print("The quality variable in config.ini is invalid!", Fore.RED)
+        return False
 
     try: return original_image._new(im)
     except AttributeError: return original_image._makeself(im)
@@ -513,6 +522,8 @@ def main():
     dithered_image, x_coordinate_correction, y_coordinate_correction = select_image_for_painting(paint_area_width, paint_area_height)
     paint_area_x += x_coordinate_correction
     paint_area_y += y_coordinate_correction
+
+    #print(dithered_image.histogram())
 
     if dithered_image == False: exit()
 
