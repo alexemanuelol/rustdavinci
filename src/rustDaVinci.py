@@ -107,7 +107,7 @@ def auto_locate_control_area():
         template = cv2.resize(template, (int(template_width), int(template_height)))
 
         if template_width > screen_width or template_height > screen_height or loop == 49:
-            print("No tool area was found...\n")
+            print("No control area was found...\n")
             return False
 
 
@@ -129,30 +129,30 @@ def locate_control_area():
                     config.getint("Painting", "control_area_height")
 
     if auto_find_control_area:
-        print("Locating tool area automatically...\n")
-        tool_area = auto_locate_control_area()
+        print("Locating control area automatically...\n")
+        control_area = auto_locate_control_area()
 
-    if auto_find_control_area and tool_area is not False:
-        print("Tool area found!\n")
+    if auto_find_control_area and control_area is not False:
+        print("Control area found!\n")
     else:
-        input("1. Move the mouse pointer to the top left corner of the tools area and click <ENTER>...")
-        tool_area_TL = pyautogui.position()
-        input("2. Move the mouse pointer to the bottom right corner of the tools area and click <ENTER>...")
-        tool_area_BR = pyautogui.position()
-        tool_area_width = tool_area_BR[0] - tool_area_TL[0]
-        tool_area_height = tool_area_BR[1] - tool_area_TL[1]
-        tool_area = (tool_area_TL[0], tool_area_TL[1], tool_area_width, tool_area_height)
+        input("1. Move the mouse pointer to the top left corner of the control area and click <ENTER>...")
+        control_area_TL = pyautogui.position()
+        input("2. Move the mouse pointer to the bottom right corner of the control area and click <ENTER>...")
+        control_area_BR = pyautogui.position()
+        control_area_width = control_area_BR[0] - control_area_TL[0]
+        control_area_height = control_area_BR[1] - control_area_TL[1]
+        control_area = (control_area_TL[0], control_area_TL[1], control_area_width, control_area_height)
 
 
     if remember_control_area_coordinates:
-        config["Painting"]["control_area_x"] = str(tool_area[0])
-        config["Painting"]["control_area_y"] = str(tool_area[1])
-        config["Painting"]["control_area_width"] = str(tool_area[2])
-        config["Painting"]["control_area_height"] = str(tool_area[3])
+        config["Painting"]["control_area_x"] = str(control_area[0])
+        config["Painting"]["control_area_y"] = str(control_area[1])
+        config["Painting"]["control_area_width"] = str(control_area[2])
+        config["Painting"]["control_area_height"] = str(control_area[3])
         with open("config.ini", "w") as configfile:
             config.write(configfile)
 
-    return  tool_area[0], tool_area[1], tool_area[2], tool_area[3]
+    return  control_area[0], control_area[1], control_area[2], control_area[3]
 
 
 def calculate_control_positioning(x, y, width, height):
@@ -177,29 +177,29 @@ def calculate_control_positioning(x, y, width, height):
     distance_between_y_coordinates_of_eight = second_y_coordinate_of_eight - first_y_coordinate_of_eight
 
     # Set the point location of the remove & update buttons
-    tool_remove = ((x + (width/2.7692)), (y + (height/19.5714)))
-    tool_update = ((x + (width/1.5652)), (y + (height/19.5714)))
+    control_remove = ((x + (width/2.7692)), (y + (height/19.5714)))
+    control_update = ((x + (width/1.5652)), (y + (height/19.5714)))
 
 
-    tool_size = []
+    control_size = []
     for size in range(6):
-        tool_size.append( (first_x_coordinate_of_six_v1 + (size * distance_between_x_coordinates_of_six_v1), 
+        control_size.append( (first_x_coordinate_of_six_v1 + (size * distance_between_x_coordinates_of_six_v1), 
                           (y + (height/6.9661)))
                         )
 
-    tool_brush = []
+    control_brush = []
     for brush in range(4):
-        tool_brush.append( (first_x_coordinate_of_four + (brush * distance_between_x_coordinates_of_four), 
+        control_brush.append( (first_x_coordinate_of_four + (brush * distance_between_x_coordinates_of_four), 
                           (y + (height/4.2371)))
                         )
 
-    tool_opacity = []
+    control_opacity = []
     for opacity in range(6):
-        tool_opacity.append( (first_x_coordinate_of_six_v2 + (opacity * distance_between_x_coordinates_of_six_v2), 
+        control_opacity.append( (first_x_coordinate_of_six_v2 + (opacity * distance_between_x_coordinates_of_six_v2), 
                           (y + (height/3.0332)))
                         )
 
-    tool_color = []
+    control_color = []
     for row in range(8):
         for column in range(4):
             if (row == 0 or row == 4) and column == 3: continue
@@ -208,13 +208,13 @@ def calculate_control_positioning(x, y, width, height):
             if row == 3 and (column == 0 or column == 1): continue
             if row == 6 and column == 2: continue
             if row == 7 and (column == 1 or column == 2): continue
-            tool_color.append( (first_x_coordinate_of_four + (column * distance_between_x_coordinates_of_four),
+            control_color.append( (first_x_coordinate_of_four + (column * distance_between_x_coordinates_of_four),
                                (first_y_coordinate_of_eight + (row * distance_between_y_coordinates_of_eight)))
                         )
 
-    # TODO: Experiment with positioning of new (hidden) colors. Append individual colors to the tool_color list
+    # TODO: Experiment with positioning of new (hidden) colors. Append individual colors to the control_color list
 
-    return tool_remove, tool_update, tool_size, tool_brush, tool_opacity, tool_color
+    return control_remove, control_update, control_size, control_brush, control_opacity, control_color
 
 
 def select_image_for_painting(paint_area_width, paint_area_height):
@@ -364,6 +364,7 @@ def quantize_to_palette(original_image, palette):
     palette.load()
 
     if original_image.mode == "RGBA":
+        color_print("\nWarning! This Image was RGBA, converting to RGB...\n", Fore.RED)
         original_image = original_image.convert("RGB")
 
     if palette.mode != "P":
@@ -443,14 +444,14 @@ def main():
     color_print("Hello & Welcome to RustDaVinci!\n", Fore.RED)
     
     color_print("Beneath follows the application instructions:\n", Fore.RED)
-    color_print("\t1. Firstly the application needs to capture the rust palette tools area.", Fore.RED)
+    color_print("\t1. Firstly the application needs to capture the rust palette control area.", Fore.RED)
     color_print("\t2. Then it needs to capture the area in which the image will be painted.", Fore.RED)
     color_print("\t3. Make sure that the console window is in focus when capturing the areas.", Fore.RED)
     color_print("\t4. Make sure that the console window does not cover those two areas.\n", Fore.RED)
     color_print("Follow the instructions below to begin the area capturing...\n", Fore.RED)
 
 
-    # Get the tool area coordinates and ratio
+    # Get the control area coordinates and ratio
     control_area_x, control_area_y, control_area_width, control_area_height = locate_control_area()
     #print("control_area_x:      " + str(control_area_x))
     #print("control_area_y:      " + str(control_area_y))
@@ -488,36 +489,36 @@ def main():
     root.withdraw()
 
     # Calculate the control positions
-    tool_remove, \
-    tool_update, \
-    tool_size, \
-    tool_brush, \
-    tool_opacity, \
-    tool_color = calculate_control_positioning( control_area_x, 
+    control_remove, \
+    control_update, \
+    control_size, \
+    control_brush, \
+    control_opacity, \
+    control_color = calculate_control_positioning( control_area_x, 
                                                 control_area_y, 
                                                 control_area_width, 
                                                 control_area_height)
 
     # Debug purposes
-    #pyautogui.moveTo(tool_remove)
+    #pyautogui.moveTo(control_remove)
     #time.sleep(1)
-    #pyautogui.moveTo(tool_update)
+    #pyautogui.moveTo(control_update)
     #time.sleep(1)
 
     #for i in range(6):
-    #    pyautogui.moveTo(tool_size[i])
+    #    pyautogui.moveTo(control_size[i])
     #    time.sleep(1)
 
     #for i in range(4):
-    #    pyautogui.moveTo(tool_brush[i])
+    #    pyautogui.moveTo(control_brush[i])
     #    time.sleep(1)
 
     #for i in range(6):
-    #    pyautogui.moveTo(tool_opacity[i])
+    #    pyautogui.moveTo(control_opacity[i])
     #    time.sleep(1)
 
     #for i in range(20):
-    #    pyautogui.moveTo(tool_color[i])
+    #    pyautogui.moveTo(control_color[i])
     #    time.sleep(1)
 
 
@@ -588,10 +589,10 @@ def main():
     listener.start()
 
 
-    pyautogui.click(tool_size[0]) # To set focus on the rust window
+    pyautogui.click(control_size[0]) # To set focus on the rust window
     time.sleep(.5)
-    pyautogui.click(tool_size[0]); time.sleep(loop_delay)
-    pyautogui.click(tool_brush[config.getint("Painting", "default_brush")]); time.sleep(loop_delay)
+    pyautogui.click(control_size[0]); time.sleep(loop_delay)
+    pyautogui.click(control_brush[config.getint("Painting", "default_brush")]); time.sleep(loop_delay)
 
 
     color_counter = 0
@@ -603,10 +604,10 @@ def main():
         if color in is_skip_colors: continue
 
         time.sleep(0 if control_area_delay == 0 else control_area_delay / 3)
-        if   color >= 0  and color < 20: pyautogui.click(tool_opacity[5])
-        elif color >= 20 and color < 40: pyautogui.click(tool_opacity[4])
-        elif color >= 40 and color < 60: pyautogui.click(tool_opacity[3])
-        elif color >= 60 and color < 80: pyautogui.click(tool_opacity[2])
+        if   color >= 0  and color < 20: pyautogui.click(control_opacity[5])
+        elif color >= 20 and color < 40: pyautogui.click(control_opacity[4])
+        elif color >= 40 and color < 60: pyautogui.click(control_opacity[3])
+        elif color >= 60 and color < 80: pyautogui.click(control_opacity[2])
         time.sleep(0 if control_area_delay == 0 else control_area_delay / 3)
 
 
@@ -617,7 +618,7 @@ def main():
         is_line = False
         pixels_in_line = 0
 
-        pyautogui.click(tool_color[color%20])
+        pyautogui.click(control_color[color%20])
         time.sleep(0 if control_area_delay == 0 else control_area_delay / 3)
 
         for y in range(dithered_image_height):
@@ -693,14 +694,14 @@ def main():
                         is_line = False
                         pixels_in_line = 0
         if config.getboolean("Painting", "save_while_painting"):
-            pyautogui.click(tool_update); time.sleep(loop_delay)
+            pyautogui.click(control_update); time.sleep(loop_delay)
 
 
 
     listener.stop()
 
     if config.getboolean("Painting", "save_when_completed"):
-        pyautogui.click(tool_update); time.sleep(loop_delay)
+        pyautogui.click(control_update); time.sleep(loop_delay)
 
     elapsed_time = int(time.time() - start_time)
 
