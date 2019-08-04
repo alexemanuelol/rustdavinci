@@ -392,6 +392,7 @@ def draw_line(point_A, point_B):
 
     Returns:    None
     """
+    time.sleep(0.0025)
     pyautogui.PAUSE = line_delay
     pyautogui.mouseDown(button="left", x=point_A[0], y=point_A[1])
     pyautogui.keyDown("shift")
@@ -399,7 +400,7 @@ def draw_line(point_A, point_B):
     pyautogui.keyUp("shift")
     pyautogui.mouseUp(button="left")
     pyautogui.PAUSE = click_delay
-    time.sleep(.0025)
+    time.sleep(0.0025)
 
 
 def on_press(key):
@@ -676,6 +677,7 @@ def main():
                     if not prefer_lines: continue
                     if prev_is_color:
                         if is_line:
+                            #print(str((paint_area_x + (x-1)) - first_point[0]))
                             is_line = False
                             if pixels_in_line >= minimum_line_width:
                                 draw_line(first_point, (paint_area_x + (x-1), paint_area_y + y))
