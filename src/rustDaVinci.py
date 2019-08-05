@@ -288,7 +288,7 @@ def count_color_pixel_line(pixel_array, image_width, image_height):
         if color in is_skip_colors: continue
         is_first_point_of_row = True
         is_last_point_of_row = False
-        prev_is_color = False
+        is_prev_color = False
         is_line = False
         pixels_in_line = 0
 
@@ -304,11 +304,11 @@ def count_color_pixel_line(pixel_array, image_width, image_height):
 
                 if is_first_point_of_row:
                     is_first_point_of_row = False
-                    if pixel_array[x, y] == color: prev_is_color = True
+                    if pixel_array[x, y] == color: is_prev_color = True
                     continue
 
                 if pixel_array[x, y] == color:
-                    if prev_is_color:
+                    if is_prev_color:
                         if is_last_point_of_row:
                             if pixels_in_line >= minimum_line_width: number_of_lines += 1
                             else:
@@ -317,17 +317,17 @@ def count_color_pixel_line(pixel_array, image_width, image_height):
                     else:
                         if is_last_point_of_row: number_of_pixels_to_paint += 1
                         else:
-                            prev_is_color = True
+                            is_prev_color = True
                             pixels_in_line += 1
                 else:
-                    if prev_is_color:
+                    if is_prev_color:
                         if is_line:
                             is_line = False
                             if pixels_in_line >= minimum_line_width: number_of_lines += 1
                             else: number_of_pixels_to_paint += (pixels_in_line + 1)
                             pixels_in_line = 0
                         else: number_of_pixels_to_paint += 1
-                        prev_is_color = False
+                        is_prev_color = False
                     else:
                         is_line = False
                         pixels_in_line = 0
@@ -392,15 +392,16 @@ def draw_line(point_A, point_B):
 
     Returns:    None
     """
-    time.sleep(0.0025)
+    #time.sleep(0.0025)
     pyautogui.PAUSE = line_delay
     pyautogui.mouseDown(button="left", x=point_A[0], y=point_A[1])
     pyautogui.keyDown("shift")
     pyautogui.moveTo(point_B[0], point_B[1])
+    #time.sleep(0.2)
     pyautogui.keyUp("shift")
     pyautogui.mouseUp(button="left")
     pyautogui.PAUSE = click_delay
-    time.sleep(0.0025)
+    #time.sleep(0.0025)
 
 
 def on_press(key):
@@ -615,7 +616,7 @@ def main():
         first_point = (0, 0)
         is_first_point_of_row = True
         is_last_point_of_row = False
-        prev_is_color = False
+        is_prev_color = False
         is_line = False
         pixels_in_line = 0
 
@@ -648,13 +649,13 @@ def main():
                     is_first_point_of_row = False
                     if pixel_array[x, y] == color:
                         first_point = (paint_area_x + x, paint_area_y + y)
-                        prev_is_color = True
+                        is_prev_color = True
                         pixels_in_line = 1
                     continue
 
                 if pixel_array[x, y] == color:
                     if not prefer_lines: pyautogui.click(paint_area_x + x, paint_area_y + y); time.sleep(loop_delay); continue
-                    if prev_is_color:
+                    if is_prev_color:
                         if is_last_point_of_row:
                             if pixels_in_line >= minimum_line_width:
                                 draw_line(first_point, (paint_area_x + x, paint_area_y + y))
@@ -671,15 +672,25 @@ def main():
                             time.sleep(loop_delay)
                         else:
                             first_point = (paint_area_x + x, paint_area_y + y)
-                            prev_is_color = True
+                            is_prev_color = True
                             pixels_in_line = 1
                 else:
                     if not prefer_lines: continue
-                    if prev_is_color:
+                    if is_prev_color:
                         if is_line:
-                            #print(str((paint_area_x + (x-1)) - first_point[0]))
                             is_line = False
+                    
+                            if is_last_point_of_row:
+                                if pixels_in_line >= minimum_line_width:
+                                    draw_line(first_point, (paint_area_x + (x-1), paint_area_y + y))
+                                else:
+                                    for index in range(pixels_in_line):
+                                        pyautogui.click(first_point[0] + index, paint_area_y + y); time.sleep(loop_delay)
+                                continue
+
                             if pixels_in_line >= minimum_line_width:
+                                #print(str((paint_area_x + (x-1)) - first_point[0]))
+                                #print(str(first_point[0])+"\t"+str(paint_area_x + (x-1)))
                                 draw_line(first_point, (paint_area_x + (x-1), paint_area_y + y))
                             else:
                                 for index in range(pixels_in_line):
@@ -691,10 +702,11 @@ def main():
                         else:
                             pyautogui.click(paint_area_x + (x-1), paint_area_y + y)
                             time.sleep(loop_delay)
-                        prev_is_color = False
+                        is_prev_color = False
                     else:
                         is_line = False
                         pixels_in_line = 0
+
         if config.getboolean("Painting", "save_while_painting"):
             pyautogui.click(control_update); time.sleep(loop_delay)
 

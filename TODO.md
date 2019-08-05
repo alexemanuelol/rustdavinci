@@ -1,5 +1,8 @@
 # TODO
 
+- NEXT TIME: Update the line/pixel/ color counter to match the current implementation.
+- NEXT TIME: clean up in the code, around the looping part
+
 - Get Facepunch and EAC to recognize this application and what it is capable of doing.
 
 ## New features
@@ -20,5 +23,3 @@
 
 
 ## Known errors
-
-- Sometimes a line is painted across other colors... Needs investigation.
