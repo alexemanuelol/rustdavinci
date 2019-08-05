@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# pip install scikit-image
+# pip install scipy
+
 import numpy as np
 from PIL import Image
 from skimage import color
