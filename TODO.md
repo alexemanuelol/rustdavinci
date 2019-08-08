@@ -3,6 +3,7 @@
 - NEXT TIME: Update the line/pixel/ color counter to match the current implementation.
 - NEXT TIME: clean up in the code, around the looping part
 - NEXT TIME: Fix function banners, fix syntax for it and try to clean up
+- NEXT TIME: continue with cleanup
 
 - Get Facepunch and EAC to recognize this application and what it is capable of doing.
 
