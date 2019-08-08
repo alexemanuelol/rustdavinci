@@ -19,7 +19,7 @@ from colorama import init, Fore, Back, Style
 from termcolor import colored
 from pynput import keyboard
 
-import rustPalette
+import rustPaletteData
 
 
 
@@ -30,7 +30,7 @@ config.read("config.ini")
 
 # Select the palette to be used
 palette_data = Image.new("P", (1, 1))
-palette_data.putpalette(rustPalette.palette_20)
+palette_data.putpalette(rustPaletteData.palette_20)
 #palette_data.putpalette(rustPalette.palette_greyscale)
 
 ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci")
@@ -38,32 +38,34 @@ ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci")
 init()  # Initilize colorama module
 
 
-is_skip_colors = [16, 36, 56, 76]
+# Append to the list, the colors that should be skipped
+is_skip_colors = []
 is_skip_colors.append(config.getint("General", "default_background_color"))
+temp_skip_colors = config["General"]["skip_colors"].replace(",", "").split()
+for skip_color in temp_skip_colors:
+    is_skip_colors.append(skip_color)
 
-
+# Click delay
 click_delay_ms = config.getint("Experimental", "click_delay")
 if click_delay_ms <= 0: click_delay = 0
 elif click_delay_ms > 0: click_delay = float(click_delay_ms / 1000)
 
+# Line delay
 line_delay_ms = config.getint("Experimental", "line_delay")
 if line_delay_ms <= 0: line_delay = 0
 elif line_delay_ms > 0: line_delay = float(line_delay_ms / 1000)
 
-loop_delay_ms = config.getint("Experimental", "loop_delay")
-if loop_delay_ms <= 0: loop_delay = 0
-elif loop_delay_ms > 0: loop_delay = float(loop_delay_ms / 1000)
+#loop_delay_ms = config.getint("Experimental", "loop_delay")
+#if loop_delay_ms <= 0: loop_delay = 0
+#elif loop_delay_ms > 0: loop_delay = float(loop_delay_ms / 1000)
 
-control_area_delay_ms = config.getint("Experimental", "control_area_delay")
-if control_area_delay_ms <= 0: control_area_delay = 0
-elif control_area_delay_ms > 0: control_area_delay = float(control_area_delay_ms / 1000)
-
+#control_area_delay_ms = config.getint("Experimental", "control_area_delay")
+#if control_area_delay_ms <= 0: control_area_delay = 0
+#elif control_area_delay_ms > 0: control_area_delay = float(control_area_delay_ms / 1000)
 
 pyautogui.PAUSE = click_delay
 
-
 minimum_line_width = config.getint("Experimental", "minimum_line_width")
-
 
 is_paused = False
 is_skip_color = False
@@ -635,7 +637,10 @@ def main():
 
                 while is_paused: None
 
-                if is_skip_color: color_print("Skipping current color...", Fore.YELLOW); break
+                if is_skip_color:
+                    color_print("Skipping current color...", Fore.YELLOW)
+                    break
+
                 if is_exit:
                     elapsed_time = int(time.time() - start_time)
                     color_print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))), Fore.GREEN)
@@ -689,8 +694,8 @@ def main():
                                 continue
 
                             if pixels_in_line >= minimum_line_width:
-                                #print(str((paint_area_x + (x-1)) - first_point[0]))
-                                #print(str(first_point[0])+"\t"+str(paint_area_x + (x-1)))
+                                print(str((paint_area_x + (x-1)) - first_point[0]))
+                                print(str(first_point[0])+"\t"+str(paint_area_x + (x-1)))
                                 draw_line(first_point, (paint_area_x + (x-1), paint_area_y + y))
                             else:
                                 for index in range(pixels_in_line):
