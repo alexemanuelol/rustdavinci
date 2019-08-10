@@ -31,6 +31,7 @@ palette_data = Image.new("P", (1, 1))
 palette_data.putpalette(rustPaletteData.palette_80)
 
 ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci") # Set window title
+
 init()  # Initilize colorama module
 
 
@@ -40,6 +41,7 @@ colors_to_skip.append(config.getint("General", "default_background_color"))
 config_skip_color = config["General"]["skip_colors"].replace(",", "").split()
 for skip_color in config_skip_color:
     colors_to_skip.append(skip_color)
+
 
 # Click delay
 click_delay_ms = config.getint("Experimental", "click_delay")
@@ -51,24 +53,18 @@ line_delay_ms = config.getint("Experimental", "line_delay")
 if line_delay_ms <= 0: line_delay = 0
 elif line_delay_ms > 0: line_delay = float(line_delay_ms / 1000)
 
-minimum_line_width = config.getint("Experimental", "minimum_line_width")
-
-#loop_delay_ms = config.getint("Experimental", "loop_delay")
-#if loop_delay_ms <= 0: loop_delay = 0
-#elif loop_delay_ms > 0: loop_delay = float(loop_delay_ms / 1000)
-
-#control_area_delay_ms = config.getint("Experimental", "control_area_delay")
-#if control_area_delay_ms <= 0: control_area_delay = 0
-#elif control_area_delay_ms > 0: control_area_delay = float(control_area_delay_ms / 1000)
+# Delay for changing color
+control_area_delay_ms = config.getint("Experimental", "control_area_delay")
+if control_area_delay_ms <= 0: control_area_delay = 0
+elif control_area_delay_ms > 0: control_area_delay = float(control_area_delay_ms / 1000)
 
 pyautogui.PAUSE = click_delay
 
+minimum_line_width = config.getint("Experimental", "minimum_line_width")
 
 is_paused = False
 is_skip_color = False
 is_exit = False
-
-
 
 
 def auto_locate_control_area():
@@ -161,12 +157,12 @@ def locate_control_area():
 def calculate_control_positioning(x, y, width, height):
     """ This function calculates the positioning of the different controls in the painting control area.
     The brush size, type and opacity along with all the different colors.
-    Return the positioning of:  control_remove
-                                control_update
-                                control_size
-                                control_brush
-                                control_opacity
-                                control_color
+    Returns:    control_remove
+                control_update
+                control_size
+                control_brush
+                control_opacity
+                control_color
     """
     # Calculate the distance between two items on a row of six items (Size)
     first_x_coordinate_of_six_v1 = x + (width/6.5454)
@@ -195,24 +191,21 @@ def calculate_control_positioning(x, y, width, height):
 
     control_size = []
     for size in range(6):
-        control_size.append( (  first_x_coordinate_of_six_v1 + 
+        control_size.append((   first_x_coordinate_of_six_v1 + 
                                 (size * distance_between_x_coordinates_of_six_v1), 
-                                (y + (height/6.9661)))
-        )
+                                (y + (height/6.9661))))
 
     control_brush = []
     for brush in range(4):
-        control_brush.append( ( first_x_coordinate_of_four + 
+        control_brush.append((  first_x_coordinate_of_four + 
                                 (brush * distance_between_x_coordinates_of_four), 
-                                (y + (height/4.2371)))
-        )
+                                (y + (height/4.2371))))
 
     control_opacity = []
     for opacity in range(6):
-        control_opacity.append( (first_x_coordinate_of_six_v2 + 
+        control_opacity.append((first_x_coordinate_of_six_v2 + 
                                 (opacity * distance_between_x_coordinates_of_six_v2), 
-                                (y + (height/3.0332)))
-        )
+                                (y + (height/3.0332))))
 
     control_color = []
     for row in range(8):
@@ -224,20 +217,20 @@ def calculate_control_positioning(x, y, width, height):
             if row == 6 and column == 2: continue
             if row == 7 and (column == 1 or column == 2): continue
             control_color.append( (first_x_coordinate_of_four + (column * distance_between_x_coordinates_of_four),
-                               (first_y_coordinate_of_eight + (row * distance_between_y_coordinates_of_eight)))
-                        )
+                               (first_y_coordinate_of_eight + (row * distance_between_y_coordinates_of_eight))))
 
     # TODO: Experiment with positioning of new (hidden) colors. Append individual colors to the control_color list
 
     return control_remove, control_update, control_size, control_brush, control_opacity, control_color
 
 
-def select_image_for_painting(paint_area_width, paint_area_height):
+def select_image_for_painting(paint_area_frame_width, paint_area_frame_height):
     """ Select the image that is going to be painted and calculate the positioning of the painting..
-    Return The dithered image, x_coordinate_correction and y_coordinate_correction
-    False, if the image type is invalid.
+    Returns:    The dithered image,
+                x_coordinate_correction,
+                y_coordinate_correction
+                False, if the image type is invalid.
     """
-    global palette_data
     image_path = filedialog.askopenfilename(title="Select the image to be painted")
     if image_path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
         color_print("\nDithering process started...", Fore.YELLOW)
@@ -246,8 +239,8 @@ def select_image_for_painting(paint_area_width, paint_area_height):
         original_image_width = original_image.size[0]
         original_image_height = original_image.size[1]
         
-        wpercent = (paint_area_width / float(original_image_width))
-        hpercent = (paint_area_height / float(original_image_height))
+        wpercent = (paint_area_frame_width / float(original_image_width))
+        hpercent = (paint_area_frame_height / float(original_image_height))
 
         hsize = int((float(original_image_height) * float(wpercent)))
         wsize = int((float(original_image_width) * float(hpercent)))
@@ -255,14 +248,14 @@ def select_image_for_painting(paint_area_width, paint_area_height):
         x_coordinate_correction = 0
         y_coordinate_correction = 0
 
-        if hsize <= paint_area_height: 
-            original_image = original_image.resize((paint_area_width, hsize), Image.ANTIALIAS)
-            y_coordinate_correction = int((paint_area_height - hsize)/2)
-        elif wsize <= paint_area_width: 
-            original_image = original_image.resize((wsize, paint_area_height), Image.ANTIALIAS)
-            x_coordinate_correction = int((paint_area_width - wsize)/2)
+        if hsize <= paint_area_frame_height: 
+            original_image = original_image.resize((paint_area_frame_width, hsize), Image.ANTIALIAS)
+            y_coordinate_correction = int((paint_area_frame_height - hsize)/2)
+        elif wsize <= paint_area_frame_width: 
+            original_image = original_image.resize((wsize, paint_area_frame_height), Image.ANTIALIAS)
+            x_coordinate_correction = int((paint_area_frame_width - wsize)/2)
         else: 
-            original_image = original_image.resize((paint_area_width, paint_area_height), Image.ANTIALIAS)
+            original_image = original_image.resize((paint_area_frame_width, paint_area_frame_height), Image.ANTIALIAS)
 
         dithered_image = quantize_to_palette(original_image, palette_data)
         if dithered_image == False: return False
@@ -280,10 +273,10 @@ def select_image_for_painting(paint_area_width, paint_area_height):
 
 def count_color_pixel_line(pixel_array, image_width, image_height):
     """ Counting the colors, total amout of pixels to paint and lines
-    Return  Number of colors, 
-            Total amount of pixels to paint,
-            Number of pixels to paint,
-            Number of lines to be drawn
+    Returns:    Number of colors, 
+                Total amount of pixels to paint,
+                Number of pixels to paint,
+                Number of lines to be drawn
     """
     color_print("Counting colors...\nCounting pixels...", Fore.YELLOW)
     image_colors = []
@@ -317,7 +310,9 @@ def count_color_pixel_line(pixel_array, image_width, image_height):
 
                 if is_first_point_of_row:
                     is_first_point_of_row = False
-                    if pixel_array[x, y] == color: is_prev_color = True
+                    if pixel_array[x, y] == color:
+                        is_prev_color = True
+                        pixels_in_line = 1
                     continue
 
                 if pixel_array[x, y] == color:
@@ -331,11 +326,18 @@ def count_color_pixel_line(pixel_array, image_width, image_height):
                         if is_last_point_of_row: number_of_pixels_to_paint += 1
                         else:
                             is_prev_color = True
-                            pixels_in_line += 1
+                            pixels_in_line = 1
                 else:
                     if is_prev_color:
                         if is_line:
                             is_line = False
+
+                            if is_last_point_of_row:
+                                if pixels_in_line >= minimum_line_width: number_of_lines += 1
+                                else: 
+                                    number_of_pixels_to_paint += (pixels_in_line + 1)
+                                continue
+
                             if pixels_in_line >= minimum_line_width: number_of_lines += 1
                             else: number_of_pixels_to_paint += (pixels_in_line + 1)
                             pixels_in_line = 0
@@ -354,13 +356,13 @@ def count_color_pixel_line(pixel_array, image_width, image_height):
 
 def calculate_estimated_time(colors, tot_pixels, pixels, lines):
     """ Calculate estimated time for the painting process.
-    Return  Estimated time for clicking and lines
-            Estimated time for only clicking
+    Returns:    Estimated time for clicking and lines
+                Estimated time for only clicking
     """
-    one_line_time = (line_delay + 0.0036 +0.0025) * 5
-    one_click_time = click_delay + loop_delay + 0.001
+    one_line_time = line_delay * 5
+    one_click_time = click_delay + 0.001
     change_color_time = colors * (control_area_delay + (2 * click_delay))
-    other_time = 0.5 + (3 * click_delay) + (2 * loop_delay)
+    other_time = 0.5 + (3 * click_delay)
     estimated_time_lines = int((pixels * one_click_time) + (lines * one_line_time) + change_color_time + other_time)
     estimated_time_click = int((tot_pixels * one_click_time) + change_color_time + other_time)
 
@@ -369,7 +371,6 @@ def calculate_estimated_time(colors, tot_pixels, pixels, lines):
 
 def quantize_to_palette(original_image, palette):
     """ Convert an RGB or L mode image to use a given P image's palette.
-
     Returns:    The converted image
     """
     original_image.load()
@@ -400,33 +401,25 @@ def quantize_to_palette(original_image, palette):
 
 
 def draw_line(point_A, point_B):
-    """ Draws a line between point_A and point_B.
-
-    Returns:    None
-    """
-    #time.sleep(0.0025)
+    """ Draws a line between point_A and point_B. """
     pyautogui.PAUSE = line_delay
     pyautogui.mouseDown(button="left", x=point_A[0], y=point_A[1])
     pyautogui.keyDown("shift")
     pyautogui.moveTo(point_B[0], point_B[1])
-    #time.sleep(0.2)
     pyautogui.keyUp("shift")
     pyautogui.mouseUp(button="left")
     pyautogui.PAUSE = click_delay
-    #time.sleep(0.0025)
 
 
 def on_press(key):
-    """ Key-press handler
-    
-    Returns:    None
-    """
+    """ Key-press handler. """
     global is_paused, is_skip_color, is_exit
     if key == keyboard.Key.f10:
         is_paused = not is_paused
         if is_paused:
             color_print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit", Fore.YELLOW)
     elif key == keyboard.Key.f11:
+        color_print("Skipping current color...", Fore.YELLOW)
         is_paused = False
         is_skip_color = True
     elif key == keyboard.Key.esc:
@@ -435,11 +428,8 @@ def on_press(key):
 
 
 def color_print(message, color):
-    """ Print function with different colors
-
+    """ Print function with different colors.
     Colors:     BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
-
-    Returns:    None
     """
     print(color + message + Fore.RESET)
 
@@ -467,6 +457,7 @@ def main():
 
     # Get the control area coordinates and ratio
     control_area_x, control_area_y, control_area_width, control_area_height = locate_control_area()
+    # Debug purpose
     #print("control_area_x:      " + str(control_area_x))
     #print("control_area_y:      " + str(control_area_y))
     #print("control_area_width:  " + str(control_area_width))
@@ -485,8 +476,8 @@ def main():
     paint_area_BR = pyautogui.position()
 
     paint_area_x, paint_area_y = paint_area_TL[0], paint_area_TL[1]
-    paint_area_width = paint_area_BR[0] - paint_area_TL[0]
-    paint_area_height = paint_area_BR[1] - paint_area_TL[1]
+    paint_area_frame_width = paint_area_BR[0] - paint_area_TL[0]
+    paint_area_frame_height = paint_area_BR[1] - paint_area_TL[1]
 
 
 
@@ -508,12 +499,12 @@ def main():
     control_size, \
     control_brush, \
     control_opacity, \
-    control_color = calculate_control_positioning( control_area_x, 
-                                                control_area_y, 
-                                                control_area_width, 
-                                                control_area_height)
+    control_color = calculate_control_positioning(  control_area_x, 
+                                                    control_area_y, 
+                                                    control_area_width, 
+                                                    control_area_height)
 
-    # Debug purposes
+    # Debug purpose
     #pyautogui.moveTo(control_remove)
     #time.sleep(1)
     #pyautogui.moveTo(control_update)
@@ -537,7 +528,7 @@ def main():
 
 
     # Select the image to be dithered and painted
-    dithered_image, x_coordinate_correction, y_coordinate_correction = select_image_for_painting(paint_area_width, paint_area_height)
+    dithered_image, x_coordinate_correction, y_coordinate_correction = select_image_for_painting(paint_area_frame_width, paint_area_frame_height)
     paint_area_x += x_coordinate_correction
     paint_area_y += y_coordinate_correction
 
@@ -551,7 +542,7 @@ def main():
     pixel_array = dithered_image.load()
 
 
-    # Counter statistics (Tot amount of pixels, lines, colors etc...)
+    # Counter statistics (Total amount of pixels, lines, colors etc...)
     statistics = count_color_pixel_line(pixel_array,
                                         dithered_image_width,
                                         dithered_image_height)
@@ -587,16 +578,12 @@ def main():
     color_print("Number of lines:\t\t\t" + str(num_of_lines), Fore.GREEN)
     color_print("Est. painting time (click only):\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time_click))), Fore.GREEN)
     color_print("Est. painting time (with lines):\t" + str(time.strftime("%H:%M:%S", time.gmtime(estimated_time_line))), Fore.GREEN)
-
     color_print("\nPress <ENTER> to start the painting process...\n", Fore.YELLOW); input()
-
-
     color_print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=estimated_time)).time().strftime("%H:%M:%S")) + "\n", Fore.GREEN)
-
     color_print("F10 = Continue, F11 = Skip color, ESC = Exit\n", Fore.GREEN)
 
-    start_time = time.time()
 
+    start_time = time.time()
 
     # Start listening for key-presses
     listener = keyboard.Listener(on_press=on_press)
@@ -605,8 +592,8 @@ def main():
 
     pyautogui.click(control_size[0]) # To set focus on the rust window
     time.sleep(.5)
-    pyautogui.click(control_size[0]); time.sleep(loop_delay)
-    pyautogui.click(control_brush[config.getint("Painting", "default_brush")]); time.sleep(loop_delay)
+    pyautogui.click(control_size[0])
+    pyautogui.click(control_brush[config.getint("Painting", "default_brush")])
 
 
     color_counter = 0
@@ -647,9 +634,7 @@ def main():
 
                 while is_paused: None
 
-                if is_skip_color:
-                    color_print("Skipping current color...", Fore.YELLOW)
-                    break
+                if is_skip_color: break
 
                 if is_exit:
                     elapsed_time = int(time.time() - start_time)
@@ -669,14 +654,14 @@ def main():
                     continue
 
                 if pixel_array[x, y] == color:
-                    if not prefer_lines: pyautogui.click(paint_area_x + x, paint_area_y + y); time.sleep(loop_delay); continue
+                    if not prefer_lines: pyautogui.click(paint_area_x + x, paint_area_y + y); continue
                     if is_prev_color:
                         if is_last_point_of_row:
                             if pixels_in_line >= minimum_line_width:
                                 draw_line(first_point, (paint_area_x + x, paint_area_y + y))
                             else:
                                 for index in range(pixels_in_line):
-                                    pyautogui.click(first_point[0] + index, paint_area_y + y); time.sleep(loop_delay)
+                                    pyautogui.click(first_point[0] + index, paint_area_y + y)
                                 pyautogui.click(paint_area_x + x, paint_area_y + y)
                         else:
                             is_line = True
@@ -684,7 +669,6 @@ def main():
                     else:
                         if is_last_point_of_row:
                             pyautogui.click(paint_area_x + x, paint_area_y + y)
-                            time.sleep(loop_delay)
                         else:
                             first_point = (paint_area_x + x, paint_area_y + y)
                             is_prev_color = True
@@ -700,7 +684,7 @@ def main():
                                     draw_line(first_point, (paint_area_x + (x-1), paint_area_y + y))
                                 else:
                                     for index in range(pixels_in_line):
-                                        pyautogui.click(first_point[0] + index, paint_area_y + y); time.sleep(loop_delay)
+                                        pyautogui.click(first_point[0] + index, paint_area_y + y)
                                 continue
 
                             if pixels_in_line >= minimum_line_width:
@@ -710,27 +694,25 @@ def main():
                             else:
                                 for index in range(pixels_in_line):
                                     pyautogui.click(first_point[0] + index, paint_area_y + y)
-                                    time.sleep(loop_delay)
                                 pyautogui.click(paint_area_x + x, paint_area_y + y)
                             pixels_in_line = 0
 
                         else:
                             pyautogui.click(paint_area_x + (x-1), paint_area_y + y)
-                            time.sleep(loop_delay)
                         is_prev_color = False
                     else:
                         is_line = False
                         pixels_in_line = 0
 
         if config.getboolean("Painting", "save_while_painting"):
-            pyautogui.click(control_update); time.sleep(loop_delay)
+            pyautogui.click(control_update)
 
 
 
     listener.stop()
 
     if config.getboolean("Painting", "save_when_completed"):
-        pyautogui.click(control_update); time.sleep(loop_delay)
+        pyautogui.click(control_update)
 
     elapsed_time = int(time.time() - start_time)
 
