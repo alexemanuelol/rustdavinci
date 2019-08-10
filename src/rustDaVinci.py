@@ -40,7 +40,7 @@ colors_to_skip = []
 colors_to_skip.append(config.getint("General", "default_background_color"))
 config_skip_color = config["General"]["skip_colors"].replace(",", "").split()
 for skip_color in config_skip_color:
-    colors_to_skip.append(skip_color)
+    colors_to_skip.append(int(skip_color))
 
 
 # Click delay
@@ -495,15 +495,17 @@ def main():
     root.withdraw()
 
     # Calculate the control positions
-    control_remove, \
-    control_update, \
-    control_size, \
-    control_brush, \
-    control_opacity, \
-    control_color = calculate_control_positioning(  control_area_x, 
-                                                    control_area_y, 
-                                                    control_area_width, 
-                                                    control_area_height)
+    positions = calculate_control_positioning(  control_area_x,
+                                                control_area_y,
+                                                control_area_width,
+                                                control_area_height)
+
+    control_remove = positions[0]
+    control_update = positions[1]
+    control_size = positions[2]
+    control_brush = positions[3]
+    control_opacity = positions[4]
+    control_color = positions[5]
 
     # Debug purpose
     #pyautogui.moveTo(control_remove)
@@ -529,7 +531,10 @@ def main():
 
 
     # Select the image to be dithered and painted
-    dithered_image, x_coordinate_correction, y_coordinate_correction = select_image_for_painting(paint_area_frame_width, paint_area_frame_height)
+    image_convertion = select_image_for_painting(paint_area_frame_width, paint_area_frame_height)
+    dithered_image = image_convertion[0]
+    x_coordinate_correction = image_convertion[1]
+    y_coordinate_correction = image_convertion[2]
     paint_area_x += x_coordinate_correction
     paint_area_y += y_coordinate_correction
 
@@ -544,9 +549,9 @@ def main():
 
 
     # Counter statistics (Total amount of pixels, lines, colors etc...)
-    statistics = count_color_pixel_line(pixel_array,
-                                        dithered_image_width,
-                                        dithered_image_height)
+    statistics = count_color_pixel_line(    pixel_array,
+                                            dithered_image_width,
+                                            dithered_image_height)
 
     image_colors = statistics[0]
     num_of_image_colors = statistics[1]
