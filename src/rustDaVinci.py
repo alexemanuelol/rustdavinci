@@ -284,7 +284,8 @@ def count_color_pixel_line(pixel_array, image_width, image_height):
     for y in range(image_height):
         for x in range(image_width):
             if pixel_array[x, y] is not 16: total_number_of_pixels_to_paint += 1
-            if pixel_array[x, y] not in image_colors: image_colors.append(pixel_array[x, y])
+            if (pixel_array[x, y] not in image_colors) and (pixel_array[x, y] not in colors_to_skip):
+                image_colors.append(pixel_array[x, y])
     number_of_image_colors = len(image_colors)
 
     color_print("Counting lines...", Fore.YELLOW)
@@ -688,8 +689,8 @@ def main():
                                 continue
 
                             if pixels_in_line >= minimum_line_width:
-                                print(str((paint_area_x + (x-1)) - first_point[0]))
-                                print(str(first_point[0])+"\t"+str(paint_area_x + (x-1)))
+                                #print(str((paint_area_x + (x-1)) - first_point[0]))
+                                #print(str(first_point[0])+"\t"+str(paint_area_x + (x-1)))
                                 draw_line(first_point, (paint_area_x + (x-1), paint_area_y + y))
                             else:
                                 for index in range(pixels_in_line):
