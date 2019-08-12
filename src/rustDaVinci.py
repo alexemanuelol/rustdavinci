@@ -221,8 +221,8 @@ def calc_ctrl_tools_pos(x, y, w, h):
 
 
 def convert_img(img_path, canvas_w, canvas_h):
-    """ Convert the image to fit the canvas and dither the image.
-    Returns:    dithered_img,
+    """ Convert the image to fit the canvas and quantize the image.
+    Returns:    quantized_img,
                 x_correction,
                 y_correction
                 False, if the image type is invalid.
@@ -256,22 +256,22 @@ def convert_img(img_path, canvas_w, canvas_h):
         palette_data = Image.new("P", (1, 1))
         palette_data.putpalette(rustPaletteData.palette_80)
 
-        dithered_img = quantize_to_palette(org_img, palette_data)
-        if dithered_img == False: return False
+        quantized_img = quantize_to_palette(org_img, palette_data)
+        if quantized_img == False: return False
 
         if config.getboolean("Painting", "save_preview"):
-            dithered_img.save(config("Painting", "path_for_preview_image") + "Preview.png")
+            quantized_img.save(config("Painting", "path_for_preview_image") + "Preview.png")
         if config.getboolean("Painting", "show_preview"):
-            dithered_img.show(title="Preview")
+            quantized_img.show(title="Preview")
 
-        return dithered_img, x_correction, y_correction
+        return quantized_img, x_correction, y_correction
     else:
         color_print("Invalid picture format...", Fore.RED)
         return False
 
 
 
-def calc_statistics(dithered_img, img_w, img_h):
+def calc_statistics(quantized_img, img_w, img_h):
     """ Calculate what colors, how many pixels and lines for the painting
     Returns:    img_colors, 
                 tot_pixels,
@@ -285,12 +285,12 @@ def calc_statistics(dithered_img, img_w, img_h):
     pixels = 0
     lines = 0
 
-    for color in dithered_img.getcolors():
+    for color in quantized_img.getcolors():
         if color[1] not in COLORS_TO_SKIP:
             tot_pixels += color[0]
             img_colors.append(color[1])
 
-    pixel_arr = dithered_img.load()
+    pixel_arr = quantized_img.load()
 
 
     color_print("Counting lines...", Fore.YELLOW)
@@ -549,24 +549,24 @@ def main():
 
 
 
-    # Select the image to be dithered and painted
+    # Select the image to be quantized and painted
     img_path = filedialog.askopenfilename(title="Select the image to be painted")
 
-    dithered_img, x_correction, y_correction = convert_img(img_path, canvas_w, canvas_h)
-    if dithered_img == False: exit()
+    quantized_img, x_correction, y_correction = convert_img(img_path, canvas_w, canvas_h)
+    if quantized_img == False: exit()
 
-    pixel_arr = dithered_img.load()
+    pixel_arr = quantized_img.load()
 
     canvas_x += x_correction
     canvas_y += y_correction
-    canvas_w = dithered_img.size[0]
-    canvas_h = dithered_img.size[1]
+    canvas_w = quantized_img.size[0]
+    canvas_h = quantized_img.size[1]
 
         
 
 
     # Counter statistics (Total amount of pixels, lines, colors etc...)
-    statistics = calc_statistics(dithered_img, canvas_w, canvas_h)
+    statistics = calc_statistics(quantized_img, canvas_w, canvas_h)
 
     img_colors = statistics[0]
     tot_pixels = statistics[1]
@@ -634,12 +634,12 @@ def main():
 
         if color in COLORS_TO_SKIP: continue
 
-        time.sleep(0 if CTRL_AREA_DELAY == 0 else CTRL_AREA_DELAY / 3)
+        time.sleep(CTRL_AREA_DELAY)
         if   color >= 0  and color < 20: pyautogui.click(ctrl_opacity[5])
         elif color >= 20 and color < 40: pyautogui.click(ctrl_opacity[4])
         elif color >= 40 and color < 60: pyautogui.click(ctrl_opacity[3])
         elif color >= 60 and color < 80: pyautogui.click(ctrl_opacity[2])
-        time.sleep(0 if CTRL_AREA_DELAY == 0 else CTRL_AREA_DELAY / 3)
+        time.sleep(CTRL_AREA_DELAY)
 
 
         first_point = (0, 0)
@@ -650,7 +650,7 @@ def main():
         pixels_in_line = 0
 
         pyautogui.click(ctrl_color[color%20])
-        time.sleep(0 if CTRL_AREA_DELAY == 0 else CTRL_AREA_DELAY / 3)
+        time.sleep(CTRL_AREA_DELAY)
 
         for y in range(canvas_h):
             if is_skip_color: break
