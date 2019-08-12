@@ -26,6 +26,7 @@ import rustPaletteData
 config = configparser.ConfigParser(comment_prefixes="/", allow_no_value=True)
 config.read("config.ini")
 
+
 # CONSTANT the colors that should be skipped
 COLORS_TO_SKIP = []
 COLORS_TO_SKIP.append(config.getint("General", "default_background_color"))
@@ -48,8 +49,8 @@ ctrl_area_delay_ms = config.getint("Experimental", "ctrl_area_delay")
 if ctrl_area_delay_ms <= 0: CTRL_AREA_DELAY = 0
 elif ctrl_area_delay_ms > 0: CTRL_AREA_DELAY = float(ctrl_area_delay_ms / 1000)
 
-
 MINIMUM_LINE_WIDTH = config.getint("Experimental", "minimum_line_width")
+
 
 # Variables for keyboard event
 is_paused = False
@@ -353,10 +354,7 @@ def calc_statistics(quantized_img, img_w, img_h):
                         is_line = False
                         pixels_in_line = 0
 
-    return  img_colors, \
-            tot_pixels, \
-            pixels, \
-            lines
+    return  img_colors, tot_pixels, pixels, lines
 
 
 
@@ -423,15 +421,16 @@ def draw_line(point_A, point_B):
 def key_event(key):
     """ Key-press handler. """
     global is_paused, is_skip_color, is_exit
-    if key == keyboard.Key.f10:
+
+    if key == keyboard.Key.f10:     # PAUSE
         is_paused = not is_paused
         if is_paused:
             color_print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit", Fore.YELLOW)
-    elif key == keyboard.Key.f11:
+    elif key == keyboard.Key.f11:   # SKIP CURRENT COLOR
         color_print("Skipping current color...", Fore.YELLOW)
+        is_paused = False
         is_skip_color = True
-        #is_paused = False
-    elif key == keyboard.Key.esc:
+    elif key == keyboard.Key.esc:   # EXIT 
         is_paused = False
         is_exit = True
 
@@ -463,13 +462,6 @@ def main():
 
     color_print("Hello & Welcome to RustDaVinci!\n", Fore.RED)
     
-    color_print("Beneath follows the application instructions:\n", Fore.RED)
-    color_print("\t1. Firstly the application needs to capture the rust palette control area.", Fore.RED)
-    color_print("\t2. Then it needs to capture the canvas.", Fore.RED)
-    color_print("\t3. Make sure that the application window is in focus when capturing the areas.", Fore.RED)
-    color_print("\t4. Make sure that the application window does not cover those two areas.\n", Fore.RED)
-    color_print("Follow the instructions below to begin the area capturing...\n", Fore.RED)
-
 
     ctypes.windll.kernel32.SetConsoleTitleW("RustDaVinci") # Set window title
 
@@ -481,8 +473,6 @@ def main():
 
 
     pyautogui.PAUSE = CLICK_DELAY
-
-
 
 
     # Get the control area coordinates and ratio
@@ -585,14 +575,6 @@ def main():
                                                     lines)
 
 
-    prefer_lines = False
-    if est_time_line < est_time_click:
-        print("\nGoing for lines...")
-        prefer_lines = True
-        est_time = est_time_line
-    else:
-        print("\nGoing for clicks...")
-        est_time = est_time_click
 
 
 
@@ -605,7 +587,18 @@ def main():
     color_print("Number of lines:\t\t\t" + str(lines), Fore.GREEN)
     color_print("Est. painting time (click only):\t" + str(time.strftime("%H:%M:%S", time.gmtime(est_time_click))), Fore.GREEN)
     color_print("Est. painting time (with lines):\t" + str(time.strftime("%H:%M:%S", time.gmtime(est_time_line))), Fore.GREEN)
+
+    prefer_lines = False
+    if est_time_line < est_time_click:
+        print("\nGoing for lines...")
+        prefer_lines = True
+        est_time = est_time_line
+    else:
+        print("\nGoing for clicks...")
+        est_time = est_time_click
+
     color_print("\nPress <ENTER> to start the painting process...\n", Fore.YELLOW); input()
+
     color_print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=est_time)).time().strftime("%H:%M:%S")) + "\n", Fore.GREEN)
 
 

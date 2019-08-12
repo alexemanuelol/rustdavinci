@@ -1,6 +1,9 @@
 # TODO
 
+- Test different settings for paintings (click_delay, line_delay etc...)
+- Check accuracy for the estimation of time
 - Get Facepunch and EAC to recognize this application and what it is capable of doing.
+- Investigate which GUI module should be used. Kivy, pyQT, tkinter, pyGUI?
 
 ## New features
 
