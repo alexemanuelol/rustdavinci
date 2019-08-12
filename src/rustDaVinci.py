@@ -429,8 +429,8 @@ def key_event(key):
             color_print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit", Fore.YELLOW)
     elif key == keyboard.Key.f11:
         color_print("Skipping current color...", Fore.YELLOW)
-        is_paused = False
         is_skip_color = True
+        #is_paused = False
     elif key == keyboard.Key.esc:
         is_paused = False
         is_exit = True
@@ -448,6 +448,8 @@ def color_print(message, color):
 def main():
     """ The main application
     """
+    # Global key-event variables
+    global is_paused, is_skip_color, is_exit
 
     init()  # Initilize colorama module
 
@@ -663,9 +665,7 @@ def main():
             for x in range(canvas_w):
 
                 while is_paused: None
-
                 if is_skip_color: break
-
                 if is_exit:
                     elapsed_time = int(time.time() - start_time)
                     color_print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))), Fore.GREEN)
