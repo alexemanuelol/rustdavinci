@@ -12,6 +12,7 @@
 - Create a FAQ file
 - Play around with the hidden colors (Needs to be SUPER accurate for it to work)
 - Make the palette implementation more smart. So it does not depend on the position of the colors.
+- Investigate in Nuitka for avoiding decomplie the executable. (Is it really necessary?)
 
 
 ## Optimization
