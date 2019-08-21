@@ -24,7 +24,10 @@ Script uses opencv to take a screenshot and look for the template to match somew
 
 ![The template for the control area](rust_palette_template.png)
 
+## Test GUI
 
+### testGUI.py
+Testing for python gui pyqt5
 
 
 ## Useful articles and links:
