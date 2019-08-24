@@ -2,7 +2,7 @@
 
 ## Generate quantized images
 
-### alt_quantize_image.py
+### ./src/test/alt_quantize_image.py
 Perhaps a middle quality quantize.. cons - it is very slow in generating the image
 
 
@@ -10,7 +10,7 @@ Perhaps a middle quality quantize.. cons - it is very slow in generating the ima
 
 - Useful site: https://imgur.com/a/L7P0f
 
-### identifyColors.py
+### ./src/test/identifyColors.py
 Script that print out every single pixel from the palette onto a picture frame in-game.
 NOTE: The coordinates needs to be modified to the correct placement of the control area.
 
@@ -19,14 +19,14 @@ NOTE: The coordinates needs to be modified to the correct placement of the contr
 
 ## Identify control area automatically with opencv
 
-### identify_tool_area.py
+### ./src/test/identify_tool_area.py
 Script uses opencv to take a screenshot and look for the template to match somewhere (rust_palette_template.png).
 
 ![The template for the control area](rust_palette_template.png)
 
 ## Test GUI
 
-### testGUI.py
+### ./src/test/testGUI.py
 Testing for python gui pyqt5
 
 
