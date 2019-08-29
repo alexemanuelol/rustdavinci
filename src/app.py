@@ -5,6 +5,9 @@ import sys
 
 from PyQt5 import QtCore, QtGui
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QLabel, QAction, QPushButton, QVBoxLayout, QGroupBox, QMenu
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import QSize, QRect
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -12,13 +15,67 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        self.resize(600,300)
+        self.title = "RustDaVinci"
+        self.width = 240
+        self.height = 400
+        self._initUI()
+
+
+    def _initUI(self):
+        self.setWindowTitle(self.title)
+        self.setWindowIcon(QIcon("../images/RustDaVinci-icon.ico"))
+        self.resize(self.width, self.height)
+        self.setMinimumSize(QSize(self.width, self.height))
+
+        loadImageButton = QPushButton("    Load Image...", self)
+        loadImageButton.setGeometry(QRect(10, 10, self.width - 20, 45))
+        loadImageButton.setFlat(True)
+        loadImageButton.setIcon(QtGui.QIcon("../images/load_image_icon.png"))
+        loadImageButton.setIconSize(QtCore.QSize(self.width - 20, 45))
+
+        loadMenu = QtWidgets.QMenu()
+        loadMenu.addAction("Load from File", self.loadImageFile)
+        loadMenu.addAction("Load from URL", self.loadImageURL)
+        loadImageButton.setMenu(loadMenu)
+
+        paintImageButton = QPushButton("    Paint Image...", self)
+        paintImageButton.setGeometry(QRect(10, 65, self.width - 20, 45))
+        paintImageButton.setFlat(True)
+        paintImageButton.setEnabled(False)
+        paintImageButton.setIcon(QtGui.QIcon("../images/paint_image_icon.png"))
+        paintImageButton.setIconSize(QtCore.QSize(self.width - 20, 45))
+        paintImageButton.clicked.connect(self.start_painting)
+
+        settingsButton = QPushButton("    Settings          ", self)
+        settingsButton.setGeometry(QRect(10, 120, self.width - 20, 45))
+        settingsButton.setFlat(True)
+        settingsButton.setIcon(QtGui.QIcon("../images/settings_icon.png"))
+        settingsButton.setIconSize(QtCore.QSize(self.width - 20, 45))
+        settingsButton.clicked.connect(self.settings)
+
+
+    def settings(self):
+        print("ENTER SETTINGS...")
+
+    def start_painting(self):
+        print("START PAINTING...")
+
+    def test(self):
+        print("CLICKED")
+
+    def loadImageFile(self):
+        print("load image file...")
+
+    def loadImageURL(self):
+        print("load image URL...")
 
     def show(self):
         super(MainWindow, self).show()
 
+
     def hide(self):
         super(MainWindow, self).hide()
+
 
     def closeEvent(self, closeEvent):
         super(MainWindow, self).closeEvent(closeEvent)
@@ -26,19 +83,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-
-
-def run():
+if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    app.setApplicationName("RustDaVinci")
-
     main = MainWindow()
     main.show()
-
-    app.exec_()
-    sys.exit()
-
-
-
-if __name__ == "__main__":
-    run()
+    sys.exit(app.exec_())
