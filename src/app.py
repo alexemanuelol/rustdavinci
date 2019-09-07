@@ -27,7 +27,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(self.width, self.height)
         self.setMinimumSize(QSize(self.width, self.height))
 
-        loadImageButton = QPushButton("    Load Image...", self)
+        loadImageButton = QPushButton("               Load Image...             ", self)
         loadImageButton.setGeometry(QRect(10, 10, self.width - 20, 45))
         loadImageButton.setFlat(True)
         loadImageButton.setIcon(QtGui.QIcon("../images/load_image_icon.png"))
@@ -36,38 +36,50 @@ class MainWindow(QtWidgets.QMainWindow):
         loadMenu = QtWidgets.QMenu()
         loadMenu.addAction("Load from File", self.loadImageFile)
         loadMenu.addAction("Load from URL", self.loadImageURL)
+        loadMenu.addAction("Clear image", self.clearCurrentImage)
         loadImageButton.setMenu(loadMenu)
 
-        paintImageButton = QPushButton("    Paint Image...", self)
-        paintImageButton.setGeometry(QRect(10, 65, self.width - 20, 45))
+        settingsButton = QPushButton("    Identify palette and frame...", self)
+        settingsButton.setGeometry(QRect(10, 65, self.width - 20, 45))
+        settingsButton.setFlat(True)
+        settingsButton.setIcon(QtGui.QIcon("../images/select_area_icon.png"))
+        settingsButton.setIconSize(QtCore.QSize(self.width - 20, 45))
+        settingsButton.clicked.connect(self.identifyAreas)
+
+        paintImageButton = QPushButton("               Paint Image...            ", self)
+        paintImageButton.setGeometry(QRect(10, 120, self.width - 20, 45))
         paintImageButton.setFlat(True)
         paintImageButton.setEnabled(False)
         paintImageButton.setIcon(QtGui.QIcon("../images/paint_image_icon.png"))
         paintImageButton.setIconSize(QtCore.QSize(self.width - 20, 45))
-        paintImageButton.clicked.connect(self.start_painting)
+        paintImageButton.clicked.connect(self.startPainting)
 
-        settingsButton = QPushButton("    Settings          ", self)
-        settingsButton.setGeometry(QRect(10, 120, self.width - 20, 45))
+        settingsButton = QPushButton("                 Settings                    ", self)
+        settingsButton.setGeometry(QRect(10, 175, self.width - 20, 45))
         settingsButton.setFlat(True)
         settingsButton.setIcon(QtGui.QIcon("../images/settings_icon.png"))
         settingsButton.setIconSize(QtCore.QSize(self.width - 20, 45))
         settingsButton.clicked.connect(self.settings)
-
-
-    def settings(self):
-        print("ENTER SETTINGS...")
-
-    def start_painting(self):
-        print("START PAINTING...")
-
-    def test(self):
-        print("CLICKED")
 
     def loadImageFile(self):
         print("load image file...")
 
     def loadImageURL(self):
         print("load image URL...")
+
+    def clearCurrentImage(self):
+        print("Cleared the current Image...")
+
+    def identifyAreas(self):
+        print("Identify palette and frame...")
+
+    def startPainting(self):
+        print("Start painting")
+
+    def settings(self):
+        print("Settings")
+
+
 
     def show(self):
         super(MainWindow, self).show()
