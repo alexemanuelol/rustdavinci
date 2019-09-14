@@ -36,6 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
         loadMenu = QtWidgets.QMenu()
         loadMenu.addAction("Load from File", self.loadImageFile)
         loadMenu.addAction("Load from URL", self.loadImageURL)
+        loadMenu.addAction("Show preview", self.showPreview)
         loadMenu.addAction("Clear image", self.clearCurrentImage)
         loadImageButton.setMenu(loadMenu)
 
@@ -67,6 +68,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def loadImageURL(self):
         print("load image URL...")
 
+    def showPreview(self):
+        print("Showing preview of dithered image...")
+
     def clearCurrentImage(self):
         print("Cleared the current Image...")
 
@@ -93,10 +97,25 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).closeEvent(closeEvent)
         self.closeEventSignal.emit(closeEvent)
 
+def run():
 
+    # Set some application settings for QSettings
+    QtCore.QCoreApplication.setOrganizationName("RustDaVinci")
+    QtCore.QCoreApplication.setApplicationName("RustDaVinci")
 
-if __name__ == "__main__":
+    # Setup the application and start
     app = QtWidgets.QApplication(sys.argv)
+
+    print(QtCore.QSettings().value("singleton", 0))
+    exit()
+
+
     main = MainWindow()
     main.show()
     sys.exit(app.exec_())
+
+
+
+
+if __name__ == "__main__":
+    run()
