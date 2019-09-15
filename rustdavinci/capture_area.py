@@ -12,10 +12,10 @@ def capture_area():
                 area_height
     """
     root = tk.Tk().withdraw()
-    window = tk.Toplevel(root)
-    window.overrideredirect(1)
-    window.wm_attributes('-alpha',0.5)
-    window.geometry("0x0")
+    area = tk.Toplevel(root)
+    area.overrideredirect(1)
+    area.wm_attributes('-alpha',0.5)
+    area.geometry("0x0")
 
     prev_state = win32api.GetKeyState(0x01)
     pressed, active = False, False
@@ -28,23 +28,24 @@ def capture_area():
             prev_state = current_state
             pressed = True if current_state < 0 else False
 
-        if pressed:
-            if not active: area_TL = mouse; active = True
-            winposdiff = (mouse[0] - winpos[0], mouse[1] - winpos[1])
-            winsize = str(winposdiff[0])+ "x" + str(winposdiff[1])
-            window.geometry(winsize)
-                    
-        elif not pressed:
-            if active:
-                area_BR = mouse
-                window.destroy()
-                return area_TL[0], area_TL[1], area_BR[0] - area_TL[0], area_BR[1] - area_TL[1]
+        try:
+            if pressed:
+                if not active:
+                    area_TL = mouse
+                    active = True
+                area.geometry(str(mouse[0] - area_TL[0])+ "x" + str(mouse[1] - area_TL[1]))
+            elif not pressed:
+                if active:
+                    area.destroy()
+                    if area_TL[0] >= mouse[0] or area_TL[1] >= mouse[1]:
+                        return 0, 0, 0, 0
+                    return area_TL[0], area_TL[1], mouse[0] - area_TL[0], mouse[1] - area_TL[1]
+                area.geometry("+" + str(mouse[0])+ "+" + str(mouse[1]))
 
-            winpos = (mouse[0], mouse[1])
-            window.geometry("+" + str(mouse[0])+ "+" + str(mouse[1]))
+        except Exception: pass
 
-        window.update_idletasks()
-        window.update()
+        area.update_idletasks()
+        area.update()
 
 
 if __name__ == "__main__":
