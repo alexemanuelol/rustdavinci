@@ -25,15 +25,38 @@ class Settings(QtWidgets.QDialog):
                 QtCore.Qt.WindowTitleHint |
                 QtCore.Qt.WindowCloseButtonHint)
 
-        self.load_settings()
-        self.connect_all()
+        self.loadSettings()
+        self.connectAll()
 
 
-    def load_settings(self):
+    def loadSettings(self):
         None
 
-    def connect_all(self):
+    def connectAll(self):
+        # Buttons
+        self.ui.defaultPushButton.clicked.connect(self.setDefaultSettings)
+        self.ui.okPushButton.clicked.connect(self.saveAndExit)
         self.ui.cancelPushButton.clicked.connect(self.close)
+        self.ui.applyPushButton.clicked.connect(self.saveSettings)
+
+        # General
+        self.ui.backgroundColorLineEdit.textChanged.connect(self.setBackgroundColor)
+        
+
+    def setDefaultSettings(self):
+        print("Setting default settings...")
+        None
+
+    def saveAndExit(self):
+        self.saveSettings()
+        print("Exit Settings...")
+        self.close()
+
+    def saveSettings(self):
+        print("Save Settings...")
+
+    def setBackgroundColor(self):
+        print("Set Background color...")
 
 
 
