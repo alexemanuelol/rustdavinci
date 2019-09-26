@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import QLabel, QAction, QPushButton, QVBoxLayout, QGroupBox
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QSize, QRect
 
+from ui.dialogs.settings import Settings
+
 class MainView(QtWidgets.QMainWindow):
 
     closeEventSignal = QtCore.pyqtSignal(QtGui.QCloseEvent)
@@ -39,6 +41,9 @@ class MainView(QtWidgets.QMainWindow):
         print("Start painting")
 
     def settings(self):
+        settings = Settings(self)
+        settings.setModal(True)
+        settings.show()
         print("Settings")
 
 
