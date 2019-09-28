@@ -6,7 +6,7 @@ import sys
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 
-from ui.views.main_view import MainView
+from ui.views.main import MainWindow
 
 
 def run():
@@ -20,7 +20,7 @@ def run():
 
     #print(QtCore.QSettings().value("singleton", 0))
 
-    main = MainView()
+    main = MainWindow()
     main.show()
     sys.exit(app.exec_())
 
