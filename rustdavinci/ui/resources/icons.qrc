@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>icons/load_image_icon.png</file>
+    <file>icons/select_area_icon.png</file>
+    <file>icons/paint_image_icon.png</file>
+    <file>icons/settings_icon.png</file>
+    <file>icons/RustDaVinci-icon.ico</file>
+    <file>icons/RustDaVinci-logo-1.png</file>
+    <file>icons/RustDaVinci-logo-2.png</file>
+</qresource>
+</RCC>

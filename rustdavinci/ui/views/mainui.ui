@@ -20,8 +20,8 @@
    <string>RustDaVinci</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../resources/RustDaVinci-icon.ico</normaloff>../resources/RustDaVinci-icon.ico</iconset>
+   <iconset resource="../resources/icons.qrc">
+    <normaloff>:/icons/RustDaVinci-icon.ico</normaloff>:/icons/RustDaVinci-icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="loadImagePushButton">
@@ -43,8 +43,8 @@
      <string>               Load Image...             </string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../resources/load_image_icon.png</normaloff>../resources/load_image_icon.png</iconset>
+     <iconset resource="../resources/icons.qrc">
+      <normaloff>:/icons/load_image_icon.png</normaloff>:/icons/load_image_icon.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -78,8 +78,8 @@
      <string>    Identify palette and frame...</string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../resources/select_area_icon.png</normaloff>../resources/select_area_icon.png</iconset>
+     <iconset resource="../resources/icons.qrc">
+      <normaloff>:/icons/select_area_icon.png</normaloff>:/icons/select_area_icon.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -107,8 +107,8 @@
      <string>               Paint Image...            </string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../resources/paint_image_icon.png</normaloff>../resources/paint_image_icon.png</iconset>
+     <iconset resource="../resources/icons.qrc">
+      <normaloff>:/icons/paint_image_icon.png</normaloff>:/icons/paint_image_icon.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -133,8 +133,8 @@
      <string>                 Settings                    </string>
     </property>
     <property name="icon">
-     <iconset>
-      <normaloff>../resources/settings_icon.png</normaloff>../resources/settings_icon.png</iconset>
+     <iconset resource="../resources/icons.qrc">
+      <normaloff>:/icons/settings_icon.png</normaloff>:/icons/settings_icon.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -149,6 +149,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>
