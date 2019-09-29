@@ -7,5 +7,10 @@
     <file>icons/RustDaVinci-icon.ico</file>
     <file>icons/RustDaVinci-logo-1.png</file>
     <file>icons/RustDaVinci-logo-2.png</file>
+
+    <file>brushes/light_round.png</file>
+    <file>brushes/heavy_round.png</file>
+    <file>brushes/medium_round.png</file>
+    <file>brushes/heavy_square.png</file>
 </qresource>
 </RCC>

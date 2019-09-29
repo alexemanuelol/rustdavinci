@@ -758,7 +758,7 @@
       <rect>
        <x>180</x>
        <y>140</y>
-       <width>91</width>
+       <width>111</width>
        <height>22</height>
       </rect>
      </property>
@@ -772,20 +772,36 @@
       <property name="text">
        <string>Light Round</string>
       </property>
+      <property name="icon">
+       <iconset resource="../resources/icons.qrc">
+        <normaloff>:/brushes/light_round.png</normaloff>:/brushes/light_round.png</iconset>
+      </property>
      </item>
      <item>
       <property name="text">
        <string>Heavy Round</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../resources/icons.qrc">
+        <normaloff>:/brushes/heavy_round.png</normaloff>:/brushes/heavy_round.png</iconset>
       </property>
      </item>
      <item>
       <property name="text">
        <string>Medium Round</string>
       </property>
+      <property name="icon">
+       <iconset resource="../resources/icons.qrc">
+        <normaloff>:/brushes/medium_round.png</normaloff>:/brushes/medium_round.png</iconset>
+      </property>
      </item>
      <item>
       <property name="text">
        <string>Heavy Square</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../resources/icons.qrc">
+        <normaloff>:/brushes/heavy_square.png</normaloff>:/brushes/heavy_square.png</iconset>
       </property>
      </item>
     </widget>
@@ -952,6 +968,8 @@ automatically find the paint control area coordinates is selected)</string>
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>
