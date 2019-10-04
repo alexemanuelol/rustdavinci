@@ -5,6 +5,7 @@ import sys
 
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QFileDialog
 
 from ui.views.main import MainWindow
 
@@ -17,8 +18,6 @@ def run():
 
     # Setup the application and start
     app = QtWidgets.QApplication(sys.argv)
-
-    #print(QtCore.QSettings().value("singleton", 0))
 
     main = MainWindow()
     main.show()

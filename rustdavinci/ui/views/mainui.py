@@ -70,7 +70,7 @@ class Ui_MainUI(object):
         _translate = QtCore.QCoreApplication.translate
         MainUI.setWindowTitle(_translate("MainUI", "RustDaVinci"))
         self.loadImagePushButton.setText(_translate("MainUI", "               Load Image...             "))
-        self.identifyAreasPushButton.setText(_translate("MainUI", "    Identify palette and frame..."))
+        self.identifyAreasPushButton.setText(_translate("MainUI", "               Capture Area..           "))
         self.paintImagePushButton.setText(_translate("MainUI", "               Paint Image...            "))
         self.settingsPushButton.setText(_translate("MainUI", "                 Settings                    "))
 import ui.resources.icons_rc

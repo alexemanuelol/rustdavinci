@@ -8,6 +8,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QSize, QRect
 
 from ui.settings.settings import Settings
+from lib.rustDaVinci import rustDaVinci
 
 from ui.views.mainui import Ui_MainUI
 
@@ -22,6 +23,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         self.settings = QtCore.QSettings()
+        self.rustDaVinci = rustDaVinci(self)
+
+        # Menu actions
+        self.action_clearImage = None
+        self.action_locateControlArea = None
 
         self.connectAll()
 
@@ -30,40 +36,64 @@ class MainWindow(QtWidgets.QMainWindow):
     def connectAll(self):
         """ Connect all the buttons """
         loadMenu = QtWidgets.QMenu()
-        loadMenu.addAction("Load from File", self.loadImageFile_clicked)
-        loadMenu.addAction("Load from URL", self.loadImageURL_clicked)
-        loadMenu.addAction("Show preview", self.showPreview_clicked)
-        loadMenu.addAction("Clear image", self.clearCurrentImage_clicked)
+        loadMenu.addAction("From File...", self.loadImageFile_clicked)
+        loadMenu.addAction("From URL...", self.loadImageURL_clicked)
+        self.action_clearImage = loadMenu.addAction("Clear image", self.clearCurrentImage_clicked)
+        self.action_clearImage.setEnabled(False)
         self.ui.loadImagePushButton.setMenu(loadMenu)
 
-        self.ui.identifyAreasPushButton.clicked.connect(self.identifyAreas_clicked)
-        self.ui.paintImagePushButton.clicked.connect(self.startPainting_clicked)
+        identifyMenu = QtWidgets.QMenu()
+        identifyMenu.addAction("Canvas...", self.locateCanvasArea_clicked)
+        self.action_locateControlArea = identifyMenu.addAction("Painting Controls...", self.locateControlArea_clicked)
+        self.action_locateControlArea.setEnabled(True)
+        self.ui.identifyAreasPushButton.setMenu(identifyMenu)
+
+        paintMenu = QtWidgets.QMenu()
+        self.action_paintImage = paintMenu.addAction("Paint Image", self.paintImage_clicked)
+        self.action_paintImage.setEnabled(False)
+        self.action_showPreview = paintMenu.addAction("Show Preview", self.showPreview_clicked)
+        self.action_showPreview.setEnabled(False)
+        self.ui.paintImagePushButton.setMenu(paintMenu)
+
         self.ui.settingsPushButton.clicked.connect(self.settings_clicked)
 
 
     def loadImageFile_clicked(self):
-        print("load image file...")
+        self.rustDaVinci.load_image_from_file()
+        if self.rustDaVinci.image_path != None:
+            self.action_clearImage.setEnabled(True)
 
     def loadImageURL_clicked(self):
-        print("load image URL...")
-
-    def showPreview_clicked(self):
-        print("Showing preview of dithered image...")
+        self.rustDaVinci.load_image_from_url()
+        if self.rustDaVinci.image_path != None:
+            self.action_clearImage.setEnabled(True)
 
     def clearCurrentImage_clicked(self):
-        print("Cleared the current Image...")
+        self.rustDaVinci.clear_image()
+        self.action_clearImage.setEnabled(False)
 
-    def identifyAreas_clicked(self):
-        print("Identify palette and frame...")
+    def locateCanvasArea_clicked(self):
+        self.rustDaVinci.locate_canvas_area()
 
-    def startPainting_clicked(self):
-        print("Start painting")
+    def locateControlArea_clicked(self):
+        self.rustDaVinci.locate_control_area()
+
+    def paintImage_clicked(self):
+        None
+
+    def showPreview_clicked(self):
+        None
 
     def settings_clicked(self):
         settings = Settings(self)
         settings.setModal(True)
         settings.show()
         print("Settings")
+
+
+
+
+
 
 
     def show(self):

@@ -83,8 +83,8 @@ class Settings(QtWidgets.QDialog):
     def loadSettings(self):
         """ Load the saved settings or the default settings. """
         # Checkboxes
-        self._settings_int_to_checkbox("auto_find_control_area", self.ui.autoFindControlAreaCheckBox, 1)
-        self._settings_int_to_checkbox("remember_control_area_coordinates", self.ui.rememberControlAreaCoordinatesCheckBox, 1)
+        self._settings_int_to_checkbox("auto_find_control_area", self.ui.autoFindControlAreaCheckBox, 0)
+        self._settings_int_to_checkbox("remember_control_area_coordinates", self.ui.rememberControlAreaCoordinatesCheckBox, 0)
         self._settings_int_to_checkbox("skip_default_background_color", self.ui.skipDefaultColorCheckBox, 1)
         self._settings_int_to_checkbox("auto_update_canvas", self.ui.autoUpdateCanvasCheckBox, 1)
         self._settings_int_to_checkbox("auto_update_canvas_completed", self.ui.autoUpdateCanvasWhenCompletedCheckBox, 1)
@@ -127,6 +127,12 @@ class Settings(QtWidgets.QDialog):
         self.ui.controlAreaDelayLineEdit.setText(ctrl_area_delay)
         minimum_line_width = self.settings.value("minimum_line_width", "10")
         self.ui.minimumLineWidthLineEdit.setText(minimum_line_width)
+
+    def _settings_int_to_checkbox(self, name, checkBox, default):
+        """ Settings integer values converted to checkbox """
+        val = int(self.settings.value(name, default))
+        if val: checkBox.setCheckState(QtCore.Qt.Checked)
+        else: checkBox.setCheckState(QtCore.Qt.Unchecked)
         
 
     def saveSettings(self):
@@ -162,12 +168,6 @@ class Settings(QtWidgets.QDialog):
         self.settings.setValue("minimum_line_width", self.ui.minimumLineWidthLineEdit.text())
 
 
-    def _settings_int_to_checkbox(self, name, checkBox, default):
-        """ Settings integer values converted to checkbox """
-        val = int(self.settings.value(name, default))
-        if val: checkBox.setCheckState(QtCore.Qt.Checked)
-        else: checkBox.setCheckState(QtCore.Qt.Unchecked)
-
     def _settings_checkbox_to_int(self, name, val):
         """ Settings save checkbox to integer """
         if val: self.settings.setValue(name, 1)
@@ -177,8 +177,8 @@ class Settings(QtWidgets.QDialog):
     def default_clicked(self):
         """ Set everything to the default values. """
         # Checkboxes
-        self.ui.autoFindControlAreaCheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.rememberControlAreaCoordinatesCheckBox.setCheckState(QtCore.Qt.Checked)
+        self.ui.autoFindControlAreaCheckBox.setCheckState(QtCore.Qt.Unchecked)
+        self.ui.rememberControlAreaCoordinatesCheckBox.setCheckState(QtCore.Qt.Unchecked)
         self.ui.skipDefaultColorCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.autoUpdateCanvasCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.autoUpdateCanvasWhenCompletedCheckBox.setCheckState(QtCore.Qt.Checked)

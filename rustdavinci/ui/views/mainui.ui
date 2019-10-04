@@ -75,7 +75,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>    Identify palette and frame...</string>
+     <string>               Capture Area..           </string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">

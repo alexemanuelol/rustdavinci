@@ -255,6 +255,9 @@
      </property>
     </widget>
     <widget class="QCheckBox" name="rememberControlAreaCoordinatesCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -267,7 +270,7 @@
       <string>Always remember the paint controls area coordinates</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QLineEdit" name="controlAreaXLineEdit">
@@ -322,7 +325,7 @@
       <string>Automatically find the paint controls area coordinates (OpenCV)</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
