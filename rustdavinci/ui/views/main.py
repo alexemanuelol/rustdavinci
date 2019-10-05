@@ -88,12 +88,6 @@ class MainWindow(QtWidgets.QMainWindow):
         settings = Settings(self)
         settings.setModal(True)
         settings.show()
-        print("Settings")
-
-
-
-
-
 
 
     def show(self):
