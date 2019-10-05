@@ -25,7 +25,7 @@ REQUIRED = [
 with open("README.md") as file:
     readme = file.read()
 
-with open("LICENSE.txt") as file:
+with open("LICENSE") as file:
     license = file.read()
 
 
