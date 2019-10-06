@@ -5,7 +5,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog
 
 from lib.captureArea import capture_area
-from lib.rustPaletteData import palette_80
+from lib.rustPaletteData import palette_80A
 
 import pyautogui
 import cv2
