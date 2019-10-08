@@ -59,6 +59,7 @@ class rustDaVinci():
 
         self.mouse_click_delay = 0
         self.lines_draw_delay = 0
+        self.ctrl_area_delay = 0
 
         self.is_paused = False
         self.is_skip_color = False
@@ -67,15 +68,15 @@ class rustDaVinci():
 
     def update_status(self):
         """"""
-        if self.settings.value("use_saved_control_area", "1") and not (self.settings.value("ctrl_w", "0") == 0 or self.settings.value("ctrl_h", "0") == 0):
+        if self.settings.value("use_saved_control_area", "1") and not (self.settings.value("ctrl_w", "0") == 0 or self.settings.value("ctrl_h", "0") == 0) and (self.ctrl_w == 0 or self.ctrl_h == 0):
             self.ctrl_x = int(self.settings.value("ctrl_x", "0"))
             self.ctrl_y = int(self.settings.value("ctrl_y", "0"))
             self.ctrl_w = int(self.settings.value("ctrl_w", "0"))
             self.ctrl_h = int(self.settings.value("ctrl_h", "0"))
             self.is_ctrl_area_located = True
 
-        self.mouse_click_delay = int(self.settings.value("click_delay", "5"))
-        self.lines_draw_delay = int(self.settings.value("line_delay", "25"))
+        self.mouse_click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
+        self.lines_draw_delay = float(int(self.settings.value("line_delay", "25"))/1000)
 
         if self.is_org_img_ok and self.is_quantized_img_ok and self.is_ctrl_area_located:
             self.parent.ui.paintImagePushButton.setEnabled(True)
@@ -207,6 +208,7 @@ class rustDaVinci():
         self.canvas_h = canvas_area[3]
 
         self.update_status()
+        return True
 
 
     def locate_control_area_manually(self):
@@ -244,7 +246,6 @@ class rustDaVinci():
 
         self.is_ctrl_area_located = True
 
-        self.calc_ctrl_tools_pos()
         self.update_status()
 
 
@@ -286,7 +287,6 @@ class rustDaVinci():
 
             self.is_ctrl_area_located = True
             
-            self.calc_ctrl_tools_pos()
             self.update_status()
 
 
@@ -539,10 +539,10 @@ class rustDaVinci():
         Updates:    Estimated time for clicking and lines
                     Estimated time for only clicking
         """
-        one_line_time = int(self.settings.value("line_delay", "25")) * 5
-        one_click_time = int(self.settings.value("click_delay", "5")) + 0.001
-        change_color_time = len(self.img_colors) * (int(self.settings.value("ctrl_area_delay", "100")) + (2 * int(self.settings.value("click_delay", "5"))))
-        other_time = 0.5 + (3 * int(self.settings.value("click_delay", "5")))
+        one_line_time = float(int(self.settings.value("line_delay", "25"))/1000) * 5
+        one_click_time = float(int(self.settings.value("click_delay", "5"))/1000) + 0.001
+        change_color_time = len(self.img_colors) * (float(int(self.settings.value("ctrl_area_delay", "100"))/1000) + (2 * float(int(self.settings.value("click_delay", "5"))/1000)))
+        other_time = 0.5 + (3 * float(int(self.settings.value("click_delay", "5"))/1000))
         self.est_time_lines = int((self.pixels * one_click_time) + (self.lines * one_line_time) + change_color_time + other_time)
         self.est_time_click = int((self.tot_pixels * one_click_time) + change_color_time + other_time)
 
@@ -575,13 +575,21 @@ class rustDaVinci():
 
     def start_painting(self):
         """ Start the painting """
-        self.locate_canvas_area()
+        if not self.locate_canvas_area(): return
         self.convert_img()
+        self.calc_ctrl_tools_pos()
         self.calc_statistics()
         self.calc_est_time()
 
 
-        question = "\nDimensions: \t\t\t\t" + str(self.canvas_w) + " x " + str(self.canvas_h) + "\nNumber of colors:\t\t\t" + str(len(self.img_colors)) + "Total Number of pixels to paint: \t" + str(self.tot_pixels) + "Number of pixels to paint:\t\t" + str(self.pixels) + "Number of lines:\t\t\t" + str(self.lines) + "Est. painting time (click only):\t" + str(time.strftime("%H:%M:%S", time.gmtime(self.est_time_click))) + "Est. painting time (with lines):\t" + str(time.strftime("%H:%M:%S", time.gmtime(self.est_time_lines))) + "\n Would you like to start the painting?"
+        question = "Dimensions: \t\t\t\t" + str(self.canvas_w) + " x " + str(self.canvas_h)
+        question += "\nNumber of colors:\t\t\t" + str(len(self.img_colors))
+        question += "\nTotal Number of pixels to paint: \t" + str(self.tot_pixels)
+        question += "\nNumber of pixels to paint:\t\t" + str(self.pixels)
+        question += "\nNumber of lines:\t\t\t" + str(self.lines)
+        question += "\nEst. painting time (click only):\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(self.est_time_click)))
+        question += "\nEst. painting time (with lines):\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(self.est_time_lines)))
+        question += "\n\nWould you like to start the painting?"
         btn = QMessageBox.question(self.parent, None, question, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if btn == QMessageBox.Yes:
             print("STARTING THE PAINT!")
@@ -589,18 +597,161 @@ class rustDaVinci():
             print("EXITING THE PAINT!")
             return
 
+        pyautogui.PAUSE = self.mouse_click_delay
+
+        prefer_lines = False
+        if self.est_time_lines < self.est_time_click:
+            print("\nGoing for lines...")
+            prefer_lines = True
+            est_time = self.est_time_lines
+        else:
+            print("\nGoing for clicks...")
+            est_time = self.est_time_click
+
+        print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=est_time)).time().strftime("%H:%M:%S")) + "\n")
+        print("F10 = Continue, F11 = Skip color, ESC = Exit\n")
+
+        start_time = time.time()
+
         # Start keyboard listener
         listener = keyboard.Listener(on_press=self.key_event)
         listener.start()
 
+        pixel_arr = self.quantized_img.load()
 
-        while True:
-            if self.is_exit:
-                break
-        print("Done")
-        return
+        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", "100"))/1000)
+        self.mouse_click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
+        self.lines_draw_delay = float(int(self.settings.value("line_delay", "25"))/1000)
+
+        colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
+        minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
+        auto_update_canvas = self.settings.value("auto_update_canvas", 1)
+        auto_update_canvas_completed = self.settings.value("auto_update_canvas_completed", 1)
+
+        pyautogui.click(self.ctrl_size[0]) # To set focus on the rust window
+        time.sleep(.5)
+        pyautogui.click(self.ctrl_size[0])
+        pyautogui.click(self.ctrl_brush[self.settings.value("painting_brush", 1)])
 
 
+        color_counter = 0
+        for color in self.img_colors:
+            self.is_skip_color = False
+            print("(" + str((color_counter+1)) + "/" + str((len(self.img_colors))) + ") Current color: " + str(color))
+            color_counter += 1
+
+            if color in colors_to_skip: continue
+
+            time.sleep(self.ctrl_area_delay)
+            if   color >= 0  and color < 20: pyautogui.click(self.ctrl_opacity[5])
+            elif color >= 20 and color < 40: pyautogui.click(self.ctrl_opacity[4])
+            elif color >= 40 and color < 60: pyautogui.click(self.ctrl_opacity[3])
+            elif color >= 60 and color < 80: pyautogui.click(self.ctrl_opacity[2])
+            time.sleep(self.ctrl_area_delay)
 
 
+            first_point = (0, 0)
+            is_first_point_of_row = True
+            is_last_point_of_row = False
+            is_prev_color = False
+            is_line = False
+            pixels_in_line = 0
 
+            pyautogui.click(self.ctrl_color[color%20])
+            time.sleep(self.ctrl_area_delay)
+
+            for y in range(self.canvas_h):
+                if self.is_skip_color: break
+                is_first_point_of_row = True
+                is_last_point_of_row = False
+                is_prev_color = False
+                is_line = False
+                pixels_in_line = 0
+
+                for x in range(self.canvas_w):
+
+                    while self.is_paused: None
+                    if self.is_skip_color: break
+                    if self.is_exit:
+                        elapsed_time = int(time.time() - start_time)
+                        print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+                        print("\nExiting...")
+                        return
+
+                    if x == (self.canvas_w - 1):
+                        is_last_point_of_row = True
+
+                    if is_first_point_of_row and prefer_lines:
+                        is_first_point_of_row = False
+                        if pixel_arr[x, y] == color:
+                            first_point = (canvas_x + x, canvas_y + y)
+                            is_prev_color = True
+                            pixels_in_line = 1
+                        continue
+
+                    if pixel_arr[x, y] == color:
+                        if not prefer_lines: pyautogui.click(self.canvas_x + x, self.canvas_y + y); continue
+                        if is_prev_color:
+                            if is_last_point_of_row:
+                                if pixels_in_line >= minimum_line_width:
+                                    self.draw_line(first_point, (self.canvas_x + x, self.canvas_y + y))
+                                else:
+                                    for index in range(pixels_in_line):
+                                        pyautogui.click(first_point[0] + index, self.canvas_y + y)
+                                    pyautogui.click(self.canvas_x + x, self.canvas_y + y)
+                            else:
+                                is_line = True
+                                pixels_in_line += 1
+                        else:
+                            if is_last_point_of_row:
+                                pyautogui.click(self.canvas_x + x, self.canvas_y + y)
+                            else:
+                                first_point = (self.canvas_x + x, self.canvas_y + y)
+                                is_prev_color = True
+                                pixels_in_line = 1
+                    else:
+                        if not prefer_lines: continue
+                        if is_prev_color:
+                            if is_line:
+                                is_line = False
+                        
+                                if is_last_point_of_row:
+                                    if pixels_in_line >= minimum_line_width:
+                                        self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
+                                    else:
+                                        for index in range(pixels_in_line):
+                                            pyautogui.click(first_point[0] + index, self.canvas_y + y)
+                                    continue
+    
+                                if pixels_in_line >= minimum_line_width:
+                                    #print(str((paint_area_x + (x-1)) - first_point[0]))
+                                    #print(str(first_point[0])+"\t"+str(paint_area_x + (x-1)))
+                                    self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
+                                else:
+                                    for index in range(pixels_in_line):
+                                        pyautogui.click(first_point[0] + index, self.canvas_y + y)
+                                    pyautogui.click(self.canvas_x + x, self.canvas_y + y)
+                                pixels_in_line = 0
+    
+                            else:
+                                pyautogui.click(self.canvas_x + (x-1), self.canvas_y + y)
+                            is_prev_color = False
+                        else:
+                            is_line = False
+                            pixels_in_line = 0
+    
+            if auto_update_canvas:
+                pyautogui.click(self.ctrl_update)
+    
+    
+    
+        listener.stop()
+    
+        if auto_update_canvas_completed:
+            pyautogui.click(self.ctrl_update)
+    
+        elapsed_time = int(time.time() - start_time)
+    
+        print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+    
+        pyautogui.hotkey("alt", "tab")
