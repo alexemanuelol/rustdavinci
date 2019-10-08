@@ -47,7 +47,7 @@ class Settings(QtWidgets.QDialog):
         self.ui.clearCoordinatesPushButton.clicked.connect(self.clear_control_coordinates_clicked)
 
         # Checkboxes
-        self.ui.autoFindControlAreaCheckBox.stateChanged.connect(self.enableApply)
+        self.ui.useSavedControlAreaCoordinatesCheckBox.stateChanged.connect(self.enableApply)
         self.ui.rememberControlAreaCoordinatesCheckBox.stateChanged.connect(self.enableApply)
         self.ui.skipDefaultColorCheckBox.stateChanged.connect(self.enableApply)
         self.ui.autoUpdateCanvasCheckBox.stateChanged.connect(self.enableApply)
@@ -84,7 +84,7 @@ class Settings(QtWidgets.QDialog):
     def loadSettings(self):
         """ Load the saved settings or the default settings. """
         # Checkboxes
-        self._settings_int_to_checkbox("auto_find_control_area", self.ui.autoFindControlAreaCheckBox, 0)
+        self._settings_int_to_checkbox("use_saved_control_area", self.ui.useSavedControlAreaCoordinatesCheckBox, 1)
         self._settings_int_to_checkbox("remember_control_area_coordinates", self.ui.rememberControlAreaCoordinatesCheckBox, 0)
         self._settings_int_to_checkbox("skip_default_background_color", self.ui.skipDefaultColorCheckBox, 1)
         self._settings_int_to_checkbox("auto_update_canvas", self.ui.autoUpdateCanvasCheckBox, 1)
@@ -139,7 +139,7 @@ class Settings(QtWidgets.QDialog):
     def saveSettings(self):
         """ Save settings. """
         # Comboboxes
-        self._settings_checkbox_to_int("auto_find_control_area", self.ui.autoFindControlAreaCheckBox.isChecked())
+        self._settings_checkbox_to_int("use_saved_control_area", self.ui.useSavedControlAreaCoordinatesCheckBox.isChecked())
         self._settings_checkbox_to_int("remember_control_area_coordinates", self.ui.rememberControlAreaCoordinatesCheckBox.isChecked())
         self._settings_checkbox_to_int("skip_default_background_color", self.ui.skipDefaultColorCheckBox.isChecked())
         self._settings_checkbox_to_int("auto_update_canvas", self.ui.autoUpdateCanvasCheckBox.isChecked())
@@ -170,7 +170,6 @@ class Settings(QtWidgets.QDialog):
 
         if int(self.settings.value("ctrl_w", "0")) == 0 or int(self.settings.value("ctrl_h", "0")) == 0:
             self.parent.ui.paintImagePushButton.setEnabled(False)
-            self.parent.action_paintImage.setEnabled(False)
 
 
     def _settings_checkbox_to_int(self, name, val):
@@ -182,7 +181,7 @@ class Settings(QtWidgets.QDialog):
     def default_clicked(self):
         """ Set everything to the default values. """
         # Checkboxes
-        self.ui.autoFindControlAreaCheckBox.setCheckState(QtCore.Qt.Unchecked)
+        self.ui.useSavedControlAreaCoordinatesCheckBox.setCheckState(QtCore.Qt.Unchecked)
         self.ui.rememberControlAreaCoordinatesCheckBox.setCheckState(QtCore.Qt.Unchecked)
         self.ui.skipDefaultColorCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.autoUpdateCanvasCheckBox.setCheckState(QtCore.Qt.Checked)

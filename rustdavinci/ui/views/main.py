@@ -27,9 +27,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Menu actions
         self.action_clearImage = None
-        self.action_locateControlArea = None
 
         self.connectAll()
+        self.rustDaVinci.update_status()
 
 
 
@@ -43,19 +43,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.loadImagePushButton.setMenu(loadMenu)
 
         identifyMenu = QtWidgets.QMenu()
-        identifyMenu.addAction("Canvas...", self.locateCanvasArea_clicked)
-        self.action_locateControlArea = identifyMenu.addAction("Painting Controls...", self.locateControlArea_clicked)
-        self.action_locateControlArea.setEnabled(True)
+        identifyMenu.addAction("Manually", self.locateControlAreaManually_clicked)
+        identifyMenu.addAction("Automatically", self.locateControlAreaAutomatically_clicked)
         self.ui.identifyAreasPushButton.setMenu(identifyMenu)
 
-        paintMenu = QtWidgets.QMenu()
-        self.action_paintImage = paintMenu.addAction("Paint Image", self.paintImage_clicked)
-        self.action_paintImage.setEnabled(False)
-        self.action_showPreview = paintMenu.addAction("Show Preview", self.showPreview_clicked)
-        self.action_showPreview.setEnabled(False)
-        self.ui.paintImagePushButton.setMenu(paintMenu)
-
+        self.ui.paintImagePushButton.clicked.connect(self.paintImage_clicked)
         self.ui.settingsPushButton.clicked.connect(self.settings_clicked)
+
+    def initial_setup(self):
+        None
 
 
     def loadImageFile_clicked(self):
@@ -72,17 +68,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rustDaVinci.clear_image()
         self.action_clearImage.setEnabled(False)
 
-    def locateCanvasArea_clicked(self):
-        self.rustDaVinci.locate_canvas_area()
+    def locateControlAreaManually_clicked(self):
+        self.rustDaVinci.locate_control_area_manually()
 
-    def locateControlArea_clicked(self):
-        self.rustDaVinci.locate_control_area()
+    def locateControlAreaAutomatically_clicked(self):
+        self.rustDaVinci.locate_control_area_automatically()
 
     def paintImage_clicked(self):
-        None
-
-    def showPreview_clicked(self):
-        None
+        self.rustDaVinci.start_painting()
 
     def settings_clicked(self):
         settings = Settings(self)

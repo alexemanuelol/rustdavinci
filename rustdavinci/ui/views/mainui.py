@@ -58,6 +58,11 @@ class Ui_MainUI(object):
         self.settingsPushButton.setIconSize(QtCore.QSize(220, 45))
         self.settingsPushButton.setFlat(True)
         self.settingsPushButton.setObjectName("settingsPushButton")
+        self.line = QtWidgets.QFrame(self.centralwidget)
+        self.line.setGeometry(QtCore.QRect(17, 220, 201, 16))
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
         MainUI.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainUI)
         self.statusbar.setObjectName("statusbar")
@@ -69,8 +74,8 @@ class Ui_MainUI(object):
     def retranslateUi(self, MainUI):
         _translate = QtCore.QCoreApplication.translate
         MainUI.setWindowTitle(_translate("MainUI", "RustDaVinci"))
-        self.loadImagePushButton.setText(_translate("MainUI", "               Load Image...             "))
-        self.identifyAreasPushButton.setText(_translate("MainUI", "               Capture Area..           "))
-        self.paintImagePushButton.setText(_translate("MainUI", "               Paint Image...            "))
-        self.settingsPushButton.setText(_translate("MainUI", "                 Settings                    "))
+        self.loadImagePushButton.setText(_translate("MainUI", "Load Image..."))
+        self.identifyAreasPushButton.setText(_translate("MainUI", "Capture Control Area..."))
+        self.paintImagePushButton.setText(_translate("MainUI", "Paint Image"))
+        self.settingsPushButton.setText(_translate("MainUI", "Settings"))
 import ui.resources.icons_rc

@@ -312,7 +312,7 @@
       <string>Control area y-coordinate:</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="autoFindControlAreaCheckBox">
+    <widget class="QCheckBox" name="useSavedControlAreaCoordinatesCheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -322,7 +322,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Automatically find the paint controls area coordinates (OpenCV)</string>
+      <string>Always use the saved paint controls area coordinates</string>
      </property>
      <property name="checked">
       <bool>false</bool>

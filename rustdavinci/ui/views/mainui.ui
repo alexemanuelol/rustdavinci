@@ -40,7 +40,7 @@
      <bool>false</bool>
     </property>
     <property name="text">
-     <string>               Load Image...             </string>
+     <string>Load Image...</string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -75,7 +75,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>               Capture Area..           </string>
+     <string>Capture Control Area...</string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -104,7 +104,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>               Paint Image...            </string>
+     <string>Paint Image</string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -130,7 +130,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>                 Settings                    </string>
+     <string>Settings</string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -144,6 +144,19 @@
     </property>
     <property name="flat">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>17</x>
+      <y>220</y>
+      <width>201</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
     </property>
    </widget>
   </widget>
