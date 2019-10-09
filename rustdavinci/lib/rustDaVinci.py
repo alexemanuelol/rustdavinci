@@ -547,9 +547,9 @@ class rustDaVinci():
         self.est_time_click = int((self.tot_pixels * one_click_time) + change_color_time + other_time)
 
 
-    def draw_line(point_A, point_B):
+    def draw_line(self, point_A, point_B):
         """ Draws a line between point_A and point_B. """
-        pyautogui.PAUSE = self.line_draw_delay
+        pyautogui.PAUSE = self.lines_draw_delay
         pyautogui.mouseDown(button="left", x=point_A[0], y=point_A[1])
         pyautogui.keyDown("shift")
         pyautogui.moveTo(point_B[0], point_B[1])
