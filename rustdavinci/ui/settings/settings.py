@@ -13,28 +13,26 @@ from ui.settings.settingsui import Ui_SettingsUI
 class Settings(QtWidgets.QDialog):
 
     def __init__(self, parent):
-        """ Init module """
+        """ Settings init module """
         QtWidgets.QDialog.__init__(self, parent)
-
+        
+        # Setup UI
         self.ui = Ui_SettingsUI()
         self.ui.setupUi(self)
-        self.parent = parent
-        self.settings = QtCore.QSettings()
-        self.setWindowFlags(
-                QtCore.Qt.Dialog |
-                QtCore.Qt.MSWindowsFixedSizeDialogHint |
-                QtCore.Qt.WindowSystemMenuHint |
-                QtCore.Qt.WindowTitleHint |
-                QtCore.Qt.WindowCloseButtonHint)
-
-        self.isSettingsChanged = False
         
+        # Setup parent object
+        self.parent = parent
+
+        # Setup Settings
+        self.settings = QtCore.QSettings()
+        self.isSettingsChanged = False
+
         # Uncomment line below if you want to clear the settings everytime you start an instance
         #self.settings.clear()
 
+        # Load settings and connect UI modules
         self.loadSettings()
         self.connectAll()
-
 
 
     def connectAll(self):
@@ -44,7 +42,7 @@ class Settings(QtWidgets.QDialog):
         self.ui.okPushButton.clicked.connect(self.ok_clicked)
         self.ui.cancelPushButton.clicked.connect(self.close)
         self.ui.applyPushButton.clicked.connect(self.apply_clicked)
-        self.ui.clearCoordinatesPushButton.clicked.connect(self.clear_control_coordinates_clicked)
+        self.ui.clearCoordinatesPushButton.clicked.connect(self.clear_ctrl_coords_clicked)
 
         # Checkboxes
         self.ui.useSavedControlAreaCoordinatesCheckBox.stateChanged.connect(self.enableApply)
@@ -75,6 +73,7 @@ class Settings(QtWidgets.QDialog):
         self.ui.lineDrawingDelayLineEdit.textChanged.connect(self.enableApply)
         self.ui.controlAreaDelayLineEdit.textChanged.connect(self.enableApply)
         self.ui.minimumLineWidthLineEdit.textChanged.connect(self.enableApply)
+
 
     def enableApply(self):
         """ When a settings is changed, enable the apply button. """
@@ -129,6 +128,7 @@ class Settings(QtWidgets.QDialog):
         minimum_line_width = self.settings.value("minimum_line_width", "10")
         self.ui.minimumLineWidthLineEdit.setText(minimum_line_width)
 
+
     def _settings_int_to_checkbox(self, name, checkBox, default):
         """ Settings integer values converted to checkbox """
         val = int(self.settings.value(name, default))
@@ -138,7 +138,7 @@ class Settings(QtWidgets.QDialog):
 
     def saveSettings(self):
         """ Save settings. """
-        # Comboboxes
+        # Checkboxes
         self._settings_checkbox_to_int("use_saved_control_area", self.ui.useSavedControlAreaCoordinatesCheckBox.isChecked())
         self._settings_checkbox_to_int("remember_control_area_coordinates", self.ui.rememberControlAreaCoordinatesCheckBox.isChecked())
         self._settings_checkbox_to_int("skip_default_background_color", self.ui.skipDefaultColorCheckBox.isChecked())
@@ -181,7 +181,7 @@ class Settings(QtWidgets.QDialog):
     def default_clicked(self):
         """ Set everything to the default values. """
         # Checkboxes
-        self.ui.useSavedControlAreaCoordinatesCheckBox.setCheckState(QtCore.Qt.Unchecked)
+        self.ui.useSavedControlAreaCoordinatesCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.rememberControlAreaCoordinatesCheckBox.setCheckState(QtCore.Qt.Unchecked)
         self.ui.skipDefaultColorCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.autoUpdateCanvasCheckBox.setCheckState(QtCore.Qt.Checked)
@@ -210,14 +210,17 @@ class Settings(QtWidgets.QDialog):
         self.ui.controlAreaDelayLineEdit.setText("100")
         self.ui.minimumLineWidthLineEdit.setText("10")
 
+
     def ok_clicked(self):
         """ Save and quit settings. """
         if self.isSettingsChanged: self.saveSettings()
         self.close()
 
+
     def cancel_clicked(self):
         """ quit settings. """
         self.close()
+
 
     def apply_clicked(self):
         """ Apply the settings. """
@@ -225,22 +228,10 @@ class Settings(QtWidgets.QDialog):
         self.isSettingsChanged = False
         self.ui.applyPushButton.setEnabled(False)
 
-    def clear_control_coordinates_clicked(self):
+
+    def clear_ctrl_coords_clicked(self):
         """ Clear the control area coordinates. """
         self.ui.controlAreaXLineEdit.setText("0")
         self.ui.controlAreaYLineEdit.setText("0")
         self.ui.controlAreaWidthLineEdit.setText("0")
         self.ui.controlAreaHeightLineEdit.setText("0")
-
-
-
-
-
-if __name__ == "__main__":
-    QtCore.QCoreApplication.setOrganizationName("RustDaVinci")
-    QtCore.QCoreApplication.setApplicationName("RustDaVinci")
-    app = QtWidgets.QApplication(sys.argv)
-    settings = Settings()
-    settings.setModal(True)
-    settings.show()
-    sys.exit(app.exec_())
