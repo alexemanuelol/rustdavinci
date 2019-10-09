@@ -684,7 +684,7 @@ class rustDaVinci():
                     if is_first_point_of_row and prefer_lines:
                         is_first_point_of_row = False
                         if pixel_arr[x, y] == color:
-                            first_point = (canvas_x + x, canvas_y + y)
+                            first_point = (self.canvas_x + x, self.canvas_y + y)
                             is_prev_color = True
                             pixels_in_line = 1
                         continue
