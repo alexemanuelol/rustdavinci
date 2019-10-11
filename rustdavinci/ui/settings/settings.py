@@ -167,8 +167,7 @@ class Settings(QtWidgets.QDialog):
         self.settings.setValue("ctrl_area_delay", self.ui.controlAreaDelayLineEdit.text())
         self.settings.setValue("minimum_line_width", self.ui.minimumLineWidthLineEdit.text())
 
-        if int(self.settings.value("ctrl_w", "0")) == 0 or int(self.settings.value("ctrl_h", "0")) == 0:
-            self.parent.ui.paintImagePushButton.setEnabled(False)
+        self.parent.rustDaVinci.update()
 
 
     def _settings_checkbox_to_int(self, name, val):

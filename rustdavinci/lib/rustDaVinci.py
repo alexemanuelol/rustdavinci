@@ -18,7 +18,7 @@ from lib.rustPaletteData import palette_80
 class rustDaVinci():
 
     def __init__(self, parent):
-
+        """ RustDaVinci module init """
         self.settings = QtCore.QSettings()
         self.parent = parent
 
@@ -29,13 +29,7 @@ class rustDaVinci():
         self.canvas_w = 0
         self.canvas_h = 0
 
-        self.ctrl_x = 0
-        self.ctrl_y = 0
-        self.ctrl_w = 0
-        self.ctrl_h = 0
-
         self.is_org_img_ok = False
-        self.is_quantized_img_ok = False
         self.is_ctrl_area_located = False
 
         self.ctrl_remove = 0
@@ -47,7 +41,6 @@ class rustDaVinci():
 
         self.original_img = None
         self.quantized_img = None
-        self.pixel_arr = None
 
         self.img_colors = []
         self.tot_pixels = 0
@@ -57,8 +50,8 @@ class rustDaVinci():
         self.est_time_lines = 0
         self.est_time_click = 0
 
-        self.mouse_click_delay = 0
-        self.lines_draw_delay = 0
+        self.click_delay = 0
+        self.line_delay = 0
         self.ctrl_area_delay = 0
 
         self.is_paused = False
@@ -66,48 +59,31 @@ class rustDaVinci():
         self.is_exit = False
 
 
-    def update_status(self):
+    def update(self):
         """"""
-        if self.settings.value("use_saved_control_area", "1") and not (self.settings.value("ctrl_w", "0") == 0 or self.settings.value("ctrl_h", "0") == 0) and (self.ctrl_w == 0 or self.ctrl_h == 0):
-            self.ctrl_x = int(self.settings.value("ctrl_x", "0"))
-            self.ctrl_y = int(self.settings.value("ctrl_y", "0"))
-            self.ctrl_w = int(self.settings.value("ctrl_w", "0"))
-            self.ctrl_h = int(self.settings.value("ctrl_h", "0"))
-            self.is_ctrl_area_located = True
-
-        self.mouse_click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
-        self.lines_draw_delay = float(int(self.settings.value("line_delay", "25"))/1000)
-
-        if self.is_org_img_ok and self.is_quantized_img_ok and self.is_ctrl_area_located:
-            self.parent.ui.paintImagePushButton.setEnabled(True)
-        else:
+        if self.settings.value("ctrl_w", "0") == 0 or self.settings.value("ctrl_h", "0") == 0:
             self.parent.ui.paintImagePushButton.setEnabled(False)
+        elif self.is_org_img_ok:
+            self.parent.ui.paintImagePushButton.setEnabled(True)
 
+        self.click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
+        self.line_delay = float(int(self.settings.value("line_delay", "25"))/1000)
 
 
     def load_image_from_file(self):
         """ Load image from a file """
         title = "Select the image to be painted"
         fileformats = "Images (*.png *.jpg *.jpeg *.gif *.bmp)"
-        path = QFileDialog.getOpenFileName(self.parent, title, QtCore.QDir.homePath(), fileformats)[0]
+        path = QFileDialog.getOpenFileName(self.parent, title, None, fileformats)[0]
 
-        if path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
-            self.original_img = Image.open(path)
-            self.check_image_compatibility(self.original_img)
-            self.is_org_img_ok = True
-        elif path == "":
-            self.original_img = None
-            self.is_org_img_ok = False
+        if path != "":
+            self.org_img = Image.open(path)
+            self.check_image()
         else:
-            self.original_img = None
-            self.is_org_img_ok = False
-            msg = QMessageBox(self.parent)
-            msg.setIcon(QMessageBox.Information)
-            msg.setText("Invalid image format...")
-            msg.setInformativeText("Valid formats: .png, .jpg, .jpeg, .gif, .bmp")
-            msg.exec_()
+            self.org_img = None
+            self.is_org_img_ok = False 
 
-        self.update_status()
+        self.update()
 
 
     def load_image_from_url(self):
@@ -139,35 +115,32 @@ class rustDaVinci():
         self.update_status()
 
 
-    def check_image_compatibility(self, image):
+    def check_image(self):
         """"""
-        image.load()
+        self.org_img.load()
 
-        if image.mode == "RGBA":
+        if self.org_img.mode == "RGBA":
             msg = QMessageBox(self.parent)
             msg.setIcon(QMessageBox.Warning)
-            msg.setText("Warning! This image was RGBA, converting to RGB...")
+            msg.setText("Warning! This image was RGBA...")
             msg.exec_()
+            self.is_org_img_ok = True
+            return
 
-            self.original_img = image.convert("RGB")
-        elif image.mode != "RGB" and image.mode != "L":
+        if self.org_img.mode != "RGB" and self.org_img.mode != "L":
             msg = QMessageBox(self.parent)
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Only RGB or L mode images can be quantized to a palette, please choose a different image...")
             msg.exec_()
-
-            self.original_img = None
             self.is_org_img_ok = False
-            return
+        self.is_org_img_ok = True
 
-        self.is_quantized_img_ok = True
-            
 
     def clear_image(self):
         """ Clear the image path """
         self.original_img = None
         self.is_org_img_ok = False
-        self.update_status()
+        self.update()
 
 
     def locate_canvas_area(self):
@@ -207,7 +180,7 @@ class rustDaVinci():
         self.canvas_w = canvas_area[2]
         self.canvas_h = canvas_area[3]
 
-        self.update_status()
+        self.update()
         return True
 
 
@@ -223,36 +196,24 @@ class rustDaVinci():
         self.parent.show()
 
         btn = QMessageBox.question(self.parent, None,
-                "Coordinates:\n" + 
-                "X =\t\t" + str(ctrl_area [0]) + "\n" +
-                "Y =\t\t" + str(ctrl_area [1]) + "\n" +
-                "Width =\t" + str(ctrl_area [2]) + "\n" +
-                "Height =\t" + str(ctrl_area [3]) + "\n\n" +
-                "Would you like to save the painting controls area coordinates?",
-                QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            "Coordinates:\n" + 
+            "X =\t\t" + str(ctrl_area [0]) + "\n" +
+            "Y =\t\t" + str(ctrl_area [1]) + "\n" +
+            "Width =\t" + str(ctrl_area [2]) + "\n" +
+            "Height =\t" + str(ctrl_area [3]) + "\n\n" +
+            "Would you like to update the painting controls area coordinates?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if btn == QMessageBox.Yes:
-            self.settings.setValue("use_saved_area_coordinates", 1)
             self.settings.setValue("ctrl_x", str(ctrl_area[0]))
             self.settings.setValue("ctrl_y", str(ctrl_area[1]))
             self.settings.setValue("ctrl_w", str(ctrl_area[2]))
             self.settings.setValue("ctrl_h", str(ctrl_area[3]))
-        else:
-            self.settings.setValue("use_saved_area_coordinates", 0)
 
-        self.ctrl_x = ctrl_area[0]
-        self.ctrl_y = ctrl_area[1]
-        self.ctrl_w = ctrl_area[2]
-        self.ctrl_h = ctrl_area[3]
-
-        self.is_ctrl_area_located = True
-
-        self.update_status()
+        self.update()
 
 
     def locate_control_area_automatically(self):
         """"""
-        use_saved_coords = bool(self.settings.value("use_saved_control_area", 1))
-
         self.parent.hide()
         ctrl_area = self.locate_control_area_opencv()
         self.parent.show()
@@ -264,30 +225,20 @@ class rustDaVinci():
             msg.exec_()
         else:
             btn = QMessageBox.question(self.parent, None,
-                    "Coordinates:\n" + 
-                    "X =\t\t" + str(ctrl_area [0]) + "\n" +
-                    "Y =\t\t" + str(ctrl_area [1]) + "\n" +
-                    "Width =\t" + str(ctrl_area [2]) + "\n" +
-                    "Height =\t" + str(ctrl_area [3]) + "\n\n" +
-                    "Would you like to save the painting controls area coordinates?",
-                    QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+                "Coordinates:\n" + 
+                "X =\t\t" + str(ctrl_area [0]) + "\n" +
+                "Y =\t\t" + str(ctrl_area [1]) + "\n" +
+                "Width =\t" + str(ctrl_area [2]) + "\n" +
+                "Height =\t" + str(ctrl_area [3]) + "\n\n" +
+                "Would you like to update the painting controls area coordinates?",
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if btn == QMessageBox.Yes:
-                self.settings.setValue("use_saved_area_coordinates", 1)
                 self.settings.setValue("ctrl_x", str(ctrl_area[0]))
                 self.settings.setValue("ctrl_y", str(ctrl_area[1]))
                 self.settings.setValue("ctrl_w", str(ctrl_area[2]))
                 self.settings.setValue("ctrl_h", str(ctrl_area[3]))
-            else:
-                self.settings.setValue("use_saved_area_coordinates", 0)
-
-            self.ctrl_x = ctrl_area[0]
-            self.ctrl_y = ctrl_area[1]
-            self.ctrl_w = ctrl_area[2]
-            self.ctrl_h = ctrl_area[3]
-
-            self.is_ctrl_area_located = True
             
-            self.update_status()
+            self.update()
 
 
     def locate_control_area_opencv(self):
@@ -339,45 +290,50 @@ class rustDaVinci():
                     self.ctrl_opacity
                     self.ctrl_color
         """
+        ctrl_x = int(self.settings.value("ctrl_x", "0"))
+        ctrl_y = int(self.settings.value("ctrl_h", "0"))
+        ctrl_w = int(self.settings.value("ctrl_w", "0"))
+        ctrl_h = int(self.settings.value("ctrl_h", "0"))
+
         # Calculate the distance between two items on a row of six items (Size)
-        first_x_coord_of_six_v1 = self.ctrl_x + (self.ctrl_w/6.5454)
-        second_x_coord_of_six_v1 = self.ctrl_x + (self.ctrl_w/3.4285)
+        first_x_coord_of_six_v1 = ctrl_x + (ctrl_w/6.5454)
+        second_x_coord_of_six_v1 = ctrl_x + (ctrl_w/3.4285)
         dist_btwn_x_coords_of_six_v1 = second_x_coord_of_six_v1 - first_x_coord_of_six_v1
     
         # Calculate the distance between two items on a row of six items (Opacity)
-        first_x_coord_of_six_v2 = self.ctrl_x + (self.ctrl_w/7.5789)
-        second_x_coord_of_six_v2 = self.ctrl_x + (self.ctrl_w/3.5555)
+        first_x_coord_of_six_v2 = ctrl_x + (ctrl_w/7.5789)
+        second_x_coord_of_six_v2 = ctrl_x + (ctrl_w/3.5555)
         dist_btwn_x_coords_of_six_v2 = second_x_coord_of_six_v2 - first_x_coord_of_six_v2
     
         # Calculate the distance between two items on a row of four items (Colors width)
-        first_x_coord_of_four = self.ctrl_x + (self.ctrl_w/6)
-        second_x_coord_of_four = self.ctrl_x + (self.ctrl_w/2.5714)
+        first_x_coord_of_four = ctrl_x + (ctrl_w/6)
+        second_x_coord_of_four = ctrl_x + (ctrl_w/2.5714)
         dist_btwn_x_coords_of_four = second_x_coord_of_four - first_x_coord_of_four
     
         # Calculate the distance between two items on a column of eight items (Colors height)
-        first_y_coord_of_eight = self.ctrl_y + (self.ctrl_h/2.3220)
-        second_y_coord_of_eight = self.ctrl_y + (self.ctrl_h/1.9855)
+        first_y_coord_of_eight = ctrl_y + (ctrl_h/2.3220)
+        second_y_coord_of_eight = ctrl_y + (ctrl_h/1.9855)
         dist_btwn_y_coords_of_eight = second_y_coord_of_eight - first_y_coord_of_eight
     
         # Set the point location of the remove & update buttons
-        self.ctrl_remove = ((self.ctrl_x + (self.ctrl_w/2.7692)), (self.ctrl_y + (self.ctrl_h/19.5714)))
-        self.ctrl_update = ((self.ctrl_x + (self.ctrl_w/1.5652)), (self.ctrl_y + (self.ctrl_h/19.5714)))
+        self.ctrl_remove = ((ctrl_x + (ctrl_w/2.7692)), (ctrl_y + (ctrl_h/19.5714)))
+        self.ctrl_update = ((ctrl_x + (ctrl_w/1.5652)), (ctrl_y + (ctrl_h/19.5714)))
     
     
         for size in range(6):
             self.ctrl_size.append((  first_x_coord_of_six_v1 + 
                                      (size * dist_btwn_x_coords_of_six_v1), 
-                                     (self.ctrl_y + (self.ctrl_h/6.9661))))
+                                     (ctrl_y + (ctrl_h/6.9661))))
     
         for brush in range(4):
             self.ctrl_brush.append(( first_x_coord_of_four + 
                                      (brush * dist_btwn_x_coords_of_four), 
-                                     (self.ctrl_y + (self.ctrl_h/4.2371))))
+                                     (ctrl_y + (ctrl_h/4.2371))))
     
         for opacity in range(6):
             self.ctrl_opacity.append((   first_x_coord_of_six_v2 + 
                                          (opacity * dist_btwn_x_coords_of_six_v2), 
-                                         (self.ctrl_y + (self.ctrl_h/3.0332))))
+                                         (ctrl_y + (ctrl_h/3.0332))))
     
         for row in range(8):
             for column in range(4):
@@ -400,8 +356,8 @@ class rustDaVinci():
                     y_correction
         Returns:    False, if the image type is invalid.
         """
-        org_img_w = self.original_img.size[0]
-        org_img_h = self.original_img.size[1]
+        org_img_w = self.org_img.size[0]
+        org_img_h = self.org_img.size[1]
             
         wpercent = (self.canvas_w / float(org_img_w))
         hpercent = (self.canvas_h / float(org_img_h))
@@ -413,23 +369,28 @@ class rustDaVinci():
         y_correction = 0
     
         if hsize <= self.canvas_h: 
-            resized_img = self.original_img.resize((self.canvas_w, hsize), Image.ANTIALIAS)
+            resized_img = self.org_img.resize((self.canvas_w, hsize), Image.ANTIALIAS)
             y_correction = int((self.canvas_h - hsize)/2)
         elif wsize <= self.canvas_w: 
-            resized_img = self.original_img.resize((wsize, self.canvas_h), Image.ANTIALIAS)
+            resized_img = self.org_img.resize((wsize, self.canvas_h), Image.ANTIALIAS)
             x_correction = int((self.canvas_w - wsize)/2)
         else: 
-            resized_img = self.original_img.resize((self.canvas_w, self.canvas_h), Image.ANTIALIAS)
+            resized_img = self.org_img.resize((self.canvas_w, self.canvas_h), Image.ANTIALIAS)
     
         self.quantized_img = self.quantize_to_palette(resized_img)
-        #if self.quantized_img == False:
-        #    self.quantized_img = None
-        #    return False
+        if self.quantized_img == False:
+            self.org_img = None
+            self.quantized_img = None
+            self.is_org_img_ok = False
+            return False
+
+        self.quantized_img.show(title="Preview")
             
         self.canvas_x += x_correction
         self.canvas_y += y_correction
         self.canvas_w = self.quantized_img.size[0]
         self.canvas_h = self.quantized_img.size[1]
+        return True
 
 
     def quantize_to_palette(self, image):
@@ -437,17 +398,35 @@ class rustDaVinci():
         Returns:    The quantized image
         """
         # Select the palette to be used
-        palette = Image.new("P", (1, 1))
-        palette.putpalette(palette_80)
-        palette.load()
+        palette_data = Image.new("P", (1, 1))
+        palette_data.putpalette(palette_80)
 
-        image.load()
-    
+        palette_data.load()
+        self.org_img = image
+        self.org_img.load()
+
+        if self.org_img.mode == "RGBA":
+            msg = QMessageBox(self.parent)
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Warning! This image was RGBA, converting to RGB...")
+            msg.exec_()
+            self.is_org_img_ok = True
+            self.org_img = image.convert("RGB")
+
+        if self.org_img.mode != "RGB" and self.org_img.mode != "L":
+            msg = QMessageBox(self.parent)
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Only RGB or L mode images can be quantized to a palette, please choose a different image...")
+            msg.exec_()
+            self.is_org_img_ok = False
+            self.org_img = None
+            return False
+
         quality = int(self.settings.value("painting_quality", 1))
         if quality == 0:
-            im = image.im.convert("P", 0, palette.im)
+            im = image.im.convert("P", 0, palette_data.im)
         elif quality == 1:
-            im = image.im.convert("P", 1, palette.im) # Dithering
+            im = image.im.convert("P", 1, palette_data.im) # Dithering
     
         try: return image._new(im)
         except AttributeError: return image._makeself(im)
@@ -476,7 +455,7 @@ class rustDaVinci():
                 self.img_colors.append(color[1])
     
         for color in self.img_colors:
-            #if color in colors_to_skip: continue
+            if color in colors_to_skip: continue
     
             is_first_point_of_row = True
             is_last_point_of_row = False
@@ -539,23 +518,27 @@ class rustDaVinci():
         Updates:    Estimated time for clicking and lines
                     Estimated time for only clicking
         """
-        one_line_time = float(int(self.settings.value("line_delay", "25"))/1000) * 5
-        one_click_time = float(int(self.settings.value("click_delay", "5"))/1000) + 0.001
-        change_color_time = len(self.img_colors) * (float(int(self.settings.value("ctrl_area_delay", "100"))/1000) + (2 * float(int(self.settings.value("click_delay", "5"))/1000)))
-        other_time = 0.5 + (3 * float(int(self.settings.value("click_delay", "5"))/1000))
+        self.click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
+        self.line_delay = float(int(self.settings.value("line_delay", "25"))/1000)
+        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", "100"))/1000) 
+
+        one_line_time = self.line_delay * 5
+        one_click_time = self.click_delay + 0.001
+        change_color_time = len(self.img_colors) * (self.ctrl_area_delay + (2 * self.click_delay))
+        other_time = 0.5 + (3 * self.click_delay)
         self.est_time_lines = int((self.pixels * one_click_time) + (self.lines * one_line_time) + change_color_time + other_time)
         self.est_time_click = int((self.tot_pixels * one_click_time) + change_color_time + other_time)
 
 
     def draw_line(self, point_A, point_B):
         """ Draws a line between point_A and point_B. """
-        pyautogui.PAUSE = self.lines_draw_delay
+        pyautogui.PAUSE = self.line_delay
         pyautogui.mouseDown(button="left", x=point_A[0], y=point_A[1])
         pyautogui.keyDown("shift")
         pyautogui.moveTo(point_B[0], point_B[1])
         pyautogui.keyUp("shift")
         pyautogui.mouseUp(button="left")
-        pyautogui.PAUSE = self.mouse_click_delay
+        pyautogui.PAUSE = self.click_delay
 
 
     def key_event(self,key):
@@ -575,12 +558,30 @@ class rustDaVinci():
 
     def start_painting(self):
         """ Start the painting """
+        ctrl_x = int(self.settings.value("ctrl_x", "0"))
+        ctrl_y = int(self.settings.value("ctrl_h", "0"))
+        ctrl_w = int(self.settings.value("ctrl_w", "0"))
+        ctrl_h = int(self.settings.value("ctrl_h", "0"))
+
+        self.click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
+        self.line_delay = float(int(self.settings.value("line_delay", "25"))/1000)
+        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", "100"))/1000) 
+
+        colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
+        minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
+        auto_update_canvas = self.settings.value("auto_update_canvas", 1)
+        auto_update_canvas_completed = self.settings.value("auto_update_canvas_completed", 1)
+
+
         if not self.locate_canvas_area(): return
-        self.convert_img()
+        if not self.convert_img(): return
         self.calc_ctrl_tools_pos()
         self.calc_statistics()
         self.calc_est_time()
 
+        self.is_paused = False
+        self.is_skip_color = False
+        self.is_exit = False
 
         question = "Dimensions: \t\t\t\t" + str(self.canvas_w) + " x " + str(self.canvas_h)
         question += "\nNumber of colors:\t\t\t" + str(len(self.img_colors))
@@ -597,7 +598,7 @@ class rustDaVinci():
             print("EXITING THE PAINT!")
             return
 
-        pyautogui.PAUSE = self.mouse_click_delay
+        pyautogui.PAUSE = self.click_delay
 
         prefer_lines = False
         if self.est_time_lines < self.est_time_click:
@@ -618,15 +619,6 @@ class rustDaVinci():
         listener.start()
 
         pixel_arr = self.quantized_img.load()
-
-        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", "100"))/1000)
-        self.mouse_click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
-        self.lines_draw_delay = float(int(self.settings.value("line_delay", "25"))/1000)
-
-        colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
-        minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
-        auto_update_canvas = self.settings.value("auto_update_canvas", 1)
-        auto_update_canvas_completed = self.settings.value("auto_update_canvas_completed", 1)
 
         pyautogui.click(self.ctrl_size[0]) # To set focus on the rust window
         time.sleep(.5)
@@ -754,4 +746,4 @@ class rustDaVinci():
     
         print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
     
-        pyautogui.hotkey("alt", "tab")
+        #pyautogui.hotkey("alt", "tab")

@@ -5,7 +5,6 @@ import sys
 
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog
 
 from ui.views.main import MainWindow
 

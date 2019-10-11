@@ -36,7 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.connectAll()
 
         # Update the rustDaVinci module
-        self.rustDaVinci.update_status()
+        self.rustDaVinci.update()
 
 
     def connectAll(self):
