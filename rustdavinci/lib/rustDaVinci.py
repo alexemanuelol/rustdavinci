@@ -2,15 +2,20 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QFileDialog, QInputDialog, QLineEdit, QMessageBox
+from PyQt5 import QtGui
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QFileDialog, QInputDialog, QLineEdit, QMessageBox, QApplication, QLabel
 from PIL import Image
 from pynput import keyboard
+from io import BytesIO
 
 import pyautogui
 import cv2
 import numpy
 import time
 import datetime
+import os
+import urllib.request
 
 from lib.captureArea import capture_area
 from lib.rustPaletteData import palette_80
@@ -27,6 +32,15 @@ class rustDaVinci():
         self.org_img = None
         self.quantized_img = None
 
+        # Start painting booleans
+        self.is_org_img_ok = False
+
+        # Pixmaps
+        self.pixmap_on_display = 0
+        self.org_img_pixmap = None
+        self.quantized_img_pixmap_normal = None
+        self.quantized_img_pixmap_high = None
+
         # Painting control tools
         self.ctrl_remove = 0
         self.ctrl_update = 0
@@ -40,9 +54,6 @@ class rustDaVinci():
         self.canvas_y = 0
         self.canvas_w = 0
         self.canvas_h = 0
-
-        # Start painting booleans
-        self.is_org_img_ok = False
 
         # Statistics
         self.img_colors = []
@@ -64,6 +75,9 @@ class rustDaVinci():
         self.is_skip_color = False
         self.is_exit = False
 
+        # Hotkey display QLabel
+        self.hotkey_label = None
+
 
     def update(self):
         """"""
@@ -75,9 +89,9 @@ class rustDaVinci():
         # Update the pyautogui delay
         pyautogui.PAUSE = self.click_delay
 
-        if self.settings.value("ctrl_w", "0") == 0 or self.settings.value("ctrl_h", "0") == 0:
+        if int(self.settings.value("ctrl_w", "0")) == 0 or int(self.settings.value("ctrl_h", "0")) == 0:
             self.parent.ui.paintImagePushButton.setEnabled(False)
-        elif self.is_org_img_ok:
+        elif self.is_org_img_ok and int(self.settings.value("ctrl_w", "0")) != 0 and int(self.settings.value("ctrl_h", "0")) != 0:
             self.parent.ui.paintImagePushButton.setEnabled(True)
 
 
@@ -87,18 +101,32 @@ class rustDaVinci():
         fileformats = "Images (*.png *.jpg *.jpeg *.gif *.bmp)"
         path = QFileDialog.getOpenFileName(self.parent, title, None, fileformats)[0]
 
-        if path != "":
+        if path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
+            # The original PIL.Image object
             self.org_img = Image.open(path)
+
+            # Pixmap for original image
+            self.org_img_pixmap = QPixmap(path)
+
+            # Pixmap for quantized image of quality normal
+            temp_normal = self.quantize_to_palette(self.org_img, True, 0)
+            temp_normal.save("temp_normal.png")
+            self.quantized_img_pixmap_normal = QPixmap("temp_normal.png")
+            os.remove("temp_normal.png")
+
+            # Pixmap for quantized image of quality high
+            temp_high = self.quantize_to_palette(self.org_img, True, 1)
+            temp_high.save("temp_high.png")
+            self.quantized_img_pixmap_high = QPixmap("temp_high.png")
+            os.remove("temp_high.png")
+
+            self.pixmap_on_display = 0
             self.is_org_img_ok = True
-        else:
-            self.org_img = None
-            self.is_org_img_ok = False 
 
         self.update()
 
 
     def load_image_from_url(self):
-        # TODO
         """ Load image from url """
         dialog = QInputDialog(self.parent)
         dialog.setInputMode(QInputDialog.TextInput)
@@ -108,14 +136,34 @@ class rustDaVinci():
         url = dialog.textValue()
 
         if ok_clicked and url != "":
-            if url.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
-                self.image_path = url
+
+            #if url.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
+            if True:
+                # The original PIL.Image object
+                self.org_img = Image.open(urllib.request.urlopen(url))
+
+                # Pixmap for original image
+                urllib.request.urlretrieve(url, "temp_url_image.png")
+                self.org_img_pixmap = QPixmap("temp_url_image.png", "1")
+                os.remove("temp_url_image.png")
+
+                # Pixmap for quantized image of quality normal
+                temp_normal = self.quantize_to_palette(self.org_img, True, 0)
+                temp_normal.save("temp_normal.png")
+                self.quantized_img_pixmap_normal = QPixmap("temp_normal.png")
+                os.remove("temp_normal.png")
+
+                # Pixmap for quantized image of quality high
+                temp_high = self.quantize_to_palette(self.org_img, True, 1)
+                temp_high.save("temp_high.png")
+                self.quantized_img_pixmap_high = QPixmap("temp_high.png")
+                os.remove("temp_high.png")
+
+                self.pixmap_on_display = 0
                 self.is_org_img_ok = True
-            elif path == "":
-                self.original_img = None
-                self.is_org_img_ok = False
-            else:
-                self.original_img = None
+
+            elif url != "":
+                self.org_img = None
                 self.is_org_img_ok = False
                 msg = QMessageBox(self.parent)
                 msg.setIcon(QMessageBox.Information)
@@ -123,12 +171,13 @@ class rustDaVinci():
                 msg.setInformativeText("Valid formats: .png, .jpg, .jpeg, .gif, .bmp")
                 msg.exec_()
 
-        self.update_status()
+        self.update()
 
 
     def clear_image(self):
         """ Clear the image path """
-        self.original_img = None
+        self.org_img = None
+        self.org_img_path = None
         self.is_org_img_ok = False
         self.update()
 
@@ -152,7 +201,7 @@ class rustDaVinci():
         if canvas_area[2] == 0 or canvas_area[3] == 0:
             msg = QMessageBox(self.parent)
             msg.setIcon(QMessageBox.Critical)
-            msg.setText("Invalid coordinates and ratio, please try again...")
+            msg.setText("Invalid coordinates and ratio. Drag & drop the top left corner of the canvas to the bottom right corner.")
             msg.exec_()
             return False
 
@@ -373,8 +422,6 @@ class rustDaVinci():
             self.is_org_img_ok = False
             return False
 
-        self.quantized_img.show(title="Preview")
-            
         self.canvas_x += x_correction
         self.canvas_y += y_correction
         self.canvas_w = self.quantized_img.size[0]
@@ -382,7 +429,7 @@ class rustDaVinci():
         return True
 
 
-    def quantize_to_palette(self, image):
+    def quantize_to_palette(self, image, pixmap = False, pixmap_q = 0):
         """ Convert an RGB, RGBA or L mode image to use a given P image's palette.
         Returns:    The quantized image
         """
@@ -397,11 +444,14 @@ class rustDaVinci():
         if self.org_img.mode == "RGBA":
             self.org_img = image.convert("RGB")
 
-        quality = int(self.settings.value("painting_quality", 1))
-        if quality == 0:
-            im = image.im.convert("P", 0, palette_data.im)
-        elif quality == 1:
-            im = image.im.convert("P", 1, palette_data.im) # Dithering
+        if not pixmap:
+            quality = int(self.settings.value("painting_quality", 1))
+            if quality == 0:
+                im = image.im.convert("P", 0, palette_data.im)
+            elif quality == 1:
+                im = image.im.convert("P", 1, palette_data.im) # Dithering
+        else:
+            im = image.im.convert("P", pixmap_q, palette_data.im)
     
         try: return image._new(im)
         except AttributeError: return image._makeself(im)
@@ -535,14 +585,11 @@ class rustDaVinci():
         pyautogui.PAUSE = self.click_delay
 
 
-    def key_event(self,key):
+    def key_event(self, key):
         """ Key-press handler. """
         if key == keyboard.Key.f10:     # PAUSE
             self.is_paused = not self.is_paused
-            if self.is_paused:
-                print("PAUSED\t\tF10 = Continue, F11 = Skip color, ESC = Exit")
         elif key == keyboard.Key.f11:   # SKIP CURRENT COLOR
-            print("Skipping current color...")
             self.is_paused = False
             self.is_skip_color = True
         elif key == keyboard.Key.esc:   # EXIT 
@@ -562,17 +609,22 @@ class rustDaVinci():
         if bool(self.settings.value("skip_default_background_color", "1")):
             colors_to_skip.append(self.settings.value("default_background_color", "16"))
         minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
-        auto_update_canvas = self.settings.value("auto_update_canvas", 1)
-        auto_update_canvas_completed = self.settings.value("auto_update_canvas_completed", 1)
+        auto_update_canvas = bool(self.settings.value("auto_update_canvas", 1))
+        auto_update_canvas_completed = bool(self.settings.value("auto_update_canvas_completed", 1))
 
         # Boolean reset
         self.is_paused = False
         self.is_skip_color = False
         self.is_exit = False
-
+        
         # Locate canvas, convert image, calculate tools positioning, statistics and estimated time
         if not self.locate_canvas_area(): return
         if not self.convert_img(): return
+
+        self.parent.ui.logTextEdit.clear()
+        self.parent.ui.logTextEdit.append("Calculating statistics...")
+        QApplication.processEvents()
+
         self.calc_ctrl_tools_pos()
         self.calc_statistics()
         self.calc_est_time()
@@ -589,8 +641,9 @@ class rustDaVinci():
             return
 
 
-        print("Est. time finished:\t\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")) + "\n")
-        print("F10 = Continue, F11 = Skip color, ESC = Exit\n")
+        self.parent.ui.logTextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
+        self.parent.ui.logTextEdit.append("F10 = Pause\nF11 = Skip color\nESC = Exit")
+        QApplication.processEvents()
 
         start_time = time.time()
 
@@ -598,9 +651,13 @@ class rustDaVinci():
         listener = keyboard.Listener(on_press=self.key_event)
         listener.start()
 
-        pixel_arr = self.quantized_img.load()
+        self.hotkey_label = QLabel(self.parent)
+        self.hotkey_label.setGeometry(QtCore.QRect(10, 425, 221, 21))
+        self.hotkey_label.setText("F10 = Pause        F11 = Skip        ESC = Abort")
+        self.hotkey_label.show()
 
-        print(self.ctrl_size[0])
+
+        pixel_arr = self.quantized_img.load()
 
         self.click_pixel(self.ctrl_size[0]) # To set focus on the rust window
         time.sleep(.5)
@@ -611,7 +668,8 @@ class rustDaVinci():
         color_counter = 0
         for color in self.img_colors:
             self.is_skip_color = False
-            print("(" + str((color_counter+1)) + "/" + str((len(self.img_colors))) + ") Current color: " + str(color))
+            self.parent.ui.logTextEdit.append("(" + str((color_counter+1)) + "/" + str((len(self.img_colors))) + ") Current color: " + str(color))
+            QApplication.processEvents()
             color_counter += 1
 
             if color in colors_to_skip: continue
@@ -649,8 +707,10 @@ class rustDaVinci():
                     if self.is_exit:
                         listener.stop()
                         elapsed_time = int(time.time() - start_time)
-                        print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
-                        print("\nExiting...")
+                        self.parent.ui.logTextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+                        self.parent.ui.logTextEdit.append("Aborted...")
+                        QApplication.processEvents()
+                        self.hotkey_label.hide()
                         return
 
                     if x == (self.canvas_w - 1):
@@ -722,4 +782,7 @@ class rustDaVinci():
         listener.stop()
 
         elapsed_time = int(time.time() - start_time)
-        print("\nElapsed time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+
+        self.parent.ui.logTextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+        QApplication.processEvents()
+        self.hotkey_label.hide()
