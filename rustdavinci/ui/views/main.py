@@ -96,9 +96,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """ Clear the current image """
         self.rustDaVinci.clear_image()
         self.action_clearImage.setEnabled(False)
+        self.ui.showImagePushButton.setEnabled(False)
+        self.ui.paintImagePushButton.setEnabled(False)
         self.is_expanded = True
         self.showImage_clicked()
-        self.ui.showImagePushButton.setEnabled(False)
 
 
     def locateControlAreaManually_clicked(self):
@@ -130,10 +131,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setMinimumSize(QtCore.QSize(240, 450))
             self.setMaximumSize(QtCore.QSize(240, 450))
             self.resize(240, 450)
-            self.label.hide()
-            self.showOriginalPushButton.hide()
-            self.showNormalPushButton.hide()
-            self.showHighPushButton.hide()
+            if self.label != None:
+                self.label.hide()
+                self.showOriginalPushButton.hide()
+                self.showNormalPushButton.hide()
+                self.showHighPushButton.hide()
         else:
             self.expand_window()
 

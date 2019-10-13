@@ -647,7 +647,6 @@ class rustDaVinci():
 
 
         self.parent.ui.logTextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
-        self.parent.ui.logTextEdit.append("F10 = Pause\nF11 = Skip color\nESC = Exit")
         QApplication.processEvents()
 
         start_time = time.time()
