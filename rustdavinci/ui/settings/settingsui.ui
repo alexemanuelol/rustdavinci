@@ -122,7 +122,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>120</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -135,7 +135,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>140</y>
+       <y>100</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -148,7 +148,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>180</y>
+       <y>140</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -161,7 +161,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>140</y>
+       <y>100</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -174,7 +174,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>200</y>
+       <y>160</y>
        <width>101</width>
        <height>23</height>
       </rect>
@@ -193,7 +193,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>180</y>
+       <y>140</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -206,7 +206,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>160</y>
+       <y>120</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -219,7 +219,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>80</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -232,7 +232,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>160</y>
+       <y>120</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -245,7 +245,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>120</y>
+       <y>80</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -254,30 +254,11 @@
       <string>(in pixels)</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="rememberControlAreaCoordinatesCheckBox">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>100</y>
-       <width>341</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Always remember the paint controls area coordinates</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="controlAreaXLineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>120</y>
+       <y>80</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -290,7 +271,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>180</y>
+       <y>140</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -303,29 +284,13 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>140</y>
+       <y>100</y>
        <width>161</width>
        <height>20</height>
       </rect>
      </property>
      <property name="text">
       <string>Control area y-coordinate:</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="useSavedControlAreaCoordinatesCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>80</y>
-       <width>331</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Always use the saved paint controls area coordinates</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
      </property>
     </widget>
    </widget>

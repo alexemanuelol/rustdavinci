@@ -554,7 +554,12 @@ class rustDaVinci():
         est_time_lines = int((self.pixels * one_click_time) + (self.lines * one_line_time) + change_color_time + other_time)
         est_time_click = int((self.tot_pixels * one_click_time) + change_color_time + other_time)
 
-        if est_time_lines < est_time_click:
+        draw_lines = bool(self.settings.value("draw_lines", "1"))
+
+        if not draw_lines:
+            self.prefer_lines = False
+            self.estimated_time = est_time_click
+        elif est_time_lines < est_time_click:
             self.prefer_lines = True
             self.estimated_time = est_time_lines
         else:
