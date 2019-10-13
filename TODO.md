@@ -1,26 +1,23 @@
 # TODO
 
-- Test different settings for paintings (click_delay, line_delay etc...)
-- Check accuracy for the estimation of time
-- Get Facepunch and EAC to recognize this application and what it is capable of doing.
-- Fix all the spaghetti code
-- Optimize rustDaVinci class functions and investigate the proper way to handle variables inside classes, should I use global class variables or local variables in the function?
-- Extend the GUI to show the Image preview and original. Perhaps right click to switch between them.
-- Investigate the exact settings needed and appropriate
-
-## New features
-
-- Create a howto guide
-- Set the window topmost (as an overlay to Rust) then remove topmost when paint is done
-- Perhaps hide window when painting. Or show progress.
-- Add more FAQ
+- Test different settings for paintings (click_delay, line_delay etc...). See what settings is the most optimal.
+- Check accuracy for the estimation of time.
+- Get Facepunch and EAC to recognize this application and what it is capable of doing. Contact them.
+- Create a howto/ tutorial guide.
+- Investigate how the application work together with the rust application. Will Rust minimize when switched to rustdavinci? Make it possible to set rustdavinci on top while painting? etc...
+- Fix the progress bar. Perhaps check the amount of painted pixels and from that decide what to show on the progress bar?
+- Add more to FAQ
 - Play around with the hidden colors (Needs to be SUPER accurate for it to work)
-- Make the palette implementation more smart. So it does not depend on the position of the colors.
-- Investigate in Nuitka for avoiding decomplie the executable. (Is it really necessary?)
+- Make the palette implementation more smart. So it does not depend on the position of the colors. Maybe have a list of all the different colors, include the hidden colors and depending on the settings only a certain modulus of colors will be used.
+- Create build script to make it easy to create windows executable.
+- Investigate what is the best way to create a windows executable.
+- Make it possible to exit area capturing mode by clicking any key or perhaps ESC?
+- Investigate how to handle setting the pause, skip and exit button. As of now, the values are hardcoded (F10, F11, ESC)
+- Change the way to append colors to skip. Perhaps show the actual colors from the palette?
+- Set functionality to the setting "Improce paintings by utilizing different brush opacities.
+- Fix the settings about tab, add more information to it.
+- Check what more settings would be appropriate.
+- Investigate what is the most important things to show in the textedit window.
 
 
-## Optimization
-
-## Test
-
-## Known errors
+# Known errors
