@@ -13,9 +13,9 @@ Follow [this guide](https://www.rustafied.com/how-to-host-your-own-rust-server) 
 
 ## Pull Request Process
 
-1. Test it! Ensure that your feature does not break the rest of the code.
+1. Test it! Ensure that your fix does not break the rest of the code.
 2. Update the [TODO list](TODO.md) and possibly the [README file](README.md) with necessary information about the changes you've made. Things such as Changes to the interface, new modules used should update the setup.py and requirements.txt, new files etc...
-3. When you are satisfied with the change go ahead and create a Pull Request.
+3. When you are satisfied with the fix go ahead rebase & squash your commits and create a Pull Request.
 4. Once the Pull Request has been reviewed and accepted, I will merge it into the master branch.
 
 ## Code of Conduct
