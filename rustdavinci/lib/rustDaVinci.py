@@ -329,7 +329,7 @@ class rustDaVinci():
                     self.ctrl_color
         """
         ctrl_x = int(self.settings.value("ctrl_x", "0"))
-        ctrl_y = int(self.settings.value("ctrl_h", "0"))
+        ctrl_y = int(self.settings.value("ctrl_y", "0"))
         ctrl_w = int(self.settings.value("ctrl_w", "0"))
         ctrl_h = int(self.settings.value("ctrl_h", "0"))
 
