@@ -18,7 +18,7 @@ import os
 import urllib.request
 
 from lib.captureArea import capture_area
-from lib.rustPaletteData import palette_80, complete_palette
+from lib.rustPaletteData import rust_palette
 
 
 class rustDaVinci():
@@ -482,7 +482,7 @@ class rustDaVinci():
         palette_data = Image.new("P", (1, 1))
 
         palette = ()
-        for data in complete_palette:
+        for data in rust_palette:
             palette = palette + data
 
         #palette_data.putpalette(palette_80)
