@@ -519,6 +519,7 @@ class rustDaVinci():
         colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
         if bool(self.settings.value("skip_default_background_color", "1")):
             colors_to_skip.append(self.settings.value("default_background_color", "16"))
+        colors_to_skip = list(map(int, colors_to_skip))
 
         self.img_colors = []
         self.tot_pixels = 0
@@ -532,7 +533,7 @@ class rustDaVinci():
             if color[1] not in colors_to_skip:
                 self.tot_pixels += color[0]
                 self.img_colors.append(color[1])
-    
+
         for color in self.img_colors:
             if color in colors_to_skip: continue
     
@@ -664,6 +665,7 @@ class rustDaVinci():
         colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
         if bool(self.settings.value("skip_default_background_color", "1")):
             colors_to_skip.append(self.settings.value("default_background_color", "16"))
+        colors_to_skip = list(map(int, colors_to_skip))
         minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
         auto_update_canvas = bool(self.settings.value("auto_update_canvas", 1))
         auto_update_canvas_completed = bool(self.settings.value("auto_update_canvas_completed", 1))
@@ -744,7 +746,7 @@ class rustDaVinci():
             is_line = False
             pixels_in_line = 0
 
-            self.click_pixel(self.ctrl_color[color%20])
+            self.click_pixel(self.ctrl_color[color%64])
             time.sleep(self.ctrl_area_delay)
 
             for y in range(self.canvas_h):
