@@ -481,11 +481,33 @@ class rustDaVinci():
         # Select the palette to be used
         palette_data = Image.new("P", (1, 1))
 
-        palette = ()
-        for data in rust_palette:
-            palette = palette + data
 
-        #palette_data.putpalette(palette_80)
+        palette = ()
+
+        # Choose how many colors in the palette
+        if bool(self.settings.value("use_hidden_colors", "0")):
+            if bool(self.settings.value("use_brush_opacities", "1")):
+                for data in rust_palette:
+                    palette = palette + data
+            else:
+                for i, data in enumerate(rust_palette):
+                    if i == 64:
+                        palette = palette + (2, 2, 2) * 192
+                        break
+                    palette = palette + data
+        else:
+            if bool(self.settings.value("use_brush_opacities", "1")):
+                for i, data in enumerate(rust_palette):
+                    if (i >= 0 and i <= 19) or (i >= 64 and i <= 83) or (i >= 128 and i <= 147) or (i >= 192 and i <= 211):
+                        palette = palette + data
+                palette = palette + (2, 2, 2) * 176
+            else:
+                for i, data in enumerate(rust_palette):
+                    if i == 20:
+                        palette = palette + (2, 2, 2) * 236
+                        break
+                    palette = palette + data
+
         palette_data.putpalette(palette)
 
         palette_data.load()
@@ -670,6 +692,9 @@ class rustDaVinci():
         auto_update_canvas = bool(self.settings.value("auto_update_canvas", 1))
         auto_update_canvas_completed = bool(self.settings.value("auto_update_canvas_completed", 1))
 
+        use_hidden_colors = bool(self.settings.value("use_hidden_colors", "0"))
+        use_brush_opacities = bool(self.settings.value("use_brush_opacities", "1"))
+
         # Boolean reset
         self.is_paused = False
         self.is_skip_color = False
@@ -731,14 +756,6 @@ class rustDaVinci():
 
             if color in colors_to_skip: continue
 
-            time.sleep(self.ctrl_area_delay)
-            if   color >= 0  and color < 64: self.click_pixel(self.ctrl_opacity[5])
-            elif color >= 64 and color < 128: self.click_pixel(self.ctrl_opacity[4])
-            elif color >= 128 and color < 192: self.click_pixel(self.ctrl_opacity[3])
-            elif color >= 192 and color < 256: self.click_pixel(self.ctrl_opacity[2])
-            time.sleep(self.ctrl_area_delay)
-
-
             first_point = (0, 0)
             is_first_point_of_row = True
             is_last_point_of_row = False
@@ -746,8 +763,28 @@ class rustDaVinci():
             is_line = False
             pixels_in_line = 0
 
-            self.click_pixel(self.ctrl_color[color%64])
+
+            # Choose opacity
             time.sleep(self.ctrl_area_delay)
+            if use_hidden_colors:
+                if   color >= 0  and color < 64: self.click_pixel(self.ctrl_opacity[5])
+                elif color >= 64 and color < 128: self.click_pixel(self.ctrl_opacity[4])
+                elif color >= 128 and color < 192: self.click_pixel(self.ctrl_opacity[3])
+                elif color >= 192 and color < 256: self.click_pixel(self.ctrl_opacity[2])
+            else:
+                if   color >= 0  and color < 20: self.click_pixel(self.ctrl_opacity[5])
+                elif color >= 20 and color < 40: self.click_pixel(self.ctrl_opacity[4])
+                elif color >= 40 and color < 60: self.click_pixel(self.ctrl_opacity[3])
+                elif color >= 60 and color < 80: self.click_pixel(self.ctrl_opacity[2])
+            time.sleep(self.ctrl_area_delay)
+
+            # Choose color
+            if use_hidden_colors:
+                self.click_pixel(self.ctrl_color[color%64])
+            else:
+                self.click_pixel(self.ctrl_color[color%20])
+            time.sleep(self.ctrl_area_delay)
+
 
             for y in range(self.canvas_h):
                 if self.is_skip_color: break
