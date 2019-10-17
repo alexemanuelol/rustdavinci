@@ -15,6 +15,9 @@
 - Fix the settings about tab, add more information to it.
 - Check what more settings would be appropriate.
 - Investigate what is the most important things to show in the textedit window.
+- Add help tags to all the modules in the gui?
+- Add picture help when capturing areas?
+
 
 
 # Known errors
