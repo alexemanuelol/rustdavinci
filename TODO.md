@@ -10,6 +10,7 @@
 - Create build script to make it easy to create windows executable.
 - Investigate what is the best way to create a windows executable.
 - Make it possible to exit area capturing mode by clicking any key or perhaps ESC?
+- Make it possible to abort capturing by clicking the close button when prompted to capture
 - Investigate how to handle setting the pause, skip and exit button. As of now, the values are hardcoded (F10, F11, ESC)
 - Change the way to append colors to skip. Perhaps show the actual colors from the palette?
 - Fix the settings about tab, add more information to it.
@@ -17,6 +18,9 @@
 - Investigate what is the most important things to show in the textedit window.
 - Add help tags to all the modules in the gui?
 - Add picture help when capturing areas?
+- Try to lower the calculation time for statistics. At the moment it is very long...
+- When changing the settings for brush opacity and hidden colors update the pixmaps pictures (call "create_pixmaps()") and then check if main window is expanded then update.
+
 
 
 

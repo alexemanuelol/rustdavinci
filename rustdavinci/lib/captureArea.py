@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import tkinter as tk
+import tkinter
 import pyautogui
 import win32api
 
@@ -12,8 +12,8 @@ def capture_area():
                 area_width,
                 area_height
     """
-    root = tk.Tk().withdraw()
-    area = tk.Toplevel(root)
+    root = tkinter.Tk().withdraw()
+    area = tkinter.Toplevel(root)
     area.overrideredirect(1)
     area.wm_attributes('-alpha',0.5)
     area.geometry("0x0")

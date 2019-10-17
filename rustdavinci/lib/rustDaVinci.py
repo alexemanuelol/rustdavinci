@@ -1,39 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtCore
-from PyQt5 import QtGui
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QFileDialog, QInputDialog, QLineEdit, QMessageBox, QApplication, QLabel
-from PIL import Image
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
 from pynput import keyboard
 from io import BytesIO
+from PIL import Image
 
+import urllib.request
 import pyautogui
-import cv2
+import datetime
 import numpy
 import time
-import datetime
+import cv2
 import os
-import urllib.request
 
-from lib.captureArea import capture_area
 from lib.rustPaletteData import rust_palette
+from lib.captureArea import capture_area
 
 
 class rustDaVinci():
 
     def __init__(self, parent):
-        """ RustDaVinci module init """
+        """ RustDaVinci class init """
         self.parent = parent
-        self.settings = QtCore.QSettings()
+        self.settings = QSettings()
         
         # PIL.Image images original/ quantized
         self.org_img = None
         self.quantized_img = None
 
         # Start painting booleans
-        self.is_org_img_ok = False
+        self.org_img_ok = False
+
+        # Use double clicks
+        self.use_double_click = False
+
+        # Keyboard interrupt variables
+        self.is_paused = False
+        self.is_skip_color = False
+        self.is_exit = False
 
         # Pixmaps
         self.pixmap_on_display = 0
@@ -62,25 +70,17 @@ class rustDaVinci():
         self.lines = 0
         self.estimated_time = 0
 
-        # Use double clicks
-        self.use_double_click = False
-
         # Delays
         self.click_delay = 0
         self.line_delay = 0
         self.ctrl_area_delay = 0
-
-        # Keyboard interrupt variables
-        self.is_paused = False
-        self.is_skip_color = False
-        self.is_exit = False
 
         # Hotkey display QLabel
         self.hotkey_label = None
 
 
     def update(self):
-        """"""
+        """ Updates pyauogui delays, booleans and paint image button"""
         self.click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
         self.line_delay = float(int(self.settings.value("line_delay", "25"))/1000)
         self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", "100"))/1000) 
@@ -91,7 +91,7 @@ class rustDaVinci():
 
         if int(self.settings.value("ctrl_w", "0")) == 0 or int(self.settings.value("ctrl_h", "0")) == 0:
             self.parent.ui.paintImagePushButton.setEnabled(False)
-        elif self.is_org_img_ok and int(self.settings.value("ctrl_w", "0")) != 0 and int(self.settings.value("ctrl_h", "0")) != 0:
+        elif self.org_img_ok and int(self.settings.value("ctrl_w", "0")) != 0 and int(self.settings.value("ctrl_h", "0")) != 0:
             self.parent.ui.paintImagePushButton.setEnabled(True)
 
 
@@ -108,20 +108,7 @@ class rustDaVinci():
             # Pixmap for original image
             self.org_img_pixmap = QPixmap(path)
 
-            # Pixmap for quantized image of quality normal
-            temp_normal = self.quantize_to_palette(self.org_img, True, 0)
-            temp_normal.save("temp_normal.png")
-            self.quantized_img_pixmap_normal = QPixmap("temp_normal.png")
-            os.remove("temp_normal.png")
-
-            # Pixmap for quantized image of quality high
-            temp_high = self.quantize_to_palette(self.org_img, True, 1)
-            temp_high.save("temp_high.png")
-            self.quantized_img_pixmap_high = QPixmap("temp_high.png")
-            os.remove("temp_high.png")
-
-            self.pixmap_on_display = 0
-            self.is_org_img_ok = True
+            self.create_pixmaps()
 
         self.update()
 
@@ -136,9 +123,7 @@ class rustDaVinci():
         url = dialog.textValue()
 
         if ok_clicked and url != "":
-
-            #if url.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
-            if True:
+            try:
                 # The original PIL.Image object
                 self.org_img = Image.open(urllib.request.urlopen(url))
 
@@ -147,38 +132,139 @@ class rustDaVinci():
                 self.org_img_pixmap = QPixmap("temp_url_image.png", "1")
                 os.remove("temp_url_image.png")
 
-                # Pixmap for quantized image of quality normal
-                temp_normal = self.quantize_to_palette(self.org_img, True, 0)
-                temp_normal.save("temp_normal.png")
-                self.quantized_img_pixmap_normal = QPixmap("temp_normal.png")
-                os.remove("temp_normal.png")
-
-                # Pixmap for quantized image of quality high
-                temp_high = self.quantize_to_palette(self.org_img, True, 1)
-                temp_high.save("temp_high.png")
-                self.quantized_img_pixmap_high = QPixmap("temp_high.png")
-                os.remove("temp_high.png")
-
-                self.pixmap_on_display = 0
-                self.is_org_img_ok = True
-
-            elif url != "":
+                self.create_pixmaps()
+            except:
                 self.org_img = None
-                self.is_org_img_ok = False
+                self.org_img_ok = False
                 msg = QMessageBox(self.parent)
-                msg.setIcon(QMessageBox.Information)
-                msg.setText("Invalid image format...")
-                msg.setInformativeText("Valid formats: .png, .jpg, .jpeg, .gif, .bmp")
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("ERROR! Could not load the selected image...")
                 msg.exec_()
 
         self.update()
 
 
+    def create_pixmaps(self):
+        """ Create quantized pixmaps """
+        # Pixmap for quantized image of quality normal
+        temp_normal = self.quantize_to_palette(self.org_img, True, 0)
+        temp_normal.save("temp_normal.png")
+        self.quantized_img_pixmap_normal = QPixmap("temp_normal.png")
+        os.remove("temp_normal.png")
+
+        # Pixmap for quantized image of quality high
+        temp_high = self.quantize_to_palette(self.org_img, True, 1)
+        temp_high.save("temp_high.png")
+        self.quantized_img_pixmap_high = QPixmap("temp_high.png")
+        os.remove("temp_high.png")
+
+        self.pixmap_on_display = 0
+        self.org_img_ok = True
+
+
+    def convert_img(self):
+        """ Convert the image to fit the canvas and quantize the image.
+        Updates:    quantized_img,
+                    x_correction,
+                    y_correction
+        Returns:    False, if the image type is invalid.
+        """
+        org_img_w = self.org_img.size[0]
+        org_img_h = self.org_img.size[1]
+            
+        wpercent = (self.canvas_w / float(org_img_w))
+        hpercent = (self.canvas_h / float(org_img_h))
+    
+        hsize = int((float(org_img_h) * float(wpercent)))
+        wsize = int((float(org_img_w) * float(hpercent)))
+    
+        x_correction = 0
+        y_correction = 0
+    
+        if hsize <= self.canvas_h: 
+            resized_img = self.org_img.resize((self.canvas_w, hsize), Image.ANTIALIAS)
+            y_correction = int((self.canvas_h - hsize)/2)
+        elif wsize <= self.canvas_w: 
+            resized_img = self.org_img.resize((wsize, self.canvas_h), Image.ANTIALIAS)
+            x_correction = int((self.canvas_w - wsize)/2)
+        else: 
+            resized_img = self.org_img.resize((self.canvas_w, self.canvas_h), Image.ANTIALIAS)
+    
+        self.quantized_img = self.quantize_to_palette(resized_img)
+        if self.quantized_img == False:
+            self.org_img = None
+            self.quantized_img = None
+            self.org_img_ok = False
+            return False
+
+        self.canvas_x += x_correction
+        self.canvas_y += y_correction
+        self.canvas_w = self.quantized_img.size[0]
+        self.canvas_h = self.quantized_img.size[1]
+        return True
+
+
+    def quantize_to_palette(self, image, pixmap = False, pixmap_q = 0):
+        """ Convert an RGB, RGBA or L mode image to use a given P image's palette.
+        Returns:    The quantized image
+        """
+        # Select the palette to be used
+        palette_data = Image.new("P", (1, 1))
+
+
+        palette = ()
+
+        # Choose how many colors in the palette
+        if bool(self.settings.value("use_hidden_colors", "0")):
+            if bool(self.settings.value("use_brush_opacities", "1")):
+                for data in rust_palette:
+                    palette = palette + data
+            else:
+                for i, data in enumerate(rust_palette):
+                    if i == 64:
+                        palette = palette + (2, 2, 2) * 192
+                        break
+                    palette = palette + data
+        else:
+            if bool(self.settings.value("use_brush_opacities", "1")):
+                for i, data in enumerate(rust_palette):
+                    if (i >= 0 and i <= 19) or (i >= 64 and i <= 83) or (i >= 128 and i <= 147) or (i >= 192 and i <= 211):
+                        palette = palette + data
+                palette = palette + (2, 2, 2) * 176
+            else:
+                for i, data in enumerate(rust_palette):
+                    if i == 20:
+                        palette = palette + (2, 2, 2) * 236
+                        break
+                    palette = palette + data
+
+        palette_data.putpalette(palette)
+
+        palette_data.load()
+        self.org_img = image
+        self.org_img.load()
+
+        if self.org_img.mode == "RGBA":
+            self.org_img = image.convert("RGB")
+
+        if not pixmap:
+            quality = int(self.settings.value("painting_quality", 1))
+            if quality == 0:
+                im = image.im.convert("P", 0, palette_data.im)
+            elif quality == 1:
+                im = image.im.convert("P", 1, palette_data.im) # Dithering
+        else:
+            im = image.im.convert("P", pixmap_q, palette_data.im)
+    
+        try: return image._new(im)
+        except AttributeError: return image._makeself(im)
+
+
     def clear_image(self):
-        """ Clear the image path """
+        """ Clear the image """
         self.org_img = None
-        self.org_img_path = None
-        self.is_org_img_ok = False
+        self.quantized_img = None
+        self.org_img_ok = False
         self.update()
 
 
@@ -218,7 +304,6 @@ class rustDaVinci():
         self.canvas_y = canvas_area[1]
         self.canvas_w = canvas_area[2]
         self.canvas_h = canvas_area[3]
-
         return True
 
 
@@ -384,8 +469,8 @@ class rustDaVinci():
                 self.ctrl_color.append(  (first_x_coord_of_four + (column * dist_btwn_x_coords_of_four),
                                          (first_y_coord_of_eight + (row * dist_btwn_y_coords_of_eight))))
         
+        # Hidden colors location
         if bool(self.settings.value("use_hidden_colors", "0")):
-            # Hidden colors location
             self.ctrl_color.append((ctrl_x + (ctrl_w/18.0000), ctrl_y + (ctrl_h/2.1518)))
             self.ctrl_color.append((ctrl_x + (ctrl_w/4.2353), ctrl_y + (ctrl_h/2.1406)))
             self.ctrl_color.append((ctrl_x + (ctrl_w/13.0909), ctrl_y + (ctrl_h/1.8430)))
@@ -430,104 +515,6 @@ class rustDaVinci():
             self.ctrl_color.append((ctrl_x + (ctrl_w/2.7692), ctrl_y + (ctrl_h/1.1982)))
             self.ctrl_color.append((ctrl_x + (ctrl_w/2.0571), ctrl_y + (ctrl_h/1.2160)))
             self.ctrl_color.append((ctrl_x + (ctrl_w/1.3211), ctrl_y + (ctrl_h/1.4784)))
-    
-
-    def convert_img(self):
-        """ Convert the image to fit the canvas and quantize the image.
-        Updates:    quantized_img,
-                    x_correction,
-                    y_correction
-        Returns:    False, if the image type is invalid.
-        """
-        org_img_w = self.org_img.size[0]
-        org_img_h = self.org_img.size[1]
-            
-        wpercent = (self.canvas_w / float(org_img_w))
-        hpercent = (self.canvas_h / float(org_img_h))
-    
-        hsize = int((float(org_img_h) * float(wpercent)))
-        wsize = int((float(org_img_w) * float(hpercent)))
-    
-        x_correction = 0
-        y_correction = 0
-    
-        if hsize <= self.canvas_h: 
-            resized_img = self.org_img.resize((self.canvas_w, hsize), Image.ANTIALIAS)
-            y_correction = int((self.canvas_h - hsize)/2)
-        elif wsize <= self.canvas_w: 
-            resized_img = self.org_img.resize((wsize, self.canvas_h), Image.ANTIALIAS)
-            x_correction = int((self.canvas_w - wsize)/2)
-        else: 
-            resized_img = self.org_img.resize((self.canvas_w, self.canvas_h), Image.ANTIALIAS)
-    
-        self.quantized_img = self.quantize_to_palette(resized_img)
-        if self.quantized_img == False:
-            self.org_img = None
-            self.quantized_img = None
-            self.is_org_img_ok = False
-            return False
-
-        self.canvas_x += x_correction
-        self.canvas_y += y_correction
-        self.canvas_w = self.quantized_img.size[0]
-        self.canvas_h = self.quantized_img.size[1]
-        return True
-
-
-    def quantize_to_palette(self, image, pixmap = False, pixmap_q = 0):
-        """ Convert an RGB, RGBA or L mode image to use a given P image's palette.
-        Returns:    The quantized image
-        """
-        # Select the palette to be used
-        palette_data = Image.new("P", (1, 1))
-
-
-        palette = ()
-
-        # Choose how many colors in the palette
-        if bool(self.settings.value("use_hidden_colors", "0")):
-            if bool(self.settings.value("use_brush_opacities", "1")):
-                for data in rust_palette:
-                    palette = palette + data
-            else:
-                for i, data in enumerate(rust_palette):
-                    if i == 64:
-                        palette = palette + (2, 2, 2) * 192
-                        break
-                    palette = palette + data
-        else:
-            if bool(self.settings.value("use_brush_opacities", "1")):
-                for i, data in enumerate(rust_palette):
-                    if (i >= 0 and i <= 19) or (i >= 64 and i <= 83) or (i >= 128 and i <= 147) or (i >= 192 and i <= 211):
-                        palette = palette + data
-                palette = palette + (2, 2, 2) * 176
-            else:
-                for i, data in enumerate(rust_palette):
-                    if i == 20:
-                        palette = palette + (2, 2, 2) * 236
-                        break
-                    palette = palette + data
-
-        palette_data.putpalette(palette)
-
-        palette_data.load()
-        self.org_img = image
-        self.org_img.load()
-
-        if self.org_img.mode == "RGBA":
-            self.org_img = image.convert("RGB")
-
-        if not pixmap:
-            quality = int(self.settings.value("painting_quality", 1))
-            if quality == 0:
-                im = image.im.convert("P", 0, palette_data.im)
-            elif quality == 1:
-                im = image.im.convert("P", 1, palette_data.im) # Dithering
-        else:
-            im = image.im.convert("P", pixmap_q, palette_data.im)
-    
-        try: return image._new(im)
-        except AttributeError: return image._makeself(im)
 
 
     def calc_statistics(self):
@@ -734,7 +721,7 @@ class rustDaVinci():
         listener.start()
 
         self.hotkey_label = QLabel(self.parent)
-        self.hotkey_label.setGeometry(QtCore.QRect(10, 425, 221, 21))
+        self.hotkey_label.setGeometry(QRect(10, 425, 221, 21))
         self.hotkey_label.setText("F10 = Pause        F11 = Skip        ESC = Abort")
         self.hotkey_label.show()
 
