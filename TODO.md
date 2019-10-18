@@ -4,7 +4,6 @@
 - Make it possible to abort capturing by clicking the close button when prompted to capture
 - Fix the progress bar. Perhaps check the amount of painted pixels and from that decide what to show on the progress bar?
 - Create build script to make it easy to create windows executable.
-- Fix the settings about tab, add more information to it.
 - Add help tags to all the modules in the gui?
 - Add picture help when capturing areas?
 - Setup CI travis yml

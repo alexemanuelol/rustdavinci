@@ -32,7 +32,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="generalTab">
     <attribute name="title">
@@ -810,7 +810,7 @@
      </property>
      <property name="text">
       <string>(Only recommended if 1920x1080 resolution in-game and 
-automatically find the paint control area coordinates is selected)</string>
+the paint control area is automatically found)</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="useHiddenColorsCheckBox">
@@ -847,14 +847,14 @@ automatically find the paint control area coordinates is selected)</string>
     <widget class="QLabel" name="gitRepoLinkLabel">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>330</y>
-       <width>351</width>
-       <height>51</height>
+       <x>20</x>
+       <y>340</y>
+       <width>221</width>
+       <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/alexemanuelol/RustDaVinci&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; text-decoration: underline; color:#000000;&quot;&gt;The GitHub Repository&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/alexemanuelol/RustDaVinci&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#000000;&quot;&gt;The GitHub Repository&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
@@ -863,7 +863,145 @@ automatically find the paint control area coordinates is selected)</string>
       <bool>false</bool>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextBrowserInteraction</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="logo1Label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>351</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="../resources/icons.qrc">:/icons/RustDaVinci-logo-2.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="aboutLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>160</y>
+       <width>331</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>RustDaVinci is an automatic sign painter for the game Rust by Facepunch. The application is completely free and open-source. For those who would like to contribute to the application please visit the GitHub page in the link below. For those who just want to use the application as it is, it is strongly recommended to only use the released version of the application to avoid trouble with EAC/ Facepunch. The latest releases can be found on the Github page.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="versionLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>110</y>
+       <width>161</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>v1.0</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="versionLabel_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>130</y>
+       <width>161</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Oktober 18, 2019</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="licenseLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>270</y>
+       <width>311</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>RustDaVinci is licensed under GNU GPL3
+Developed by AlexEmanuelol</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="Line" name="line">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>310</y>
+       <width>351</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="logo2Label">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>340</y>
+       <width>81</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="../resources/icons.qrc">:/icons/RustDaVinci-logo-1.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="faqLinkLabel_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>360</y>
+       <width>221</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/alexemanuelol/RustDaVinci/blob/master/docs/FAQ.md&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#000000;&quot;&gt;Frequently Asked Questions&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
      <property name="openExternalLinks">
       <bool>true</bool>
