@@ -285,7 +285,9 @@ class rustDaVinci():
         canvas_area = capture_area()
         self.parent.show()
 
-        if canvas_area[2] == 0 or canvas_area[3] == 0:
+        if canvas_area == False:
+            return False
+        elif canvas_area[2] == 0 or canvas_area[3] == 0:
             msg = QMessageBox(self.parent)
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Invalid coordinates and ratio. Drag & drop the top left corner of the canvas to the bottom right corner.")
@@ -318,6 +320,10 @@ class rustDaVinci():
         self.parent.hide()
         ctrl_area = capture_area()
         self.parent.show()
+
+        if ctrl_area == False:
+            self.update()
+            return False
 
         btn = QMessageBox.question(self.parent, None,
             "Coordinates:\n" + 

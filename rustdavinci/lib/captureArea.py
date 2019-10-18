@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from pynput import keyboard
+
 import tkinter
 import pyautogui
 import win32api
+
+exit_capturing_mode = False
+
+def key_event(key):
+    """"""
+    global exit_capturing_mode
+    exit_capturing_mode = True
+
 
 def capture_area():
     """ Capture an area on the screen by clicking and dragging the mouse to the bottom right corner.
@@ -12,6 +22,9 @@ def capture_area():
                 area_width,
                 area_height
     """
+    global exit_capturing_mode
+    listener = keyboard.Listener(on_press=key_event)
+    listener.start()
     root = tkinter.Tk().withdraw()
     area = tkinter.Toplevel(root)
     area.overrideredirect(1)
@@ -22,6 +35,11 @@ def capture_area():
     pressed, active = False, False
 
     while True:
+        if exit_capturing_mode:
+            exit_capturing_mode = False
+            listener.stop()
+            return False
+
         current_state = win32api.GetKeyState(0x01)
         mouse = pyautogui.position()
 
@@ -39,7 +57,9 @@ def capture_area():
                 if active:
                     area.destroy()
                     if area_TL[0] >= mouse[0] or area_TL[1] >= mouse[1]:
+                        listener.stop()
                         return 0, 0, 0, 0
+                    listener.stop()
                     return area_TL[0], area_TL[1], mouse[0] - area_TL[0], mouse[1] - area_TL[1]
                 area.geometry("+" + str(mouse[0])+ "+" + str(mouse[1]))
 
