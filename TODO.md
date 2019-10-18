@@ -19,7 +19,6 @@
 - Add help tags to all the modules in the gui?
 - Add picture help when capturing areas?
 - Try to lower the calculation time for statistics. At the moment it is very long...
-- When changing the settings for brush opacity and hidden colors update the pixmaps pictures (call "create_pixmaps()") and then check if main window is expanded then update.
 
 
 

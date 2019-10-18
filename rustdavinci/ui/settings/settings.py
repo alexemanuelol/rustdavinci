@@ -163,6 +163,11 @@ class Settings(QtWidgets.QDialog):
 
         self.parent.rustDaVinci.update()
 
+        self.parent.rustDaVinci.create_pixmaps()
+        if self.parent.is_expanded:
+            self.parent.label.hide()
+            self.parent.expand_window()
+
 
     def _settings_checkbox_to_int(self, name, val):
         """ Settings save checkbox to integer """

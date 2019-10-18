@@ -109,6 +109,7 @@ class rustDaVinci():
             self.org_img_pixmap = QPixmap(path)
 
             self.create_pixmaps()
+            self.pixmap_on_display = 0
 
         self.update()
 
@@ -133,6 +134,7 @@ class rustDaVinci():
                 os.remove("temp_url_image.png")
 
                 self.create_pixmaps()
+                self.pixmap_on_display = 0
             except:
                 self.org_img = None
                 self.org_img_ok = False
@@ -158,7 +160,6 @@ class rustDaVinci():
         self.quantized_img_pixmap_high = QPixmap("temp_high.png")
         os.remove("temp_high.png")
 
-        self.pixmap_on_display = 0
         self.org_img_ok = True
 
 
