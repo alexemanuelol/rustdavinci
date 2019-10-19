@@ -163,7 +163,9 @@ class Settings(QtWidgets.QDialog):
 
         self.parent.rustDaVinci.update()
 
-        self.parent.rustDaVinci.create_pixmaps()
+        if self.parent.rustDaVinci.org_img != None:
+            self.parent.rustDaVinci.convert_transparency()
+            self.parent.rustDaVinci.create_pixmaps()
         if self.parent.is_expanded:
             self.parent.label.hide()
             self.parent.expand_window()

@@ -29,11 +29,13 @@ class rustDaVinci():
         self.settings = QSettings()
         
         # PIL.Image images original/ quantized
+        self.org_img_template = None
         self.org_img = None
         self.quantized_img = None
 
         # Start painting booleans
         self.org_img_ok = False
+        self.image_get_method = 0
 
         # Use double clicks
         self.use_double_click = False
@@ -102,14 +104,29 @@ class rustDaVinci():
         path = QFileDialog.getOpenFileName(self.parent, title, None, fileformats)[0]
 
         if path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
-            # The original PIL.Image object
-            self.org_img = Image.open(path)
+            try:
+                # Pixmap for original image
+                self.org_img_pixmap = QPixmap(path)
 
-            # Pixmap for original image
-            self.org_img_pixmap = QPixmap(path)
+                # The original PIL.Image object
+                self.org_img_template = Image.open(path)
+                print(self.org_img_template.mode)
+                if self.org_img_template.mode == "L":
+                    self.org_img_template = Image.open(path).convert("RGB")
+                self.org_img = self.org_img_template
 
-            self.create_pixmaps()
-            self.pixmap_on_display = 0
+                self.convert_transparency()
+
+                self.create_pixmaps()
+                self.pixmap_on_display = 0
+            except Exception as e:
+                self.org_img = None
+                self.org_img_ok = False
+                msg = QMessageBox(self.parent)
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("ERROR! Could not load the selected image...")
+                msg.setInformativeText(str(e))
+                msg.exec_()
 
         self.update()
 
@@ -125,25 +142,49 @@ class rustDaVinci():
 
         if ok_clicked and url != "":
             try:
-                # The original PIL.Image object
-                self.org_img = Image.open(urllib.request.urlopen(url))
-
                 # Pixmap for original image
                 urllib.request.urlretrieve(url, "temp_url_image.png")
                 self.org_img_pixmap = QPixmap("temp_url_image.png", "1")
                 os.remove("temp_url_image.png")
 
+                # The original PIL.Image object
+                self.org_img_template = Image.open(urllib.request.urlopen(url))
+                print(self.org_img_template.mode)
+                if self.org_img_template.mode == "L":
+                    self.org_img_template = Image.open(urllib.request.urlopen(url)).convert("RGB")
+                self.org_img = self.org_img_template
+
+                self.convert_transparency()
+
                 self.create_pixmaps()
                 self.pixmap_on_display = 0
-            except:
+            except Exception as e:
                 self.org_img = None
                 self.org_img_ok = False
                 msg = QMessageBox(self.parent)
                 msg.setIcon(QMessageBox.Critical)
                 msg.setText("ERROR! Could not load the selected image...")
+                msg.setInformativeText(str(e))
                 msg.exec_()
 
         self.update()
+
+
+    def convert_transparency(self):
+        """"""
+        background_color = int(self.settings.value("default_background_color", "16"))
+        if background_color == "": background_color = 16
+
+        # Set transparency in image to default background
+        try:
+            self.org_img = self.org_img_template
+            self.org_img.convert("RGBA")
+            temp_org_img = Image.new("RGBA", self.org_img.size, color=rust_palette[background_color])
+            temp_org_img.paste(self.org_img, (0 ,0), mask=self.org_img)
+            self.org_img = temp_org_img
+            self.org_img = self.org_img.convert("RGB")
+        except Exception as e:
+            None
 
 
     def create_pixmaps(self):
@@ -317,11 +358,19 @@ class rustDaVinci():
         msg.setText("Manually capture the area by drag & drop the top left" +
                     "corner of the painting controls area to the bottom right corner.")
         msg.exec_()
+
         self.parent.hide()
         ctrl_area = capture_area()
         self.parent.show()
 
         if ctrl_area == False:
+            self.update()
+            return False
+        elif ctrl_area[2] == 0 and ctrl_area[3] == 0:
+            msg = QMessageBox(self.parent)
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Invalid coordinates and ratio. Drag & drop the top left corner of the canvas to the bottom right corner.")
+            msg.exec_()
             self.update()
             return False
 
