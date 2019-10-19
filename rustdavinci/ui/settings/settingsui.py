@@ -14,11 +14,13 @@ class Ui_SettingsUI(object):
     def setupUi(self, SettingsUI):
         SettingsUI.setObjectName("SettingsUI")
         SettingsUI.resize(391, 510)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(SettingsUI.sizePolicy().hasHeightForWidth())
         SettingsUI.setSizePolicy(sizePolicy)
+        SettingsUI.setMinimumSize(QtCore.QSize(391, 510))
+        SettingsUI.setMaximumSize(QtCore.QSize(391, 510))
         self.tabWidget = QtWidgets.QTabWidget(SettingsUI)
         self.tabWidget.setGeometry(QtCore.QRect(6, 9, 381, 461))
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.Rounded)
@@ -299,7 +301,7 @@ class Ui_SettingsUI(object):
         self.applyPushButton.setObjectName("applyPushButton")
 
         self.retranslateUi(SettingsUI)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         self.paintingQualityComboBox.setCurrentIndex(1)
         self.paintingBrushTypeComboBox.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(SettingsUI)

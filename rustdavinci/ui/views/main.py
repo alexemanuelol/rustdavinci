@@ -120,7 +120,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def settings_clicked(self):
         """ Create an instance of a settings window """
         settings = Settings(self)
-        settings.show()
+        #settings.show()
+        settings.exec_()
 
 
     def showImage_clicked(self):
