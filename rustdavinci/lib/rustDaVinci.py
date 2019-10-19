@@ -109,8 +109,7 @@ class rustDaVinci():
                 self.org_img_pixmap = QPixmap(path)
 
                 # The original PIL.Image object
-                self.org_img_template = Image.open(path)
-                print(self.org_img_template.mode)
+                self.org_img_template = Image.open(path).convert("RGBA")
                 if self.org_img_template.mode == "L":
                     self.org_img_template = Image.open(path).convert("RGB")
                 self.org_img = self.org_img_template
@@ -142,16 +141,18 @@ class rustDaVinci():
 
         if ok_clicked and url != "":
             try:
+                headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'}
+                request = urllib.request.Request(url, None, headers)
+                self.org_img_template = Image.open(urllib.request.urlopen(request)).convert("RGBA")
+
                 # Pixmap for original image
-                urllib.request.urlretrieve(url, "temp_url_image.png")
+                self.org_img_template.save("temp_url_image.png")
                 self.org_img_pixmap = QPixmap("temp_url_image.png", "1")
                 os.remove("temp_url_image.png")
 
                 # The original PIL.Image object
-                self.org_img_template = Image.open(urllib.request.urlopen(url))
-                print(self.org_img_template.mode)
                 if self.org_img_template.mode == "L":
-                    self.org_img_template = Image.open(urllib.request.urlopen(url)).convert("RGB")
+                    self.org_img_template = Image.open(urllib.request.urlopen(request)).convert("RGB")
                 self.org_img = self.org_img_template
 
                 self.convert_transparency()
