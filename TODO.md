@@ -1,7 +1,6 @@
 # TODO
 
 ## Coding
-- Fix the progress bar. Perhaps check the amount of painted pixels and from that decide what to show on the progress bar?
 - Add help tags to all the modules in the gui?
 - Create build script to make it easy to create windows executable.
 - Setup CI travis yml

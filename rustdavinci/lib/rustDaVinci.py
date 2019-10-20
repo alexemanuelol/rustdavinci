@@ -792,6 +792,12 @@ class rustDaVinci():
         self.click_pixel(self.ctrl_size[0])
         self.click_pixel(self.ctrl_brush[self.settings.value("painting_brush", 1)])
 
+        pixel_progress = 0
+        prev_progress_multiplier = -1
+        progress_multiplier = 0
+        one_20th = int(self.tot_pixels/20)
+        self.parent.ui.progressBar.setValue(0)
+
 
         color_counter = 0
         for color in self.img_colors:
@@ -834,6 +840,12 @@ class rustDaVinci():
 
             for y in range(self.canvas_h):
                 if self.is_skip_color: break
+
+                progress_multiplier = int(pixel_progress/one_20th)
+                if progress_multiplier != prev_progress_multiplier:
+                    prev_progress_multiplier = progress_multiplier
+                    self.parent.ui.progressBar.setValue(5 * progress_multiplier)
+
                 is_first_point_of_row = True
                 is_last_point_of_row = False
                 is_prev_color = False
@@ -870,21 +882,27 @@ class rustDaVinci():
                         continue
 
                     if pixel_arr[x, y] == color:
-                        if not self.prefer_lines: self.click_pixel(self.canvas_x + x, self.canvas_y + y); continue
+                        if not self.prefer_lines:
+                            self.click_pixel(self.canvas_x + x, self.canvas_y + y)
+                            pixel_progress += 1
+                            continue
                         if is_prev_color:
                             if is_last_point_of_row:
                                 if pixels_in_line >= minimum_line_width:
                                     self.draw_line(first_point, (self.canvas_x + x, self.canvas_y + y))
+                                    pixel_progress += pixels_in_line
                                 else:
                                     for index in range(pixels_in_line):
                                         self.click_pixel(first_point[0] + index, self.canvas_y + y)
                                     self.click_pixel(self.canvas_x + x, self.canvas_y + y)
+                                    pixel_progress += pixels_in_line + 1
                             else:
                                 is_line = True
                                 pixels_in_line += 1
                         else:
                             if is_last_point_of_row:
                                 self.click_pixel(self.canvas_x + x, self.canvas_y + y)
+                                pixel_progress += 1
                             else:
                                 first_point = (self.canvas_x + x, self.canvas_y + y)
                                 is_prev_color = True
@@ -898,21 +916,25 @@ class rustDaVinci():
                                 if is_last_point_of_row:
                                     if pixels_in_line >= minimum_line_width:
                                         self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
+                                        pixel_progress += pixels_in_line
                                     else:
                                         for index in range(pixels_in_line):
                                             self.click_pixel(first_point[0] + index, self.canvas_y + y)
+                                        pixel_progress += pixels_in_line
                                     continue
     
                                 if pixels_in_line >= minimum_line_width:
                                     self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
+                                    pixel_progress += pixels_in_line
                                 else:
                                     for index in range(pixels_in_line):
                                         self.click_pixel(first_point[0] + index, self.canvas_y + y)
-                                    self.click_pixel(self.canvas_x + x, self.canvas_y + y)
+                                    pixel_progress += pixels_in_line
                                 pixels_in_line = 0
     
                             else:
                                 self.click_pixel(self.canvas_x + (x-1), self.canvas_y + y)
+                                pixel_progress += 1
                             is_prev_color = False
                         else:
                             is_line = False
