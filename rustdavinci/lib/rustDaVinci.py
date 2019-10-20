@@ -43,8 +43,11 @@ class rustDaVinci():
 
         # Keyboard interrupt variables
         self.is_paused = False
+        self.pause_key = None
         self.is_skip_color = False
+        self.skip_key = None
         self.is_exit = False
+        self.exit_key = None
 
         # Pixmaps
         self.pixmap_on_display = 0
@@ -708,12 +711,15 @@ class rustDaVinci():
 
     def key_event(self, key):
         """ Key-press handler. """
-        if key == keyboard.Key.f10:     # PAUSE
+        try: key_str = str(key.char)
+        except: key_str = str(key.name)
+
+        if key_str == self.pause_key:       # PAUSE
             self.is_paused = not self.is_paused
-        elif key == keyboard.Key.f11:   # SKIP CURRENT COLOR
+        elif key_str == self.skip_key:      # SKIP CURRENT COLOR
             self.is_paused = False
             self.is_skip_color = True
-        elif key == keyboard.Key.esc:   # EXIT 
+        elif key_str == self.exit_key:      # EXIT 
             self.is_paused = False
             self.is_exit = True
 
@@ -726,6 +732,11 @@ class rustDaVinci():
         ctrl_y = int(self.settings.value("ctrl_h", "0"))
         ctrl_w = int(self.settings.value("ctrl_w", "0"))
         ctrl_h = int(self.settings.value("ctrl_h", "0"))
+
+        self.pause_key = str(self.settings.value("pause_key", "f10")).lower()
+        self.skip_key = str(self.settings.value("skip_key", "f11")).lower()
+        self.exit_key = str(self.settings.value("cancel_key", "esc")).lower()
+
         colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
         if bool(self.settings.value("skip_default_background_color", "1")):
             colors_to_skip.append(self.settings.value("default_background_color", "16"))
@@ -781,7 +792,7 @@ class rustDaVinci():
 
         self.hotkey_label = QLabel(self.parent)
         self.hotkey_label.setGeometry(QRect(10, 425, 221, 21))
-        self.hotkey_label.setText("F10 = Pause        F11 = Skip        ESC = Abort")
+        self.hotkey_label.setText(self.pause_key + " = Pause        " + self.skip_key + " = Skip        " + self.exit_key + " = Abort")
         self.hotkey_label.show()
 
 

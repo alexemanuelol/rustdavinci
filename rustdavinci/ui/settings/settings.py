@@ -27,7 +27,7 @@ class Settings(QtWidgets.QDialog):
         self.isSettingsChanged = False
 
         # Uncomment line below if you want to clear the settings everytime you start an instance
-        #self.settings.clear()
+        self.settings.clear()
 
         # Load settings and connect UI modules
         self.loadSettings()
@@ -106,11 +106,11 @@ class Settings(QtWidgets.QDialog):
         self.ui.controlAreaWidthLineEdit.setText(ctrl_w)
         ctrl_h = self.settings.value("ctrl_h", "0")
         self.ui.controlAreaHeightLineEdit.setText(ctrl_h)
-        pause_key = self.settings.value("pause_key", "F10")
+        pause_key = self.settings.value("pause_key", "f10")
         self.ui.pauseKeyLineEdit.setText(pause_key)
-        skip_key = self.settings.value("skip_key", "F11")
+        skip_key = self.settings.value("skip_key", "f11")
         self.ui.skipColorKeyLineEdit.setText(skip_key)
-        cancel_key = self.settings.value("cancel_key", "Escape")
+        cancel_key = self.settings.value("cancel_key", "esc")
         self.ui.cancelKeyLineEdit.setText(cancel_key)
         default_background_color = self.settings.value("default_background_color", "16")
         self.ui.backgroundColorLineEdit.setText(default_background_color)
@@ -201,9 +201,9 @@ class Settings(QtWidgets.QDialog):
         self.ui.controlAreaYLineEdit.setText("0")
         self.ui.controlAreaWidthLineEdit.setText("0")
         self.ui.controlAreaHeightLineEdit.setText("0")
-        self.ui.pauseKeyLineEdit.setText("F10")
-        self.ui.skipColorKeyLineEdit.setText("F11")
-        self.ui.cancelKeyLineEdit.setText("Escape")
+        self.ui.pauseKeyLineEdit.setText("f10")
+        self.ui.skipColorKeyLineEdit.setText("f11")
+        self.ui.cancelKeyLineEdit.setText("esc")
         self.ui.backgroundColorLineEdit.setText("16")
         self.ui.skipColorsLineEdit.setText("80, 144, 208")
         self.ui.mouseClickDelayLineEdit.setText("5")

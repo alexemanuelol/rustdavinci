@@ -336,7 +336,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>F10</string>
+      <string>f10</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_10">
@@ -375,7 +375,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>F11</string>
+      <string>f11</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_12">
@@ -401,7 +401,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Escape</string>
+      <string>esc</string>
      </property>
     </widget>
     <widget class="Line" name="line_2">

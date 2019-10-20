@@ -23,7 +23,6 @@
 
 # Potentially big todos
 - Try to lower the calculation time for statistics. At the moment it is very long...
-- Investigate how to handle setting the pause, skip and exit button. As of now, the values are hardcoded (F10, F11, ESC)
 - Change the way to append colors to skip. Perhaps show the actual colors from the palette?
 
 
