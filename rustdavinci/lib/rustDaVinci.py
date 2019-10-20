@@ -19,6 +19,7 @@ import os
 
 from lib.rustPaletteData import rust_palette
 from lib.captureArea import capture_area
+from ui.dialogs.captureDialog import CaptureAreaDialog
 
 
 class rustDaVinci():
@@ -318,10 +319,9 @@ class rustDaVinci():
                     self.canvas_w,
                     self.canvas_h
         """
-        msg = QMessageBox(self.parent)
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Manually capture the area by drag & drop the top left corner of the canvas to the bottom right corner.")
-        msg.exec_()
+        dialog = CaptureAreaDialog(self.parent, 0)
+        ans = dialog.exec_()
+        if ans == 0: return False
 
         self.parent.hide()
         canvas_area = capture_area()
@@ -354,11 +354,9 @@ class rustDaVinci():
 
     def locate_control_area_manually(self):
         """"""
-        msg = QMessageBox(self.parent)
-        msg.setIcon(QMessageBox.Information)
-        msg.setText("Manually capture the area by drag & drop the top left" +
-                    "corner of the painting controls area to the bottom right corner.")
-        msg.exec_()
+        dialog = CaptureAreaDialog(self.parent, 1)
+        ans = dialog.exec_()
+        if ans == 0: return False
 
         self.parent.hide()
         ctrl_area = capture_area()

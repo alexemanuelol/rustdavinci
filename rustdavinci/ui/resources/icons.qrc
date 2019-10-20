@@ -12,5 +12,8 @@
     <file>brushes/heavy_round.png</file>
     <file>brushes/medium_round.png</file>
     <file>brushes/heavy_square.png</file>
+
+    <file>gifs/capture_canvas.gif</file>
+    <file>gifs/capture_ctrl_area.gif</file>
 </qresource>
 </RCC>
