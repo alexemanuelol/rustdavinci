@@ -44,6 +44,7 @@ class Settings(QtWidgets.QDialog):
         self.ui.clearCoordinatesPushButton.clicked.connect(self.clear_ctrl_coords_clicked)
 
         # Checkboxes
+        self.ui.setTopmostPaintingCheckBox.stateChanged.connect(self.enableApply)
         self.ui.skipDefaultColorCheckBox.stateChanged.connect(self.enableApply)
         self.ui.autoUpdateCanvasCheckBox.stateChanged.connect(self.enableApply)
         self.ui.autoUpdateCanvasWhenCompletedCheckBox.stateChanged.connect(self.enableApply)
@@ -80,6 +81,7 @@ class Settings(QtWidgets.QDialog):
     def loadSettings(self):
         """ Load the saved settings or the default settings. """
         # Checkboxes
+        self._settings_int_to_checkbox("window_topmost_painting", self.ui.setTopmostPaintingCheckBox, 1)
         self._settings_int_to_checkbox("skip_default_background_color", self.ui.skipDefaultColorCheckBox, 1)
         self._settings_int_to_checkbox("auto_update_canvas", self.ui.autoUpdateCanvasCheckBox, 1)
         self._settings_int_to_checkbox("auto_update_canvas_completed", self.ui.autoUpdateCanvasWhenCompletedCheckBox, 1)
@@ -134,6 +136,7 @@ class Settings(QtWidgets.QDialog):
     def saveSettings(self):
         """ Save settings. """
         # Checkboxes
+        self._settings_checkbox_to_int("window_topmost_painting", self.ui.setTopmostPaintingCheckBox.isChecked())
         self._settings_checkbox_to_int("skip_default_background_color", self.ui.skipDefaultColorCheckBox.isChecked())
         self._settings_checkbox_to_int("auto_update_canvas", self.ui.autoUpdateCanvasCheckBox.isChecked())
         self._settings_checkbox_to_int("auto_update_canvas_completed", self.ui.autoUpdateCanvasWhenCompletedCheckBox.isChecked())
@@ -180,6 +183,7 @@ class Settings(QtWidgets.QDialog):
     def default_clicked(self):
         """ Set everything to the default values. """
         # Checkboxes
+        self.ui.setTopmostPaintingCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.skipDefaultColorCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.autoUpdateCanvasCheckBox.setCheckState(QtCore.Qt.Checked)
         self.ui.autoUpdateCanvasWhenCompletedCheckBox.setCheckState(QtCore.Qt.Checked)

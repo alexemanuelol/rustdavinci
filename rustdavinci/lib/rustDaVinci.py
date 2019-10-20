@@ -765,6 +765,10 @@ class rustDaVinci():
         if btn == QMessageBox.No:
             return
 
+        if bool(self.settings.value("window_topmost_painting", "1")):
+            self.parent.setWindowFlags(self.parent.windowFlags() | Qt.WindowStaysOnTopHint)
+            self.parent.show()
+
 
         self.parent.ui.logTextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
         QApplication.processEvents()
@@ -847,6 +851,11 @@ class rustDaVinci():
                         self.parent.ui.logTextEdit.append("Aborted...")
                         QApplication.processEvents()
                         self.hotkey_label.hide()
+
+                        if bool(self.settings.value("window_topmost_painting", "1")):
+                            self.parent.setWindowFlags(self.parent.windowFlags() & ~Qt.WindowStaysOnTopHint)
+                            self.parent.show()
+                        self.parent.activateWindow()
                         return
 
                     if x == (self.canvas_w - 1):
@@ -922,3 +931,8 @@ class rustDaVinci():
         self.parent.ui.logTextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
         QApplication.processEvents()
         self.hotkey_label.hide()
+        
+        if bool(self.settings.value("window_topmost_painting", "1")):
+            self.parent.setWindowFlags(self.parent.windowFlags() & ~Qt.WindowStaysOnTopHint)
+            self.parent.show()
+        self.parent.activateWindow()
