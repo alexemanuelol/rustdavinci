@@ -4,9 +4,15 @@
 import sys
 
 from PyQt5 import QtCore
+from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
+from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import QColorDialog
+
 from ui.settings.settingsui import Ui_SettingsUI
+from lib.rustPaletteData import rust_palette
+from lib.color_functions import hex_to_rgb, rgb_to_hex, closest_color
 
 
 class Settings(QtWidgets.QDialog):
@@ -26,8 +32,10 @@ class Settings(QtWidgets.QDialog):
         self.settings = QtCore.QSettings()
         self.isSettingsChanged = False
 
+        self.qpalette = QPalette()
+
         # Uncomment line below if you want to clear the settings everytime you start an instance
-        self.settings.clear()
+        #self.settings.clear()
 
         # Load settings and connect UI modules
         self.loadSettings()
@@ -42,6 +50,7 @@ class Settings(QtWidgets.QDialog):
         self.ui.cancelPushButton.clicked.connect(self.close)
         self.ui.applyPushButton.clicked.connect(self.apply_clicked)
         self.ui.clearCoordinatesPushButton.clicked.connect(self.clear_ctrl_coords_clicked)
+        self.ui.colorPickerPushButton.clicked.connect(self.color_picker_clicked)
 
         # Checkboxes
         self.ui.setTopmostPaintingCheckBox.stateChanged.connect(self.enableApply)
@@ -112,8 +121,13 @@ class Settings(QtWidgets.QDialog):
         self.ui.skipColorKeyLineEdit.setText(skip_key)
         cancel_key = self.settings.value("cancel_key", "esc")
         self.ui.cancelKeyLineEdit.setText(cancel_key)
-        default_background_color = self.settings.value("default_background_color", "16")
+
+        default_background_color = self.settings.value("default_background_color", "#ECF0F1")
+        rgb = hex_to_rgb(default_background_color)
+        self.qpalette.setColor(QPalette.Base, QColor(rgb[0], rgb[1], rgb[2]))
+        self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
         self.ui.backgroundColorLineEdit.setText(default_background_color)
+
         skip_colors = self.settings.value("skip_colors", "80, 144, 208")
         self.ui.skipColorsLineEdit.setText(skip_colors)
         click_delay = self.settings.value("click_delay", "5")
@@ -204,7 +218,12 @@ class Settings(QtWidgets.QDialog):
         self.ui.pauseKeyLineEdit.setText("f10")
         self.ui.skipColorKeyLineEdit.setText("f11")
         self.ui.cancelKeyLineEdit.setText("esc")
-        self.ui.backgroundColorLineEdit.setText("16")
+
+        rgb = hex_to_rgb("#ECF0F1")
+        self.qpalette.setColor(QPalette.Base, QColor(rgb[0], rgb[1], rgb[2]))
+        self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
+        self.ui.backgroundColorLineEdit.setText("#ECF0F1")
+
         self.ui.skipColorsLineEdit.setText("80, 144, 208")
         self.ui.mouseClickDelayLineEdit.setText("5")
         self.ui.lineDrawingDelayLineEdit.setText("25")
@@ -236,3 +255,16 @@ class Settings(QtWidgets.QDialog):
         self.ui.controlAreaYLineEdit.setText("0")
         self.ui.controlAreaWidthLineEdit.setText("0")
         self.ui.controlAreaHeightLineEdit.setText("0")
+
+
+    def color_picker_clicked(self):
+        """"""
+        rgb = hex_to_rgb(self.ui.backgroundColorLineEdit.text())
+        colorDialog = QColorDialog(QColor(rgb[0], rgb[1], rgb[2]), self.parent)
+        selected_color = colorDialog.getColor()
+        if selected_color.isValid():
+            color = closest_color(hex_to_rgb(selected_color.name()))
+            self.qpalette.setColor(QPalette.Base, QColor(color[0], color[1], color[2]))
+            self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
+            hex = rgb_to_hex(color)
+            self.ui.backgroundColorLineEdit.setText(hex)
