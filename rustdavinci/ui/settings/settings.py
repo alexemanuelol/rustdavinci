@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QColorDialog
 from ui.settings.settingsui import Ui_SettingsUI
 from lib.rustPaletteData import rust_palette
 from lib.color_functions import hex_to_rgb, rgb_to_hex, closest_color
+from ui.settings.default_settings import default_settings
 
 
 class Settings(QtWidgets.QDialog):
@@ -90,57 +91,57 @@ class Settings(QtWidgets.QDialog):
     def loadSettings(self):
         """ Load the saved settings or the default settings. """
         # Checkboxes
-        self._settings_int_to_checkbox("window_topmost_painting", self.ui.setTopmostPaintingCheckBox, 1)
-        self._settings_int_to_checkbox("skip_default_background_color", self.ui.skipDefaultColorCheckBox, 1)
-        self._settings_int_to_checkbox("auto_update_canvas", self.ui.autoUpdateCanvasCheckBox, 1)
-        self._settings_int_to_checkbox("auto_update_canvas_completed", self.ui.autoUpdateCanvasWhenCompletedCheckBox, 1)
-        self._settings_int_to_checkbox("use_brush_opacities", self.ui.useBrushOpacitiesCheckBox, 1)
-        self._settings_int_to_checkbox("draw_lines", self.ui.drawLinesCheckBox, 1)
-        self._settings_int_to_checkbox("double_click", self.ui.doubleClickCheckBox, 0)
-        self._settings_int_to_checkbox("use_hidden_colors", self.ui.useHiddenColorsCheckBox, 0)
+        self.setting_to_checkbox("window_topmost", self.ui.setTopmostPaintingCheckBox, default_settings["window_topmost"])
+        self.setting_to_checkbox("skip_background_color", self.ui.skipDefaultColorCheckBox, default_settings["skip_background_color"])
+        self.setting_to_checkbox("update_canvas", self.ui.autoUpdateCanvasCheckBox, default_settings["update_canvas"])
+        self.setting_to_checkbox("update_canvas_completed", self.ui.autoUpdateCanvasWhenCompletedCheckBox, default_settings["update_canvas_completed"])
+        self.setting_to_checkbox("brush_opacities", self.ui.useBrushOpacitiesCheckBox, default_settings["brush_opacities"])
+        self.setting_to_checkbox("draw_lines", self.ui.drawLinesCheckBox, default_settings["draw_lines"])
+        self.setting_to_checkbox("double_click", self.ui.doubleClickCheckBox, default_settings["double_click"])
+        self.setting_to_checkbox("hidden_colors", self.ui.useHiddenColorsCheckBox, default_settings["hidden_colors"])
 
         # Comboboxes
-        index = self.settings.value("painting_quality", 1)
+        index = self.settings.value("quality", default_settings["quality"])
         self.ui.paintingQualityComboBox.setCurrentIndex(index)
 
-        index = self.settings.value("painting_brush", 1)
+        index = self.settings.value("brush", default_settings["brush"])
         self.ui.paintingBrushTypeComboBox.setCurrentIndex(index)
 
         # Lineedits
-        ctrl_x = self.settings.value("ctrl_x", "0")
+        ctrl_x = str(self.settings.value("ctrl_x", default_settings["ctrl_x"]))
         self.ui.controlAreaXLineEdit.setText(ctrl_x)
-        ctrl_y = self.settings.value("ctrl_y", "0")
+        ctrl_y = str(self.settings.value("ctrl_y", default_settings["ctrl_y"]))
         self.ui.controlAreaYLineEdit.setText(ctrl_y)
-        ctrl_w = self.settings.value("ctrl_w", "0")
+        ctrl_w = str(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
         self.ui.controlAreaWidthLineEdit.setText(ctrl_w)
-        ctrl_h = self.settings.value("ctrl_h", "0")
+        ctrl_h = str(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
         self.ui.controlAreaHeightLineEdit.setText(ctrl_h)
-        pause_key = self.settings.value("pause_key", "f10")
+        pause_key = self.settings.value("pause_key", default_settings["pause_key"])
         self.ui.pauseKeyLineEdit.setText(pause_key)
-        skip_key = self.settings.value("skip_key", "f11")
+        skip_key = self.settings.value("skip_key", default_settings["skip_key"])
         self.ui.skipColorKeyLineEdit.setText(skip_key)
-        cancel_key = self.settings.value("cancel_key", "esc")
+        cancel_key = self.settings.value("abort_key", default_settings["abort_key"])
         self.ui.cancelKeyLineEdit.setText(cancel_key)
 
-        default_background_color = self.settings.value("default_background_color", "#ECF0F1")
+        default_background_color = self.settings.value("background_color", default_settings["background_color"])
         rgb = hex_to_rgb(default_background_color)
         self.qpalette.setColor(QPalette.Base, QColor(rgb[0], rgb[1], rgb[2]))
         self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
         self.ui.backgroundColorLineEdit.setText(default_background_color)
 
-        skip_colors = self.settings.value("skip_colors", "80, 144, 208")
+        skip_colors = self.settings.value("skip_colors", default_settings["skip_colors"])
         self.ui.skipColorsLineEdit.setText(skip_colors)
-        click_delay = self.settings.value("click_delay", "5")
+        click_delay = str(self.settings.value("click_delay", default_settings["click_delay"]))
         self.ui.mouseClickDelayLineEdit.setText(click_delay)
-        line_delay = self.settings.value("line_delay", "25")
+        line_delay = str(self.settings.value("line_delay", default_settings["line_delay"]))
         self.ui.lineDrawingDelayLineEdit.setText(line_delay)
-        ctrl_area_delay = self.settings.value("ctrl_area_delay", "100")
+        ctrl_area_delay = str(self.settings.value("ctrl_area_delay", default_settings["ctrl_area_delay"]))
         self.ui.controlAreaDelayLineEdit.setText(ctrl_area_delay)
-        minimum_line_width = self.settings.value("minimum_line_width", "10")
+        minimum_line_width = str(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
         self.ui.minimumLineWidthLineEdit.setText(minimum_line_width)
 
 
-    def _settings_int_to_checkbox(self, name, checkBox, default):
+    def setting_to_checkbox(self, name, checkBox, default):
         """ Settings integer values converted to checkbox """
         val = int(self.settings.value(name, default))
         if val: checkBox.setCheckState(QtCore.Qt.Checked)
@@ -150,18 +151,18 @@ class Settings(QtWidgets.QDialog):
     def saveSettings(self):
         """ Save settings. """
         # Checkboxes
-        self._settings_checkbox_to_int("window_topmost_painting", self.ui.setTopmostPaintingCheckBox.isChecked())
-        self._settings_checkbox_to_int("skip_default_background_color", self.ui.skipDefaultColorCheckBox.isChecked())
-        self._settings_checkbox_to_int("auto_update_canvas", self.ui.autoUpdateCanvasCheckBox.isChecked())
-        self._settings_checkbox_to_int("auto_update_canvas_completed", self.ui.autoUpdateCanvasWhenCompletedCheckBox.isChecked())
-        self._settings_checkbox_to_int("use_brush_opacities", self.ui.useBrushOpacitiesCheckBox.isChecked())
-        self._settings_checkbox_to_int("draw_lines", self.ui.drawLinesCheckBox.isChecked())
-        self._settings_checkbox_to_int("double_click", self.ui.doubleClickCheckBox.isChecked())
-        self._settings_checkbox_to_int("use_hidden_colors", self.ui.useHiddenColorsCheckBox.isChecked())
+        self.checkbox_to_setting("window_topmost", self.ui.setTopmostPaintingCheckBox.isChecked())
+        self.checkbox_to_setting("skip_background_color", self.ui.skipDefaultColorCheckBox.isChecked())
+        self.checkbox_to_setting("update_canvas", self.ui.autoUpdateCanvasCheckBox.isChecked())
+        self.checkbox_to_setting("update_canvas_completed", self.ui.autoUpdateCanvasWhenCompletedCheckBox.isChecked())
+        self.checkbox_to_setting("brush_opacities", self.ui.useBrushOpacitiesCheckBox.isChecked())
+        self.checkbox_to_setting("draw_lines", self.ui.drawLinesCheckBox.isChecked())
+        self.checkbox_to_setting("double_click", self.ui.doubleClickCheckBox.isChecked())
+        self.checkbox_to_setting("hidden_colors", self.ui.useHiddenColorsCheckBox.isChecked())
 
         # Comboboxes
-        self.settings.setValue("painting_quality", self.ui.paintingQualityComboBox.currentIndex())
-        self.settings.setValue("painting_brush", self.ui.paintingBrushTypeComboBox.currentIndex())
+        self.settings.setValue("quality", self.ui.paintingQualityComboBox.currentIndex())
+        self.settings.setValue("brush", self.ui.paintingBrushTypeComboBox.currentIndex())
 
         #  Lineedits
         self.settings.setValue("ctrl_x", self.ui.controlAreaXLineEdit.text())
@@ -170,8 +171,8 @@ class Settings(QtWidgets.QDialog):
         self.settings.setValue("ctrl_h", self.ui.controlAreaHeightLineEdit.text())
         self.settings.setValue("pause_key", self.ui.pauseKeyLineEdit.text())
         self.settings.setValue("skip_key", self.ui.skipColorKeyLineEdit.text())
-        self.settings.setValue("cancel_key", self.ui.cancelKeyLineEdit.text())
-        self.settings.setValue("default_background_color", self.ui.backgroundColorLineEdit.text())
+        self.settings.setValue("abort_key", self.ui.cancelKeyLineEdit.text())
+        self.settings.setValue("background_color", self.ui.backgroundColorLineEdit.text())
         self.settings.setValue("skip_colors", self.ui.skipColorsLineEdit.text())
         self.settings.setValue("click_delay", self.ui.mouseClickDelayLineEdit.text())
         self.settings.setValue("line_delay", self.ui.lineDrawingDelayLineEdit.text())
@@ -188,7 +189,7 @@ class Settings(QtWidgets.QDialog):
             self.parent.expand_window()
 
 
-    def _settings_checkbox_to_int(self, name, val):
+    def checkbox_to_setting(self, name, val):
         """ Settings save checkbox to integer """
         if val: self.settings.setValue(name, 1)
         else: self.settings.setValue(name, 0)
@@ -207,28 +208,28 @@ class Settings(QtWidgets.QDialog):
         self.ui.useHiddenColorsCheckBox.setCheckState(QtCore.Qt.Unchecked)
 
         # Comboboxes
-        self.ui.paintingQualityComboBox.setCurrentIndex(1)
-        self.ui.paintingBrushTypeComboBox.setCurrentIndex(1)
+        self.ui.paintingQualityComboBox.setCurrentIndex(default_settings["quality"])
+        self.ui.paintingBrushTypeComboBox.setCurrentIndex(default_settings["brush"])
 
         # Lineedits
-        self.ui.controlAreaXLineEdit.setText("0")
-        self.ui.controlAreaYLineEdit.setText("0")
-        self.ui.controlAreaWidthLineEdit.setText("0")
-        self.ui.controlAreaHeightLineEdit.setText("0")
-        self.ui.pauseKeyLineEdit.setText("f10")
-        self.ui.skipColorKeyLineEdit.setText("f11")
-        self.ui.cancelKeyLineEdit.setText("esc")
+        self.ui.controlAreaXLineEdit.setText(str(default_settings["ctrl_x"]))
+        self.ui.controlAreaYLineEdit.setText(str(default_settings["ctrl_y"]))
+        self.ui.controlAreaWidthLineEdit.setText(str(default_settings["ctrl_w"]))
+        self.ui.controlAreaHeightLineEdit.setText(str(default_settings["ctrl_h"]))
+        self.ui.pauseKeyLineEdit.setText(default_settings["pause_key"])
+        self.ui.skipColorKeyLineEdit.setText(default_settings["skip_key"])
+        self.ui.cancelKeyLineEdit.setText(default_settings["abort_key"])
 
-        rgb = hex_to_rgb("#ECF0F1")
+        rgb = hex_to_rgb(default_settings["background_color"])
         self.qpalette.setColor(QPalette.Base, QColor(rgb[0], rgb[1], rgb[2]))
         self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
-        self.ui.backgroundColorLineEdit.setText("#ECF0F1")
+        self.ui.backgroundColorLineEdit.setText(default_settings["background_color"])
 
-        self.ui.skipColorsLineEdit.setText("80, 144, 208")
-        self.ui.mouseClickDelayLineEdit.setText("5")
-        self.ui.lineDrawingDelayLineEdit.setText("25")
-        self.ui.controlAreaDelayLineEdit.setText("100")
-        self.ui.minimumLineWidthLineEdit.setText("10")
+        self.ui.skipColorsLineEdit.setText(default_settings["skip_colors"])
+        self.ui.mouseClickDelayLineEdit.setText(str(default_settings["click_delay"]))
+        self.ui.lineDrawingDelayLineEdit.setText(str(default_settings["line_delay"]))
+        self.ui.controlAreaDelayLineEdit.setText(str(default_settings["ctrl_area_delay"]))
+        self.ui.minimumLineWidthLineEdit.setText(str(default_settings["minimum_line_width"]))
 
 
     def ok_clicked(self):
@@ -251,10 +252,10 @@ class Settings(QtWidgets.QDialog):
 
     def clear_ctrl_coords_clicked(self):
         """ Clear the control area coordinates. """
-        self.ui.controlAreaXLineEdit.setText("0")
-        self.ui.controlAreaYLineEdit.setText("0")
-        self.ui.controlAreaWidthLineEdit.setText("0")
-        self.ui.controlAreaHeightLineEdit.setText("0")
+        self.ui.controlAreaXLineEdit.setText(str(default_settings["ctrl_x"]))
+        self.ui.controlAreaYLineEdit.setText(str(default_settings["ctrl_y"]))
+        self.ui.controlAreaWidthLineEdit.setText(str(default_settings["ctrl_w"]))
+        self.ui.controlAreaHeightLineEdit.setText(str(default_settings["ctrl_h"]))
 
 
     def color_picker_clicked(self):

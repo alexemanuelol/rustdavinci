@@ -21,6 +21,7 @@ from lib.rustPaletteData import rust_palette
 from lib.captureArea import capture_area
 from lib.color_functions import hex_to_rgb
 from ui.dialogs.captureDialog import CaptureAreaDialog
+from ui.settings.default_settings import default_settings
 
 
 class rustDaVinci():
@@ -88,17 +89,17 @@ class rustDaVinci():
 
     def update(self):
         """ Updates pyauogui delays, booleans and paint image button"""
-        self.click_delay = float(int(self.settings.value("click_delay", "5"))/1000)
-        self.line_delay = float(int(self.settings.value("line_delay", "25"))/1000)
-        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", "100"))/1000) 
-        self.use_double_click = bool(self.settings.value("double_click", "0"))
+        self.click_delay = float(int(self.settings.value("click_delay", default_settings["click_delay"]))/1000)
+        self.line_delay = float(int(self.settings.value("line_delay", default_settings["line_delay"]))/1000)
+        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", default_settings["ctrl_area_delay"]))/1000) 
+        self.use_double_click = bool(self.settings.value("double_click", default_settings["double_click"]))
         
         # Update the pyautogui delay
         pyautogui.PAUSE = self.click_delay
 
-        if int(self.settings.value("ctrl_w", "0")) == 0 or int(self.settings.value("ctrl_h", "0")) == 0:
+        if int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0:
             self.parent.ui.paintImagePushButton.setEnabled(False)
-        elif self.org_img_ok and int(self.settings.value("ctrl_w", "0")) != 0 and int(self.settings.value("ctrl_h", "0")) != 0:
+        elif self.org_img_ok and int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) != 0 and int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) != 0:
             self.parent.ui.paintImagePushButton.setEnabled(True)
 
 
@@ -178,7 +179,7 @@ class rustDaVinci():
 
     def convert_transparency(self):
         """"""
-        background_color = rust_palette.index(hex_to_rgb(self.settings.value("default_background_color", "#ECF0F1")))
+        background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
         # Set transparency in image to default background
         try:
             self.org_img = self.org_img_template
@@ -261,8 +262,8 @@ class rustDaVinci():
         palette = ()
 
         # Choose how many colors in the palette
-        if bool(self.settings.value("use_hidden_colors", "0")):
-            if bool(self.settings.value("use_brush_opacities", "1")):
+        if bool(self.settings.value("hidden_colors", default_settings["hidden_colors"])):
+            if bool(self.settings.value("brush_opacities", default_settings["brush_opacities"])):
                 for data in rust_palette:
                     palette = palette + data
             else:
@@ -272,7 +273,7 @@ class rustDaVinci():
                         break
                     palette = palette + data
         else:
-            if bool(self.settings.value("use_brush_opacities", "1")):
+            if bool(self.settings.value("brush_opacities", default_settings["brush_opacities"])):
                 for i, data in enumerate(rust_palette):
                     if (i >= 0 and i <= 19) or (i >= 64 and i <= 83) or (i >= 128 and i <= 147) or (i >= 192 and i <= 211):
                         palette = palette + data
@@ -294,7 +295,7 @@ class rustDaVinci():
             self.org_img = image.convert("RGB")
 
         if not pixmap:
-            quality = int(self.settings.value("painting_quality", 1))
+            quality = int(self.settings.value("quality", default_settings["quality"]))
             if quality == 0:
                 im = image.im.convert("P", 0, palette_data.im)
             elif quality == 1:
@@ -470,10 +471,10 @@ class rustDaVinci():
                     self.ctrl_opacity
                     self.ctrl_color
         """
-        ctrl_x = int(self.settings.value("ctrl_x", "0"))
-        ctrl_y = int(self.settings.value("ctrl_y", "0"))
-        ctrl_w = int(self.settings.value("ctrl_w", "0"))
-        ctrl_h = int(self.settings.value("ctrl_h", "0"))
+        ctrl_x = int(self.settings.value("ctrl_x", default_settings["ctrl_x"]))
+        ctrl_y = int(self.settings.value("ctrl_y", default_settings["ctrl_y"]))
+        ctrl_w = int(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
+        ctrl_h = int(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
 
         # Calculate the distance between two items on a row of six items (Size)
         first_x_coord_of_six_v1 = ctrl_x + (ctrl_w/6.5454)
@@ -527,7 +528,7 @@ class rustDaVinci():
                                          (first_y_coord_of_eight + (row * dist_btwn_y_coords_of_eight))))
         
         # Hidden colors location
-        if bool(self.settings.value("use_hidden_colors", "0")):
+        if bool(self.settings.value("hidden_colors", default_settings["hidden_colors"])):
             self.ctrl_color.append((ctrl_x + (ctrl_w/18.0000), ctrl_y + (ctrl_h/2.1518)))
             self.ctrl_color.append((ctrl_x + (ctrl_w/4.2353), ctrl_y + (ctrl_h/2.1406)))
             self.ctrl_color.append((ctrl_x + (ctrl_w/13.0909), ctrl_y + (ctrl_h/1.8430)))
@@ -581,10 +582,10 @@ class rustDaVinci():
                     self.pixels,
                     self.lines
         """
-        minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
-        colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
-        if bool(self.settings.value("skip_default_background_color", "1")):
-            background_color = rust_palette.index(hex_to_rgb(self.settings.value("default_background_color", "#ECF0F1")))
+        minimum_line_width = int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
+        colors_to_skip = self.settings.value("skip_colors", default_settings["skip_colors"]).replace(" ", "").split(",")
+        if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
+            background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
             colors_to_skip.append(background_color)
         colors_to_skip = list(map(int, colors_to_skip))
 
@@ -673,7 +674,7 @@ class rustDaVinci():
         est_time_lines = int((self.pixels * one_click_time) + (self.lines * one_line_time) + change_color_time + other_time)
         est_time_click = int((self.tot_pixels * one_click_time) + change_color_time + other_time)
 
-        draw_lines = bool(self.settings.value("draw_lines", "1"))
+        draw_lines = bool(self.settings.value("draw_lines", default_settings["draw_lines"]))
 
         if not draw_lines:
             self.prefer_lines = False
@@ -728,26 +729,26 @@ class rustDaVinci():
         """ Start the painting """
         # Load settings
         self.update()
-        ctrl_x = int(self.settings.value("ctrl_x", "0"))
-        ctrl_y = int(self.settings.value("ctrl_h", "0"))
-        ctrl_w = int(self.settings.value("ctrl_w", "0"))
-        ctrl_h = int(self.settings.value("ctrl_h", "0"))
+        ctrl_x = int(self.settings.value("ctrl_x", default_settings["ctrl_x"]))
+        ctrl_y = int(self.settings.value("ctrl_h", default_settings["ctrl_y"]))
+        ctrl_w = int(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
+        ctrl_h = int(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
 
-        self.pause_key = str(self.settings.value("pause_key", "f10")).lower()
-        self.skip_key = str(self.settings.value("skip_key", "f11")).lower()
-        self.exit_key = str(self.settings.value("cancel_key", "esc")).lower()
+        self.pause_key = str(self.settings.value("pause_key", default_settings["pause_key"])).lower()
+        self.skip_key = str(self.settings.value("skip_key", default_settings["skip_key"])).lower()
+        self.exit_key = str(self.settings.value("abort_key", default_settings["abort_key"])).lower()
 
-        colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
-        if bool(self.settings.value("skip_default_background_color", "1")):
-            background_color = rust_palette.index(hex_to_rgb(self.settings.value("default_background_color", "#ECF0F1")))
+        colors_to_skip = self.settings.value("skip_colors", default_settings["skip_colors"]).replace(" ", "").split(",")
+        if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
+            background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
             colors_to_skip.append(background_color)
         colors_to_skip = list(map(int, colors_to_skip))
-        minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
-        auto_update_canvas = bool(self.settings.value("auto_update_canvas", 1))
-        auto_update_canvas_completed = bool(self.settings.value("auto_update_canvas_completed", 1))
+        minimum_line_width = int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
+        auto_update_canvas = bool(self.settings.value("update_canvas", default_settings["update_canvas"]))
+        auto_update_canvas_completed = bool(self.settings.value("update_canvas_completed", default_settings["update_canvas_completed"]))
 
-        use_hidden_colors = bool(self.settings.value("use_hidden_colors", "0"))
-        use_brush_opacities = bool(self.settings.value("use_brush_opacities", "1"))
+        use_hidden_colors = bool(self.settings.value("hidden_colors", default_settings["hidden_colors"]))
+        use_brush_opacities = bool(self.settings.value("brush_opacities", default_settings["brush_opacities"]))
 
         # Boolean reset
         self.is_paused = False
@@ -777,7 +778,7 @@ class rustDaVinci():
         if btn == QMessageBox.No:
             return
 
-        if bool(self.settings.value("window_topmost_painting", "1")):
+        if bool(self.settings.value("window_topmost", default_settings["window_topmost"])):
             self.parent.setWindowFlags(self.parent.windowFlags() | Qt.WindowStaysOnTopHint)
             self.parent.show()
 
@@ -802,7 +803,7 @@ class rustDaVinci():
         self.click_pixel(self.ctrl_size[0]) # To set focus on the rust window
         time.sleep(.5)
         self.click_pixel(self.ctrl_size[0])
-        self.click_pixel(self.ctrl_brush[self.settings.value("painting_brush", 1)])
+        self.click_pixel(self.ctrl_brush[self.settings.value("brush", default_settings["brush"])])
 
         pixel_progress = 0
         prev_progress_multiplier = -1
@@ -876,7 +877,7 @@ class rustDaVinci():
                         QApplication.processEvents()
                         self.hotkey_label.hide()
 
-                        if bool(self.settings.value("window_topmost_painting", "1")):
+                        if bool(self.settings.value("window_topmost", default_settings["window_topmost"])):
                             self.parent.setWindowFlags(self.parent.windowFlags() & ~Qt.WindowStaysOnTopHint)
                             self.parent.show()
                         self.parent.activateWindow()
@@ -966,7 +967,7 @@ class rustDaVinci():
         QApplication.processEvents()
         self.hotkey_label.hide()
         
-        if bool(self.settings.value("window_topmost_painting", "1")):
+        if bool(self.settings.value("window_topmost", default_settings["window_topmost"])):
             self.parent.setWindowFlags(self.parent.windowFlags() & ~Qt.WindowStaysOnTopHint)
             self.parent.show()
         self.parent.activateWindow()
