@@ -125,6 +125,10 @@ class Settings(QtWidgets.QDialog):
 
         default_background_color = self.settings.value("background_color", default_settings["background_color"])
         rgb = hex_to_rgb(default_background_color)
+        if (rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114) > 186:
+            self.qpalette.setColor(QPalette.Text, QColor(0, 0, 0))
+        else:
+            self.qpalette.setColor(QPalette.Text, QColor(255, 255, 255))
         self.qpalette.setColor(QPalette.Base, QColor(rgb[0], rgb[1], rgb[2]))
         self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
         self.ui.backgroundColorLineEdit.setText(default_background_color)
@@ -221,6 +225,10 @@ class Settings(QtWidgets.QDialog):
         self.ui.cancelKeyLineEdit.setText(default_settings["abort_key"])
 
         rgb = hex_to_rgb(default_settings["background_color"])
+        if (rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114) > 186:
+            self.qpalette.setColor(QPalette.Text, QColor(0, 0, 0))
+        else:
+            self.qpalette.setColor(QPalette.Text, QColor(255, 255, 255))
         self.qpalette.setColor(QPalette.Base, QColor(rgb[0], rgb[1], rgb[2]))
         self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
         self.ui.backgroundColorLineEdit.setText(default_settings["background_color"])
@@ -261,10 +269,14 @@ class Settings(QtWidgets.QDialog):
     def color_picker_clicked(self):
         """"""
         rgb = hex_to_rgb(self.ui.backgroundColorLineEdit.text())
-        colorDialog = QColorDialog(QColor(rgb[0], rgb[1], rgb[2]), self.parent)
-        selected_color = colorDialog.getColor()
+        colorDialog = QColorDialog()
+        selected_color = colorDialog.getColor(QColor(rgb[0], rgb[1], rgb[2]), self.parent, "Select a color")
         if selected_color.isValid():
             color = closest_color(hex_to_rgb(selected_color.name()))
+            if (color[0]*0.299 + color[1]*0.587 + color[2]*0.114) > 186:
+                self.qpalette.setColor(QPalette.Text, QColor(0, 0, 0))
+            else:
+                self.qpalette.setColor(QPalette.Text, QColor(255, 255, 255))
             self.qpalette.setColor(QPalette.Base, QColor(color[0], color[1], color[2]))
             self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
             hex = rgb_to_hex(color)
