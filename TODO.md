@@ -4,7 +4,6 @@
 - Add help tags to all the modules in the gui?
 - Create build script to make it easy to create windows executable.
 - Setup CI travis yml
-- NEXT TIME: Fix default color in rustdavinci file, it is fixed in settings now
 
 
 ## Testing

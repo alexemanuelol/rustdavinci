@@ -19,6 +19,7 @@ import os
 
 from lib.rustPaletteData import rust_palette
 from lib.captureArea import capture_area
+from lib.color_functions import hex_to_rgb
 from ui.dialogs.captureDialog import CaptureAreaDialog
 
 
@@ -177,9 +178,7 @@ class rustDaVinci():
 
     def convert_transparency(self):
         """"""
-        background_color = int(self.settings.value("default_background_color", "16"))
-        if background_color == "": background_color = 16
-
+        background_color = rust_palette.index(hex_to_rgb(self.settings.value("default_background_color", "#ECF0F1")))
         # Set transparency in image to default background
         try:
             self.org_img = self.org_img_template
@@ -585,7 +584,8 @@ class rustDaVinci():
         minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
         colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
         if bool(self.settings.value("skip_default_background_color", "1")):
-            colors_to_skip.append(self.settings.value("default_background_color", "16"))
+            background_color = rust_palette.index(hex_to_rgb(self.settings.value("default_background_color", "#ECF0F1")))
+            colors_to_skip.append(background_color)
         colors_to_skip = list(map(int, colors_to_skip))
 
         self.img_colors = []
@@ -739,7 +739,8 @@ class rustDaVinci():
 
         colors_to_skip = self.settings.value("skip_colors", "").replace(" ", "").split(",")
         if bool(self.settings.value("skip_default_background_color", "1")):
-            colors_to_skip.append(self.settings.value("default_background_color", "16"))
+            background_color = rust_palette.index(hex_to_rgb(self.settings.value("default_background_color", "#ECF0F1")))
+            colors_to_skip.append(background_color)
         colors_to_skip = list(map(int, colors_to_skip))
         minimum_line_width = int(self.settings.value("minimum_line_width", "10"))
         auto_update_canvas = bool(self.settings.value("auto_update_canvas", 1))
