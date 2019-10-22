@@ -8,7 +8,7 @@ from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QColorDialog
+from PyQt5.QtWidgets import QColorDialog, QListWidgetItem
 
 from ui.settings.settingsui import Ui_SettingsUI
 from lib.rustPaletteData import rust_palette
@@ -52,6 +52,8 @@ class Settings(QtWidgets.QDialog):
         self.ui.applyPushButton.clicked.connect(self.apply_clicked)
         self.ui.clearCoordinatesPushButton.clicked.connect(self.clear_ctrl_coords_clicked)
         self.ui.colorPickerPushButton.clicked.connect(self.color_picker_clicked)
+        self.ui.addSkipColorPushButton.clicked.connect(self.addSkipColor_clicked)
+        self.ui.removeSkipColorPushButton.clicked.connect(self.removeSkipColor_clicked)
 
         # Checkboxes
         self.ui.setTopmostPaintingCheckBox.stateChanged.connect(self.enableApply)
@@ -144,6 +146,19 @@ class Settings(QtWidgets.QDialog):
         minimum_line_width = str(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
         self.ui.minimumLineWidthLineEdit.setText(minimum_line_width)
 
+        # Skip color list
+        skip_colors2 = self.settings.value("skip_colors2", [], "QStringList")
+        if len(skip_colors2) != 0:
+            for color in skip_colors2:
+                rgb = hex_to_rgb(color)
+                i = QListWidgetItem(color)
+                i.setBackground(QColor(rgb[0], rgb[1], rgb[2]))
+                if (rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114) > 186:
+                    i.setForeground(QColor(0, 0, 0))
+                else:
+                    i.setForeground(QColor(255, 255, 255))
+                self.ui.skipColorsListWidget.addItem(i)
+
 
     def setting_to_checkbox(self, name, checkBox, default):
         """ Settings integer values converted to checkbox """
@@ -182,6 +197,16 @@ class Settings(QtWidgets.QDialog):
         self.settings.setValue("line_delay", self.ui.lineDrawingDelayLineEdit.text())
         self.settings.setValue("ctrl_area_delay", self.ui.controlAreaDelayLineEdit.text())
         self.settings.setValue("minimum_line_width", self.ui.minimumLineWidthLineEdit.text())
+
+        # Skip color list
+        if self.ui.skipColorsListWidget.count() != 0:
+            temp_list = []
+            for i in range(self.ui.skipColorsListWidget.count()):
+                temp_list.append(self.ui.skipColorsListWidget.item(i).text())
+            self.settings.setValue("skip_colors2", temp_list)
+        else:
+            self.settings.setValue("skip_colors2", [])
+
 
         self.parent.rustDaVinci.update()
 
@@ -239,6 +264,19 @@ class Settings(QtWidgets.QDialog):
         self.ui.controlAreaDelayLineEdit.setText(str(default_settings["ctrl_area_delay"]))
         self.ui.minimumLineWidthLineEdit.setText(str(default_settings["minimum_line_width"]))
 
+        # Set skip color list to default
+        self.ui.skipColorsListWidget.clear()
+        if default_settings["skip_colors2"] != []:
+            for hex in default_settings["skip_colors2"]:
+                rgb = hex_to_rgb(hex)
+                i = QListWidgetItem(hex)
+                i.setBackground(QColor(rgb[0], rgb[1], rgb[2]))
+                if (rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114) > 186:
+                    i.setForeground(QColor(0, 0, 0))
+                else:
+                    i.setForeground(QColor(255, 255, 255))
+                self.ui.skipColorsListWidget.addItem(i)
+
 
     def ok_clicked(self):
         """ Save and quit settings. """
@@ -281,3 +319,33 @@ class Settings(QtWidgets.QDialog):
             self.ui.backgroundColorLineEdit.setPalette(self.qpalette)
             hex = rgb_to_hex(color)
             self.ui.backgroundColorLineEdit.setText(hex)
+
+
+    def addSkipColor_clicked(self):
+        colorDialog = QColorDialog()
+        selected_color = colorDialog.getColor(QColor(255, 255, 255), self.parent, "Select a color to skip")
+        if selected_color.isValid():
+            color = closest_color(hex_to_rgb(selected_color.name()))
+            hex = rgb_to_hex(color)
+
+            # Verify that the color does not already exist in the list
+            for i in range(self.ui.skipColorsListWidget.count()):
+                if self.ui.skipColorsListWidget.item(i).text() == hex:
+                    return
+
+            i = QListWidgetItem(hex)
+            i.setBackground(QColor(color[0], color[1], color[2]))
+            if (color[0]*0.299 + color[1]*0.587 + color[2]*0.114) > 186:
+                i.setForeground(QColor(0, 0, 0))
+            else:
+                i.setForeground(QColor(255, 255, 255))
+            self.ui.skipColorsListWidget.addItem(i)
+            self.enableApply()
+
+
+    def removeSkipColor_clicked(self):
+        listItems = self.ui.skipColorsListWidget.selectedItems()
+        if not listItems: return
+        for item in listItems:
+            self.ui.skipColorsListWidget.takeItem(self.ui.skipColorsListWidget.row(item))
+            self.enableApply()

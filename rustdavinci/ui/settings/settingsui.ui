@@ -54,41 +54,13 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>100</y>
+       <y>80</y>
        <width>351</width>
        <height>20</height>
       </rect>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QLabel" name="faqLinkLabel">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>390</y>
-       <width>181</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/alexemanuelol/RustDaVinci/blob/master/docs/FAQ.md&quot;&gt;&lt;span style=&quot; font-family:'Arial Black'; font-weight:600; text-decoration: underline; color:#000000;&quot;&gt;Frequently Asked Questions&lt;/span&gt;&lt;/a&gt;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="textFormat">
-      <enum>Qt::RichText</enum>
-     </property>
-     <property name="scaledContents">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::TextBrowserInteraction</set>
      </property>
     </widget>
     <widget class="QComboBox" name="paintingQualityComboBox">
@@ -134,7 +106,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>170</y>
+       <y>140</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -147,7 +119,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>150</y>
+       <y>120</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -160,7 +132,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>190</y>
+       <y>160</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -173,7 +145,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>150</y>
+       <y>120</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -186,7 +158,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>210</y>
+       <y>180</y>
        <width>101</width>
        <height>23</height>
       </rect>
@@ -205,7 +177,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>190</y>
+       <y>160</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -218,7 +190,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>170</y>
+       <y>140</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -231,7 +203,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>130</y>
+       <y>100</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -244,7 +216,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>170</y>
+       <y>140</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -257,7 +229,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>130</y>
+       <y>100</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -270,7 +242,7 @@
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>130</y>
+       <y>100</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -283,7 +255,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>190</y>
+       <y>160</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -296,7 +268,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>150</y>
+       <y>120</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -309,7 +281,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>50</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -319,6 +291,129 @@
      </property>
      <property name="checked">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="Line" name="line_7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>200</y>
+       <width>351</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="skipDefaultColorCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>230</y>
+       <width>341</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Skip painting the default background color</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_13">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>260</y>
+       <width>161</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Default background color:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="colorPickerPushButton">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>260</y>
+       <width>31</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="backgroundColorLineEdit">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>260</y>
+       <width>131</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>#ECF0F1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="skipColorsListWidget">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>310</y>
+       <width>241</width>
+       <height>111</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="addSkipColorPushButton">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>310</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="removeSkipColorPushButton">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>340</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_48">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>290</y>
+       <width>331</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Skip these colors:</string>
      </property>
     </widget>
    </widget>
@@ -417,27 +512,11 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QCheckBox" name="skipDefaultColorCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>200</y>
-       <width>341</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Skip painting the default background color</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QCheckBox" name="autoUpdateCanvasCheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>260</y>
+       <y>320</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -453,7 +532,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>280</y>
+       <y>340</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -469,7 +548,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>340</y>
+       <y>390</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -485,7 +564,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>360</y>
+       <y>410</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -495,64 +574,6 @@
      </property>
      <property name="checked">
       <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_13">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>140</y>
-       <width>161</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Default background color:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_14">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>170</y>
-       <width>161</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Skip these colors:</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="backgroundColorLineEdit">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>140</y>
-       <width>131</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>#ECF0F1</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="skipColorsLineEdit">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>170</y>
-       <width>171</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>36, 56, 76</string>
      </property>
     </widget>
     <widget class="Line" name="line_3">
@@ -572,7 +593,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>310</y>
+       <y>360</y>
        <width>351</width>
        <height>20</height>
       </rect>
@@ -581,17 +602,30 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QPushButton" name="colorPickerPushButton">
+    <widget class="QLineEdit" name="skipColorsLineEdit">
      <property name="geometry">
       <rect>
-       <x>320</x>
+       <x>180</x>
        <y>140</y>
-       <width>31</width>
+       <width>171</width>
        <height>20</height>
       </rect>
      </property>
      <property name="text">
-      <string>...</string>
+      <string>36, 56, 76</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_47">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>140</y>
+       <width>161</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Skip these colors:</string>
      </property>
     </widget>
    </widget>

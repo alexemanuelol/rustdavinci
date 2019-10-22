@@ -23,7 +23,6 @@
 
 # Potentially big todos
 - Try to lower the calculation time for statistics. At the moment it is very long...
-- Change the way to append colors to skip. Perhaps show the actual colors from the palette?
 
 
 # Known errors
