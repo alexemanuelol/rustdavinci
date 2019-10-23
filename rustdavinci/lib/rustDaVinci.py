@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QSettings, Qt, QRect
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QMessageBox, QInputDialog, QFileDialog, QApplication, QLabel
+
 
 from pynput import keyboard
 from io import BytesIO
@@ -819,7 +820,7 @@ class rustDaVinci():
             self.parent.show()
 
         if hide_preview_paint and self.parent.is_expanded:
-            self.parent.show_image_clicked()
+            self.parent.preview_clicked()
 
 
         self.parent.ui.log_TextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))

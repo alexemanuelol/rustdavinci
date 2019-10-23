@@ -6,13 +6,15 @@ from pynput import keyboard
 import tkinter
 import pyautogui
 import win32api
+import time
 
-exit_capturing_mode = False
+abort_capturing_mode = False
+
 
 def key_event(key):
-    """"""
-    global exit_capturing_mode
-    exit_capturing_mode = True
+    """ Abort capturing mode """
+    global abort_capturing_mode
+    abort_capturing_mode = True
 
 
 def capture_area():
@@ -22,9 +24,10 @@ def capture_area():
                 area_width,
                 area_height
     """
-    global exit_capturing_mode
+    global abort_capturing_mode
     listener = keyboard.Listener(on_press=key_event)
     listener.start()
+
     root = tkinter.Tk().withdraw()
     area = tkinter.Toplevel(root)
     area.overrideredirect(1)
@@ -35,8 +38,8 @@ def capture_area():
     pressed, active = False, False
 
     while True:
-        if exit_capturing_mode:
-            exit_capturing_mode = False
+        if abort_capturing_mode:
+            abort_capturing_mode = False
             listener.stop()
             return False
 
@@ -69,5 +72,23 @@ def capture_area():
         area.update()
 
 
-if __name__ == "__main__":
-    print(capture_area())
+def show_area(x, y, w, h):
+    """ Set a grey box at the coordinates """
+    global abort_capturing_mode
+    listener = keyboard.Listener(on_press=key_event)
+    listener.start()
+
+    root = tkinter.Tk().withdraw()
+    area = tkinter.Toplevel(root)
+    area.overrideredirect(1)
+    area.wm_attributes('-alpha',0.5)
+    area.geometry("0x0")
+
+    area.geometry("%dx%d+%d+%d" % (w, h, x, y))
+
+    area.update_idletasks()
+    area.update()
+
+    time.sleep(3)
+
+    area.destroy()

@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import QDialog, QColorDialog, QListWidgetItem
+
 import sys
 
-from PyQt5 import QtCore
-from PyQt5 import QtGui
-from PyQt5 import QtWidgets
-
-from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QColorDialog, QListWidgetItem
-
+from ui.settings.default_settings import default_settings
 from ui.settings.settingsui import Ui_SettingsUI
 from lib.rustPaletteData import rust_palette
 from lib.color_functions import hex_to_rgb, rgb_to_hex, closest_color
-from ui.settings.default_settings import default_settings
+from lib.captureArea import show_area
 
 
-class Settings(QtWidgets.QDialog):
-
+class Settings(QDialog):
     def __init__(self, parent):
         """ Settings init module """
-        QtWidgets.QDialog.__init__(self, parent)
+        QDialog.__init__(self, parent)
         
         # Setup UI
         self.ui = Ui_SettingsUI()
@@ -30,8 +27,12 @@ class Settings(QtWidgets.QDialog):
         self.parent = parent
 
         # Setup Settings
-        self.settings = QtCore.QSettings()
+        self.settings = QSettings()
         self.isSettingsChanged = False
+
+        if int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0:
+            self.ui.show_ctrl_PushButton.setEnabled(False)
+        else: self.ui.show_ctrl_PushButton.setEnabled(True)
 
         self.qpalette = QPalette()
 
@@ -92,6 +93,7 @@ class Settings(QtWidgets.QDialog):
         """ When a settings is changed, enable the apply button. """
         self.isSettingsChanged = True
         self.ui.apply_PushButton.setEnabled(True)
+
 
     def loadSettings(self):
         """ Load the saved settings or the default settings. """
@@ -166,8 +168,8 @@ class Settings(QtWidgets.QDialog):
     def setting_to_checkbox(self, name, checkBox, default):
         """ Settings integer values converted to checkbox """
         val = int(self.settings.value(name, default))
-        if val: checkBox.setCheckState(QtCore.Qt.Checked)
-        else: checkBox.setCheckState(QtCore.Qt.Unchecked)
+        if val: checkBox.setCheckState(Qt.Checked)
+        else: checkBox.setCheckState(Qt.Unchecked)
         
 
     def saveSettings(self):
@@ -232,17 +234,17 @@ class Settings(QtWidgets.QDialog):
     def default_clicked(self):
         """ Set everything to the default values. """
         # Checkboxes
-        self.ui.topmost_CheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.skip_background_CheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.update_canvas_CheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.update_canvas_end_CheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.draw_lines_CheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.double_click_CheckBox.setCheckState(QtCore.Qt.Unchecked)
-        self.ui.show_info_CheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.show_preview_CheckBox.setCheckState(QtCore.Qt.Unchecked)
-        self.ui.hide_preview_CheckBox.setCheckState(QtCore.Qt.Unchecked)
-        self.ui.opacities_CheckBox.setCheckState(QtCore.Qt.Checked)
-        self.ui.hidden_colors_CheckBox.setCheckState(QtCore.Qt.Unchecked)
+        self.ui.topmost_CheckBox.setCheckState(Qt.Checked)
+        self.ui.skip_background_CheckBox.setCheckState(Qt.Checked)
+        self.ui.update_canvas_CheckBox.setCheckState(Qt.Checked)
+        self.ui.update_canvas_end_CheckBox.setCheckState(Qt.Checked)
+        self.ui.draw_lines_CheckBox.setCheckState(Qt.Checked)
+        self.ui.double_click_CheckBox.setCheckState(Qt.Unchecked)
+        self.ui.show_info_CheckBox.setCheckState(Qt.Checked)
+        self.ui.show_preview_CheckBox.setCheckState(Qt.Unchecked)
+        self.ui.hide_preview_CheckBox.setCheckState(Qt.Unchecked)
+        self.ui.opacities_CheckBox.setCheckState(Qt.Checked)
+        self.ui.hidden_colors_CheckBox.setCheckState(Qt.Unchecked)
 
         # Comboboxes
         self.ui.quality_ComboBox.setCurrentIndex(default_settings["quality"])
@@ -312,11 +314,16 @@ class Settings(QtWidgets.QDialog):
 
 
     def show_ctrl_clicked(self):
-        None
+        """ Show where control area is located """
+        x = int(self.settings.value("ctrl_x", default_settings["ctrl_x"]))
+        y = int(self.settings.value("ctrl_y", default_settings["ctrl_y"]))
+        w = int(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
+        h = int(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
+        show_area(x, y, w, h)
 
 
     def color_picker_clicked(self):
-        """"""
+        """ Open a QColorDialog window """
         rgb = hex_to_rgb(self.ui.background_LineEdit.text())
         colorDialog = QColorDialog()
         selected_color = colorDialog.getColor(QColor(rgb[0], rgb[1], rgb[2]), self, "Select the default background color")
@@ -333,6 +340,7 @@ class Settings(QtWidgets.QDialog):
 
 
     def add_skip_color_clicked(self):
+        """ Add a color to skip_colors """
         colorDialog = QColorDialog()
         selected_color = colorDialog.getColor(QColor(255, 255, 255), self, "Select a color that should be skipped in the painting process")
         if selected_color.isValid():
@@ -355,6 +363,7 @@ class Settings(QtWidgets.QDialog):
 
 
     def remove_skip_color_clicked(self):
+        """ Remove a color from skip_colors """
         listItems = self.ui.skip_colors_ListWidget.selectedItems()
         if not listItems: return
         for item in listItems:

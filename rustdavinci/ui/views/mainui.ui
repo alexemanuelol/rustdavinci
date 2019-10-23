@@ -209,7 +209,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="show_image_PushButton">
+   <widget class="QPushButton" name="preview_PushButton">
     <property name="enabled">
      <bool>false</bool>
     </property>

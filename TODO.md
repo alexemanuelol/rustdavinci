@@ -1,6 +1,8 @@
 # TODO
 
 ## Coding
+- Cleanup in rustDaVinci.py
+- Settings: add a button that will open a dialog with all the possible colors
 - Add help tags to all the modules in the gui?
 - Create build script to make it easy to create windows executable.
 - Setup CI travis yml
@@ -24,3 +26,4 @@
 
 
 # Known errors
+- On the shotgun picture, it does not show the original picture... shows: "QPixmap::scaled: Pixmap is a null pixmap" when clicking "Show Image" when clicking "Show Image"

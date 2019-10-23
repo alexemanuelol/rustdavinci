@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtCore
-from PyQt5 import QtGui
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtWidgets import QMenu, QLabel, QFrame
+
+from PyQt5.QtCore import QRect, QSettings, pyqtSignal, QSize, Qt
+from PyQt5.QtGui import QPixmap, QImage, QCloseEvent
+from PyQt5.QtWidgets import QMenu, QLabel, QFrame, QMainWindow, QMenu, QPushButton
+
 from PIL import Image
 from PIL.ImageQt import ImageQt
 
 from ui.settings.settings import Settings
-from lib.rustDaVinci import rustDaVinci
-
 from ui.views.mainui import Ui_MainUI
-
+from lib.rustDaVinci import rustDaVinci
 import ui.resources.icons_rc
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QMainWindow):
 
-    closeEventSignal = QtCore.pyqtSignal(QtGui.QCloseEvent)
+    closeEventSignal = pyqtSignal(QCloseEvent)
 
     def __init__(self, parent=None):
         """ Main window init """
@@ -30,7 +27,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         # Setup settings object
-        self.settings = QtCore.QSettings()
+        self.settings = QSettings()
 
         # Setup rustDaVinci object
         self.rustDaVinci = rustDaVinci(self)
@@ -51,7 +48,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def connectAll(self):
         """ Connect all the buttons """
         # Add actions to the loadImagePushButton
-        loadMenu = QtWidgets.QMenu()
+        loadMenu = QMenu()
         loadMenu.addAction("From File...", self.load_image_file_clicked)
         loadMenu.addAction("From URL...", self.load_image_URL_clicked)
         self.action_clearImage = loadMenu.addAction("Clear image", self.clear_image_clicked)
@@ -59,7 +56,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.load_image_PushButton.setMenu(loadMenu)
 
         # Add actions to the identifyAreasPushButton
-        identifyMenu = QtWidgets.QMenu()
+        identifyMenu = QMenu()
         identifyMenu.addAction("Manually", self.locate_ctrl_manually_clicked)
         identifyMenu.addAction("Automatically", self.locate_ctrl_automatically_clicked)
         self.ui.identify_ctrl_PushButton.setMenu(identifyMenu)
@@ -67,7 +64,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.paint_image_PushButton.clicked.connect(self.paint_image_clicked)
         self.ui.settings_PushButton.clicked.connect(self.settings_clicked)
 
-        self.ui.show_image_PushButton.clicked.connect(self.show_image_clicked)
+        self.ui.preview_PushButton.clicked.connect(self.preview_clicked)
 
 
     def load_image_file_clicked(self):
@@ -75,7 +72,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rustDaVinci.load_image_from_file()
         if self.rustDaVinci.org_img != None:
             self.action_clearImage.setEnabled(True)
-            self.ui.show_image_PushButton.setEnabled(True)
+            self.ui.preview_PushButton.setEnabled(True)
         if self.is_expanded:
             self.label.hide()
             self.expand_window()
@@ -86,7 +83,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rustDaVinci.load_image_from_url()
         if self.rustDaVinci.org_img != None:
             self.action_clearImage.setEnabled(True)
-            self.ui.show_image_PushButton.setEnabled(True)
+            self.ui.preview_PushButton.setEnabled(True)
         if self.is_expanded:
             self.label.hide()
             self.expand_window()
@@ -96,10 +93,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """ Clear the current image """
         self.rustDaVinci.clear_image()
         self.action_clearImage.setEnabled(False)
-        self.ui.show_image_PushButton.setEnabled(False)
+        self.ui.preview_PushButton.setEnabled(False)
         self.ui.paint_image_PushButton.setEnabled(False)
         self.is_expanded = True
-        self.show_image_clicked()
+        self.preview_clicked()
 
 
     def locate_ctrl_manually_clicked(self):
@@ -123,13 +120,13 @@ class MainWindow(QtWidgets.QMainWindow):
         settings.exec_()
 
 
-    def show_image_clicked(self):
+    def preview_clicked(self):
         """ Expand the main window and create image object """
         if self.is_expanded:
-            self.ui.show_image_PushButton.setText("Show Image >>")
+            self.ui.preview_PushButton.setText("Show Image >>")
             self.is_expanded = False
-            self.setMinimumSize(QtCore.QSize(240, 450))
-            self.setMaximumSize(QtCore.QSize(240, 450))
+            self.setMinimumSize(QSize(240, 450))
+            self.setMaximumSize(QSize(240, 450))
             self.resize(240, 450)
             if self.label != None:
                 self.label.hide()
@@ -144,14 +141,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """"""
         self.is_expanded = True
 
-        self.ui.show_image_PushButton.setText("<< Hide Image")
+        self.ui.preview_PushButton.setText("<< Hide Image")
 
-        self.setMinimumSize(QtCore.QSize(800, 450))
-        self.setMaximumSize(QtCore.QSize(800, 450))
+        self.setMinimumSize(QSize(800, 450))
+        self.setMaximumSize(QSize(800, 450))
         self.resize(800, 450)
 
         self.label = QLabel(self)
-        self.label.setGeometry(QtCore.QRect(240, 10, 550, 380))
+        self.label.setGeometry(QRect(240, 10, 550, 380))
         self.label.setFrameShape(QFrame.Panel)
         self.label.setLineWidth(1)
         self.label.show()
@@ -163,22 +160,22 @@ class MainWindow(QtWidgets.QMainWindow):
         elif self.rustDaVinci.pixmap_on_display == 2:
             pixmap = self.rustDaVinci.quantized_img_pixmap_high
 
-        pixmap = pixmap.scaled(550, 380, QtCore.Qt.KeepAspectRatio)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        pixmap = pixmap.scaled(550, 380, Qt.KeepAspectRatio)
+        self.label.setAlignment(Qt.AlignCenter)
         self.label.setPixmap(pixmap)
 
-        self.show_original_PushButton = QtWidgets.QPushButton("Original", self)
-        self.show_original_PushButton.setGeometry(QtCore.QRect(240, 400, 180, 21))
+        self.show_original_PushButton = QPushButton("Original", self)
+        self.show_original_PushButton.setGeometry(QRect(240, 400, 180, 21))
         self.show_original_PushButton.show()
         self.show_original_PushButton.clicked.connect(self.show_original_pixmap)
 
-        self.show_normal_PushButton = QtWidgets.QPushButton("Normal", self)
-        self.show_normal_PushButton.setGeometry(QtCore.QRect(425, 400, 180, 21))
+        self.show_normal_PushButton = QPushButton("Normal", self)
+        self.show_normal_PushButton.setGeometry(QRect(425, 400, 180, 21))
         self.show_normal_PushButton.show()
         self.show_normal_PushButton.clicked.connect(self.show_normal_pixmap)
 
-        self.show_high_PushButton = QtWidgets.QPushButton("High", self)
-        self.show_high_PushButton.setGeometry(QtCore.QRect(610, 400, 180, 21))
+        self.show_high_PushButton = QPushButton("High", self)
+        self.show_high_PushButton.setGeometry(QRect(610, 400, 180, 21))
         self.show_high_PushButton.show()
         self.show_high_PushButton.clicked.connect(self.show_high_pixmap)
 

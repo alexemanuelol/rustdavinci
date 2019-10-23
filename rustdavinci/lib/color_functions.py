@@ -7,19 +7,19 @@ from lib.rustPaletteData import rust_palette
 
 
 def hex_to_rgb(hex):
-    """"""
+    """ Convert hexadecimal color to rgb """
     h = hex.lstrip("#")
     rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
     return rgb
 
 
 def rgb_to_hex(rgb):
-    """"""
+    """ Convert rgb to hexadecimal color """
     return ("#%02x%02x%02x" % rgb).upper()
 
 
 def closest_color(rgb):
-    """"""
+    """ Find the closest color from the rust_palette file """
     r, g, b = rgb
     color_diffs = []
     for color in rust_palette:

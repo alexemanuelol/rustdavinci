@@ -9,11 +9,11 @@ from PyQt5.QtWidgets import QDialog, QLabel, QPushButton
 class CaptureAreaDialog(QDialog):
 
     def __init__(self, parent=None, dialog=0):
-        """ init dialog module """
+        """ init CaptureAreaDialog module """
         super(CaptureAreaDialog, self).__init__(parent)
         self.setModal(True)
         self.resize(QSize(600, 430))
-        self.setFixedSize(600, 430)
+        self.setFixedSize(QSize(600, 430))
 
         self.label = QLabel(self)
         self.label.setWordWrap(True)
