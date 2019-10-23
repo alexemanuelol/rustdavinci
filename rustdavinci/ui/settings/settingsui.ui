@@ -54,7 +54,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>80</y>
+       <y>70</y>
        <width>351</width>
        <height>20</height>
       </rect>
@@ -63,11 +63,11 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QComboBox" name="paintingQualityComboBox">
+    <widget class="QComboBox" name="quality_ComboBox">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>20</y>
+       <y>40</y>
        <width>171</width>
        <height>22</height>
       </rect>
@@ -93,7 +93,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>20</y>
+       <y>40</y>
        <width>161</width>
        <height>21</height>
       </rect>
@@ -106,7 +106,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>140</y>
+       <y>130</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -119,7 +119,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>120</y>
+       <y>110</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -132,7 +132,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>160</y>
+       <y>150</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -141,11 +141,11 @@
       <string>(in pixels)</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="controlAreaYLineEdit">
+    <widget class="QLineEdit" name="ctrl_y_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>120</y>
+       <y>110</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -154,10 +154,10 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="clearCoordinatesPushButton">
+    <widget class="QPushButton" name="clear_coords_PushButton">
      <property name="geometry">
       <rect>
-       <x>180</x>
+       <x>130</x>
        <y>180</y>
        <width>101</width>
        <height>23</height>
@@ -170,14 +170,14 @@
       <string>Clear Coordinates</string>
      </property>
      <property name="default">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
-    <widget class="QLineEdit" name="controlAreaHeightLineEdit">
+    <widget class="QLineEdit" name="ctrl_h_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>160</y>
+       <y>150</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -186,11 +186,11 @@
       <string>0</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="controlAreaWidthLineEdit">
+    <widget class="QLineEdit" name="ctrl_w_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>140</y>
+       <y>130</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -203,7 +203,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>100</y>
+       <y>90</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -216,7 +216,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>140</y>
+       <y>130</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -229,7 +229,7 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>100</y>
+       <y>90</y>
        <width>51</width>
        <height>20</height>
       </rect>
@@ -238,11 +238,11 @@
       <string>(in pixels)</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="controlAreaXLineEdit">
+    <widget class="QLineEdit" name="ctrl_x_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>100</y>
+       <y>90</y>
        <width>101</width>
        <height>20</height>
       </rect>
@@ -255,7 +255,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>150</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -268,7 +268,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>110</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -277,11 +277,11 @@
       <string>Control area y-coordinate:</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="setTopmostPaintingCheckBox">
+    <widget class="QCheckBox" name="topmost_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>50</y>
+       <y>20</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -306,7 +306,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QCheckBox" name="skipDefaultColorCheckBox">
+    <widget class="QCheckBox" name="skip_background_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -326,7 +326,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>260</y>
+       <y>250</y>
        <width>161</width>
        <height>21</height>
       </rect>
@@ -335,11 +335,11 @@
       <string>Default background color:</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="colorPickerPushButton">
+    <widget class="QPushButton" name="color_picker_PushButton">
      <property name="geometry">
       <rect>
        <x>320</x>
-       <y>260</y>
+       <y>250</y>
        <width>31</width>
        <height>20</height>
       </rect>
@@ -348,11 +348,11 @@
       <string>...</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="backgroundColorLineEdit">
+    <widget class="QLineEdit" name="background_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>260</y>
+       <y>250</y>
        <width>131</width>
        <height>20</height>
       </rect>
@@ -367,7 +367,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QListWidget" name="skipColorsListWidget">
+    <widget class="QListWidget" name="skip_colors_ListWidget">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -377,7 +377,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="addSkipColorPushButton">
+    <widget class="QPushButton" name="add_skip_color_PushButton">
      <property name="geometry">
       <rect>
        <x>270</x>
@@ -390,7 +390,7 @@
       <string>Add</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="removeSkipColorPushButton">
+    <widget class="QPushButton" name="remove_skip_color_PushButton">
      <property name="geometry">
       <rect>
        <x>270</x>
@@ -413,7 +413,26 @@
       </rect>
      </property>
      <property name="text">
-      <string>Skip these colors:</string>
+      <string>Skip painting these colors:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="show_ctrl_PushButton">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>180</y>
+       <width>101</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="text">
+      <string>Show Controls</string>
+     </property>
+     <property name="default">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
@@ -421,7 +440,7 @@
     <attribute name="title">
      <string>Painting</string>
     </attribute>
-    <widget class="QLineEdit" name="pauseKeyLineEdit">
+    <widget class="QLineEdit" name="pause_key_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -460,7 +479,7 @@
       <string>Skip Color Hotkey:</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="skipColorKeyLineEdit">
+    <widget class="QLineEdit" name="skip_key_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -483,10 +502,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Cancel Hotkey:</string>
+      <string>Abort Hotkey:</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="cancelKeyLineEdit">
+    <widget class="QLineEdit" name="abort_key_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -512,11 +531,11 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QCheckBox" name="autoUpdateCanvasCheckBox">
+    <widget class="QCheckBox" name="update_canvas_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>320</y>
+       <y>140</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -528,11 +547,11 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="autoUpdateCanvasWhenCompletedCheckBox">
+    <widget class="QCheckBox" name="update_canvas_end_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>340</y>
+       <y>160</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -544,11 +563,11 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="useBrushOpacitiesCheckBox">
+    <widget class="QCheckBox" name="opacities_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>390</y>
+       <y>340</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -560,11 +579,11 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="drawLinesCheckBox">
+    <widget class="QCheckBox" name="draw_lines_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>410</y>
+       <y>180</y>
        <width>341</width>
        <height>17</height>
       </rect>
@@ -576,24 +595,11 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="Line" name="line_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>230</y>
-       <width>351</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
     <widget class="Line" name="line_4">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>360</y>
+       <y>310</y>
        <width>351</width>
        <height>20</height>
       </rect>
@@ -602,30 +608,87 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QLineEdit" name="skipColorsLineEdit">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>140</y>
-       <width>171</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>36, 56, 76</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_47">
+    <widget class="QCheckBox" name="double_click_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>140</y>
-       <width>161</width>
-       <height>21</height>
+       <y>200</y>
+       <width>341</width>
+       <height>17</height>
       </rect>
      </property>
      <property name="text">
-      <string>Skip these colors:</string>
+      <string>Double-click the mouse for improved painting accuracy</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>370</y>
+       <width>321</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>(Only recommended if 1920x1080 resolution in-game and 
+the paint control area is automatically found)</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="hidden_colors_CheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>360</y>
+       <width>341</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Use the hidden color palette</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="show_info_CheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>220</y>
+       <width>341</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show painting information before starting the painting</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="show_preview_CheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>240</y>
+       <width>341</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Automatically show painting preview based on the quality setting
+when loading new image</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="hide_preview_CheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>280</y>
+       <width>341</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Automatically hide painting preview before painting starts</string>
      </property>
     </widget>
    </widget>
@@ -659,7 +722,7 @@
       <string>(in milliseconds)</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="mouseClickDelayLineEdit">
+    <widget class="QLineEdit" name="click_delay_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
@@ -676,7 +739,7 @@
      <property name="geometry">
       <rect>
        <x>280</x>
-       <y>40</y>
+       <y>80</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -689,7 +752,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>40</y>
+       <y>80</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -698,11 +761,11 @@
       <string>Line-draw delay:</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineDrawingDelayLineEdit">
+    <widget class="QLineEdit" name="line_delay_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>40</y>
+       <y>80</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -715,7 +778,7 @@
      <property name="geometry">
       <rect>
        <x>280</x>
-       <y>60</y>
+       <y>50</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -728,7 +791,7 @@
      <property name="geometry">
       <rect>
        <x>280</x>
-       <y>80</y>
+       <y>110</y>
        <width>81</width>
        <height>20</height>
       </rect>
@@ -741,7 +804,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>50</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -754,7 +817,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>80</y>
+       <y>110</y>
        <width>161</width>
        <height>20</height>
       </rect>
@@ -763,11 +826,11 @@
       <string>Minimum line width:</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="minimumLineWidthLineEdit">
+    <widget class="QLineEdit" name="min_line_width_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>80</y>
+       <y>110</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -776,11 +839,11 @@
       <string>10</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="controlAreaDelayLineEdit">
+    <widget class="QLineEdit" name="ctrl_delay_LineEdit">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>60</y>
+       <y>50</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -793,7 +856,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>110</y>
+       <y>140</y>
        <width>351</width>
        <height>20</height>
       </rect>
@@ -802,12 +865,12 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QComboBox" name="paintingBrushTypeComboBox">
+    <widget class="QComboBox" name="brush_type_ComboBox">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>140</y>
-       <width>111</width>
+       <y>170</y>
+       <width>141</width>
        <height>22</height>
       </rect>
      </property>
@@ -858,8 +921,8 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>140</y>
-       <width>141</width>
+       <y>170</y>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -867,51 +930,11 @@
       <string>Painting brush type:</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="doubleClickCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>210</y>
-       <width>341</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Double-click the mouse for improved painting accuracy</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_24">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>240</y>
-       <width>321</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>(Only recommended if 1920x1080 resolution in-game and 
-the paint control area is automatically found)</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="useHiddenColorsCheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>230</y>
-       <width>341</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Use the hidden color palette</string>
-     </property>
-    </widget>
     <widget class="Line" name="line_6">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>180</y>
+       <y>200</y>
        <width>351</width>
        <height>20</height>
       </rect>
@@ -1011,7 +1034,7 @@ the paint control area is automatically found)</string>
       </rect>
      </property>
      <property name="text">
-      <string>Oktober 18, 2019</string>
+      <string>Oktober 23, 2019</string>
      </property>
     </widget>
     <widget class="QLabel" name="licenseLabel">
@@ -1093,7 +1116,7 @@ Developed by AlexEmanuelol</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QPushButton" name="defaultPushButton">
+  <widget class="QPushButton" name="default_PushButton">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -1106,7 +1129,7 @@ Developed by AlexEmanuelol</string>
     <string>Defaults</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="okPushButton">
+  <widget class="QPushButton" name="ok_PushButton">
    <property name="geometry">
     <rect>
      <x>150</x>
@@ -1125,7 +1148,7 @@ Developed by AlexEmanuelol</string>
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="cancelPushButton">
+  <widget class="QPushButton" name="cancel_PushButton">
    <property name="geometry">
     <rect>
      <x>230</x>
@@ -1138,7 +1161,7 @@ Developed by AlexEmanuelol</string>
     <string>Cancel</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="applyPushButton">
+  <widget class="QPushButton" name="apply_PushButton">
    <property name="enabled">
     <bool>false</bool>
    </property>

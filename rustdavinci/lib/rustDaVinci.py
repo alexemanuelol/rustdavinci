@@ -49,7 +49,7 @@ class rustDaVinci():
         self.is_skip_color = False
         self.skip_key = None
         self.is_exit = False
-        self.exit_key = None
+        self.abort_key = None
 
         # Pixmaps
         self.pixmap_on_display = 0
@@ -98,9 +98,9 @@ class rustDaVinci():
         pyautogui.PAUSE = self.click_delay
 
         if int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0:
-            self.parent.ui.paintImagePushButton.setEnabled(False)
+            self.parent.ui.paint_image_PushButton.setEnabled(False)
         elif self.org_img_ok and int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) != 0 and int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) != 0:
-            self.parent.ui.paintImagePushButton.setEnabled(True)
+            self.parent.ui.paint_image_PushButton.setEnabled(True)
 
 
     def load_image_from_file(self):
@@ -123,7 +123,16 @@ class rustDaVinci():
                 self.convert_transparency()
 
                 self.create_pixmaps()
-                self.pixmap_on_display = 0
+                if bool(self.settings.value("show_preview_load", default_settings["show_preview_load"])):
+                    if int(self.settings.value("quality", default_settings["quality"])) == 0:
+                        self.pixmap_on_display = 1
+                    else:
+                        self.pixmap_on_display = 2
+                    if self.parent.is_expanded:
+                        self.parent.label.hide()
+                    self.parent.expand_window()
+                else:
+                    self.pixmap_on_display = 0
             except Exception as e:
                 self.org_img = None
                 self.org_img_ok = False
@@ -164,7 +173,16 @@ class rustDaVinci():
                 self.convert_transparency()
 
                 self.create_pixmaps()
-                self.pixmap_on_display = 0
+                if bool(self.settings.value("show_preview_load", default_settings["show_preview_load"])):
+                    if int(self.settings.value("quality", default_settings["quality"])) == 0:
+                        self.pixmap_on_display = 1
+                    else:
+                        self.pixmap_on_display = 2
+                    if self.parent.is_expanded:
+                        self.parent.label.hide()
+                    self.parent.expand_window()
+                else:
+                    self.pixmap_on_display = 0
             except Exception as e:
                 self.org_img = None
                 self.org_img_ok = False
@@ -583,7 +601,13 @@ class rustDaVinci():
                     self.lines
         """
         minimum_line_width = int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
-        colors_to_skip = self.settings.value("skip_colors", default_settings["skip_colors"]).replace(" ", "").split(",")
+        colors_to_skip = []
+        temp_skip_colors = self.settings.value("skip_colors", default_settings["skip_colors"], "QStringList")
+        if len(temp_skip_colors) != 0:
+            for color in temp_skip_colors:
+                colors_to_skip.append(rust_palette.index(hex_to_rgb(color)))
+
+
         if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
             background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
             colors_to_skip.append(background_color)
@@ -720,7 +744,7 @@ class rustDaVinci():
         elif key_str == self.skip_key:      # SKIP CURRENT COLOR
             self.is_paused = False
             self.is_skip_color = True
-        elif key_str == self.exit_key:      # EXIT 
+        elif key_str == self.abort_key:      # EXIT 
             self.is_paused = False
             self.is_exit = True
 
@@ -736,16 +760,27 @@ class rustDaVinci():
 
         self.pause_key = str(self.settings.value("pause_key", default_settings["pause_key"])).lower()
         self.skip_key = str(self.settings.value("skip_key", default_settings["skip_key"])).lower()
-        self.exit_key = str(self.settings.value("abort_key", default_settings["abort_key"])).lower()
+        self.abort_key = str(self.settings.value("abort_key", default_settings["abort_key"])).lower()
 
-        colors_to_skip = self.settings.value("skip_colors", default_settings["skip_colors"]).replace(" ", "").split(",")
+
+        colors_to_skip = []
+        temp_skip_colors = self.settings.value("skip_colors", default_settings["skip_colors"], "QStringList")
+        if len(temp_skip_colors) != 0:
+            for color in temp_skip_colors:
+                colors_to_skip.append(rust_palette.index(hex_to_rgb(color)))
+
         if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
             background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
             colors_to_skip.append(background_color)
         colors_to_skip = list(map(int, colors_to_skip))
+
         minimum_line_width = int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
-        auto_update_canvas = bool(self.settings.value("update_canvas", default_settings["update_canvas"]))
-        auto_update_canvas_completed = bool(self.settings.value("update_canvas_completed", default_settings["update_canvas_completed"]))
+
+        update_canvas = bool(self.settings.value("update_canvas", default_settings["update_canvas"]))
+        update_canvas_end = bool(self.settings.value("update_canvas_end", default_settings["update_canvas_end"]))
+
+        show_info = bool(self.settings.value("show_information", default_settings["show_information"]))
+        hide_preview_paint = bool(self.settings.value("hide_preview_paint", default_settings["hide_preview_paint"]))
 
         use_hidden_colors = bool(self.settings.value("hidden_colors", default_settings["hidden_colors"]))
         use_brush_opacities = bool(self.settings.value("brush_opacities", default_settings["brush_opacities"]))
@@ -759,8 +794,8 @@ class rustDaVinci():
         if not self.locate_canvas_area(): return
         if not self.convert_img(): return
 
-        self.parent.ui.logTextEdit.clear()
-        self.parent.ui.logTextEdit.append("Calculating statistics...")
+        self.parent.ui.log_TextEdit.clear()
+        self.parent.ui.log_TextEdit.append("Calculating statistics...")
         QApplication.processEvents()
 
         self.calc_ctrl_tools_pos()
@@ -774,16 +809,20 @@ class rustDaVinci():
         question += "\nNumber of lines:\t\t\t" + str(self.lines)
         question += "\nEst. painting time:\t\t\t" + str(time.strftime("%H:%M:%S", time.gmtime(self.estimated_time)))
         question += "\n\nWould you like to start the painting?"
-        btn = QMessageBox.question(self.parent, None, question, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        if btn == QMessageBox.No:
-            return
+        if show_info:
+            btn = QMessageBox.question(self.parent, None, question, QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if btn == QMessageBox.No:
+                return
 
         if bool(self.settings.value("window_topmost", default_settings["window_topmost"])):
             self.parent.setWindowFlags(self.parent.windowFlags() | Qt.WindowStaysOnTopHint)
             self.parent.show()
 
+        if hide_preview_paint and self.parent.is_expanded:
+            self.parent.show_image_clicked()
 
-        self.parent.ui.logTextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
+
+        self.parent.ui.log_TextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
         QApplication.processEvents()
 
         start_time = time.time()
@@ -794,7 +833,7 @@ class rustDaVinci():
 
         self.hotkey_label = QLabel(self.parent)
         self.hotkey_label.setGeometry(QRect(10, 425, 221, 21))
-        self.hotkey_label.setText(self.pause_key + " = Pause        " + self.skip_key + " = Skip        " + self.exit_key + " = Abort")
+        self.hotkey_label.setText(self.pause_key + " = Pause        " + self.skip_key + " = Skip        " + self.abort_key + " = Abort")
         self.hotkey_label.show()
 
 
@@ -809,13 +848,13 @@ class rustDaVinci():
         prev_progress_multiplier = -1
         progress_multiplier = 0
         one_20th = int(self.tot_pixels/20)
-        self.parent.ui.progressBar.setValue(0)
+        self.parent.ui.progress_ProgressBar.setValue(0)
 
 
         color_counter = 0
         for color in self.img_colors:
             self.is_skip_color = False
-            self.parent.ui.logTextEdit.append("(" + str((color_counter+1)) + "/" + str((len(self.img_colors))) + ") Current color: " + str(color))
+            self.parent.ui.log_TextEdit.append("(" + str((color_counter+1)) + "/" + str((len(self.img_colors))) + ") Current color: " + str(color))
             QApplication.processEvents()
             color_counter += 1
 
@@ -857,7 +896,7 @@ class rustDaVinci():
                 progress_multiplier = int(pixel_progress/one_20th)
                 if progress_multiplier != prev_progress_multiplier:
                     prev_progress_multiplier = progress_multiplier
-                    self.parent.ui.progressBar.setValue(5 * progress_multiplier)
+                    self.parent.ui.progress_ProgressBar.setValue(5 * progress_multiplier)
 
                 is_first_point_of_row = True
                 is_last_point_of_row = False
@@ -872,8 +911,8 @@ class rustDaVinci():
                     if self.is_exit:
                         listener.stop()
                         elapsed_time = int(time.time() - start_time)
-                        self.parent.ui.logTextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
-                        self.parent.ui.logTextEdit.append("Aborted...")
+                        self.parent.ui.log_TextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+                        self.parent.ui.log_TextEdit.append("Aborted...")
                         QApplication.processEvents()
                         self.hotkey_label.hide()
 
@@ -953,17 +992,19 @@ class rustDaVinci():
                             is_line = False
                             pixels_in_line = 0
     
-            if auto_update_canvas:
+            if update_canvas:
                 self.click_pixel(self.ctrl_update)
     
-        if auto_update_canvas_completed:
+        if update_canvas_end:
             self.click_pixel(self.ctrl_update)
     
         listener.stop()
 
+        self.parent.ui.progress_ProgressBar.setValue(100)
+
         elapsed_time = int(time.time() - start_time)
 
-        self.parent.ui.logTextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
+        self.parent.ui.log_TextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
         QApplication.processEvents()
         self.hotkey_label.hide()
         

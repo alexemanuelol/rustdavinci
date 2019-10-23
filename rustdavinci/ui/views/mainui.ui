@@ -30,7 +30,7 @@
     <normaloff>:/icons/RustDaVinci-icon.ico</normaloff>:/icons/RustDaVinci-icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="loadImagePushButton">
+   <widget class="QPushButton" name="load_image_PushButton">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -39,14 +39,33 @@
       <height>45</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+      <kerning>true</kerning>
+     </font>
+    </property>
     <property name="contextMenuPolicy">
      <enum>Qt::DefaultContextMenu</enum>
     </property>
     <property name="acceptDrops">
      <bool>false</bool>
     </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="text">
-     <string>Load Image...</string>
+     <string>         Load Image...        </string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -71,7 +90,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="identifyAreasPushButton">
+   <widget class="QPushButton" name="identify_ctrl_PushButton">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -80,8 +99,17 @@
       <height>45</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
+     </font>
+    </property>
     <property name="text">
-     <string>Capture Control Area...</string>
+     <string> Capture Control Area...</string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -97,7 +125,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="paintImagePushButton">
+   <widget class="QPushButton" name="paint_image_PushButton">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -109,8 +137,16 @@
       <height>45</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>false</underline>
+     </font>
+    </property>
     <property name="text">
-     <string>Paint Image</string>
+     <string>         Paint Image           </string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -126,7 +162,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="settingsPushButton">
+   <widget class="QPushButton" name="settings_PushButton">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -135,8 +171,16 @@
       <height>45</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>false</underline>
+     </font>
+    </property>
     <property name="text">
-     <string>Settings</string>
+     <string>            Settings              </string>
     </property>
     <property name="icon">
      <iconset resource="../resources/icons.qrc">
@@ -165,7 +209,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="showImagePushButton">
+   <widget class="QPushButton" name="show_image_PushButton">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -181,7 +225,7 @@
      <string>Show Image &gt;&gt;</string>
     </property>
    </widget>
-   <widget class="QProgressBar" name="progressBar">
+   <widget class="QProgressBar" name="progress_ProgressBar">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -203,7 +247,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QTextEdit" name="logTextEdit">
+   <widget class="QTextEdit" name="log_TextEdit">
     <property name="geometry">
      <rect>
       <x>10</x>
