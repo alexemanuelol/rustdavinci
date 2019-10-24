@@ -122,6 +122,9 @@ class Ui_SettingsUI(object):
         self.show_ctrl_PushButton.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.show_ctrl_PushButton.setDefault(False)
         self.show_ctrl_PushButton.setObjectName("show_ctrl_PushButton")
+        self.available_colors_PushButton = QtWidgets.QPushButton(self.generalTab)
+        self.available_colors_PushButton.setGeometry(QtCore.QRect(270, 370, 81, 51))
+        self.available_colors_PushButton.setObjectName("available_colors_PushButton")
         self.tabWidget.addTab(self.generalTab, "")
         self.paintingTab = QtWidgets.QWidget()
         self.paintingTab.setObjectName("paintingTab")
@@ -357,6 +360,8 @@ class Ui_SettingsUI(object):
         self.remove_skip_color_PushButton.setText(_translate("SettingsUI", "Remove"))
         self.label_48.setText(_translate("SettingsUI", "Skip painting these colors:"))
         self.show_ctrl_PushButton.setText(_translate("SettingsUI", "Show Controls"))
+        self.available_colors_PushButton.setText(_translate("SettingsUI", "Available\n"
+"Colors"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.generalTab), _translate("SettingsUI", "General"))
         self.pause_key_LineEdit.setText(_translate("SettingsUI", "f10"))
         self.label_10.setText(_translate("SettingsUI", "Pause Hotkey:"))

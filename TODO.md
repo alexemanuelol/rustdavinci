@@ -6,6 +6,9 @@
 - Add help tags to all the modules in the gui?
 - Create build script to make it easy to create windows executable.
 - Setup CI travis yml
+- Paint background with background color setting
+- python script that converts .ui to .py
+- Make so that the application redither the images depending on what's in the "skip colors"
 
 
 ## Testing

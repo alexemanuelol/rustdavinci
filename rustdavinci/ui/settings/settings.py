@@ -12,6 +12,7 @@ from ui.settings.settingsui import Ui_SettingsUI
 from lib.rustPaletteData import rust_palette
 from lib.color_functions import hex_to_rgb, rgb_to_hex, closest_color
 from lib.captureArea import show_area
+from ui.dialogs.colors.colors import Colors
 
 
 class Settings(QDialog):
@@ -29,12 +30,15 @@ class Settings(QDialog):
         # Setup Settings
         self.settings = QSettings()
         self.isSettingsChanged = False
+        self.isColorsOpened = False
 
         if int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0:
             self.ui.show_ctrl_PushButton.setEnabled(False)
         else: self.ui.show_ctrl_PushButton.setEnabled(True)
 
         self.qpalette = QPalette()
+
+        self.availableColors = Colors(self)
 
         # Uncomment line below if you want to clear the settings everytime you start an instance
         #self.settings.clear()
@@ -56,6 +60,7 @@ class Settings(QDialog):
         self.ui.color_picker_PushButton.clicked.connect(self.color_picker_clicked)
         self.ui.add_skip_color_PushButton.clicked.connect(self.add_skip_color_clicked)
         self.ui.remove_skip_color_PushButton.clicked.connect(self.remove_skip_color_clicked)
+        self.ui.available_colors_PushButton.clicked.connect(self.available_colors_clicked)
 
         # Checkboxes
         self.ui.topmost_CheckBox.stateChanged.connect(self.enableApply)
@@ -369,3 +374,14 @@ class Settings(QDialog):
         for item in listItems:
             self.ui.skip_colors_ListWidget.takeItem(self.ui.skip_colors_ListWidget.row(item))
             self.enableApply()
+
+
+    def available_colors_clicked(self):
+        """ Opens a dialog with all available colors """
+        if not self.availableColors.isVisible():
+            self.availableColors.show()
+
+
+    def closeEvent(self, event):
+        """ CloseEvent """
+        self.availableColors.hide()

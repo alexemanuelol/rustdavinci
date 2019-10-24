@@ -435,6 +435,20 @@
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QPushButton" name="available_colors_PushButton">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>370</y>
+       <width>81</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Available
+Colors</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="paintingTab">
     <attribute name="title">
