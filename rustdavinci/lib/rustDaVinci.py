@@ -45,12 +45,12 @@ class rustDaVinci():
         self.use_double_click = False
 
         # Keyboard interrupt variables
-        self.is_paused = False
         self.pause_key = None
-        self.is_skip_color = False
         self.skip_key = None
-        self.is_exit = False
         self.abort_key = None
+        self.is_paused = False
+        self.is_skip_color = False
+        self.is_abort = False
 
         # Pixmaps
         self.pixmap_on_display = 0
@@ -83,6 +83,7 @@ class rustDaVinci():
         self.click_delay = 0
         self.line_delay = 0
         self.ctrl_area_delay = 0
+        self.use_double_click = False
 
         # Hotkey display QLabel
         self.hotkey_label = None
@@ -117,23 +118,23 @@ class rustDaVinci():
 
                 # The original PIL.Image object
                 self.org_img_template = Image.open(path).convert("RGBA")
-                if self.org_img_template.mode == "L":
-                    self.org_img_template = Image.open(path).convert("RGB")
                 self.org_img = self.org_img_template
 
                 self.convert_transparency()
-
                 self.create_pixmaps()
+
                 if bool(self.settings.value("show_preview_load", default_settings["show_preview_load"])):
                     if int(self.settings.value("quality", default_settings["quality"])) == 0:
                         self.pixmap_on_display = 1
                     else:
                         self.pixmap_on_display = 2
+
                     if self.parent.is_expanded:
                         self.parent.label.hide()
                     self.parent.expand_window()
                 else:
                     self.pixmap_on_display = 0
+
             except Exception as e:
                 self.org_img = None
                 self.org_img_ok = False
@@ -167,23 +168,23 @@ class rustDaVinci():
                 os.remove("temp_url_image.png")
 
                 # The original PIL.Image object
-                if self.org_img_template.mode == "L":
-                    self.org_img_template = Image.open(urllib.request.urlopen(request)).convert("RGB")
                 self.org_img = self.org_img_template
 
                 self.convert_transparency()
-
                 self.create_pixmaps()
+
                 if bool(self.settings.value("show_preview_load", default_settings["show_preview_load"])):
                     if int(self.settings.value("quality", default_settings["quality"])) == 0:
                         self.pixmap_on_display = 1
                     else:
                         self.pixmap_on_display = 2
+
                     if self.parent.is_expanded:
                         self.parent.label.hide()
                     self.parent.expand_window()
                 else:
                     self.pixmap_on_display = 0
+
             except Exception as e:
                 self.org_img = None
                 self.org_img_ok = False
@@ -197,12 +198,11 @@ class rustDaVinci():
 
 
     def convert_transparency(self):
-        """"""
+        """ Paste the org_img on top of an image with background color """
         background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
         # Set transparency in image to default background
         try:
             self.org_img = self.org_img_template
-            self.org_img.convert("RGBA")
             temp_org_img = Image.new("RGBA", self.org_img.size, color=rust_palette[background_color])
             temp_org_img.paste(self.org_img, (0 ,0), mask=self.org_img)
             self.org_img = temp_org_img
@@ -276,8 +276,6 @@ class rustDaVinci():
         """
         # Select the palette to be used
         palette_data = Image.new("P", (1, 1))
-
-
         palette = ()
 
         # Choose how many colors in the palette
@@ -601,18 +599,20 @@ class rustDaVinci():
                     self.pixels,
                     self.lines
         """
-        minimum_line_width = int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
+        # Fill the colors_to_skip list
         colors_to_skip = []
         temp_skip_colors = self.settings.value("skip_colors", default_settings["skip_colors"], "QStringList")
         if len(temp_skip_colors) != 0:
             for color in temp_skip_colors:
                 colors_to_skip.append(rust_palette.index(hex_to_rgb(color)))
 
-
+        # Append background color to colors_to_skip
         if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
             background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
             colors_to_skip.append(background_color)
         colors_to_skip = list(map(int, colors_to_skip))
+
+        minimum_line_width = int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
 
         self.img_colors = []
         self.tot_pixels = 0
@@ -699,9 +699,7 @@ class rustDaVinci():
         est_time_lines = int((self.pixels * one_click_time) + (self.lines * one_line_time) + change_color_time + other_time)
         est_time_click = int((self.tot_pixels * one_click_time) + change_color_time + other_time)
 
-        draw_lines = bool(self.settings.value("draw_lines", default_settings["draw_lines"]))
-
-        if not draw_lines:
+        if not bool(self.settings.value("draw_lines", default_settings["draw_lines"])):
             self.prefer_lines = False
             self.estimated_time = est_time_click
         elif est_time_lines < est_time_click:
@@ -747,7 +745,7 @@ class rustDaVinci():
             self.is_skip_color = True
         elif key_str == self.abort_key:      # EXIT 
             self.is_paused = False
-            self.is_exit = True
+            self.is_abort = True
 
 
     def start_painting(self):
@@ -763,38 +761,37 @@ class rustDaVinci():
         self.skip_key = str(self.settings.value("skip_key", default_settings["skip_key"])).lower()
         self.abort_key = str(self.settings.value("abort_key", default_settings["abort_key"])).lower()
 
-
+        # Fill the colors_to_skip list
         colors_to_skip = []
         temp_skip_colors = self.settings.value("skip_colors", default_settings["skip_colors"], "QStringList")
         if len(temp_skip_colors) != 0:
             for color in temp_skip_colors:
                 colors_to_skip.append(rust_palette.index(hex_to_rgb(color)))
 
+        # Append background color to colors_to_skip
         if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
             background_color = rust_palette.index(hex_to_rgb(self.settings.value("background_color", default_settings["background_color"])))
             colors_to_skip.append(background_color)
         colors_to_skip = list(map(int, colors_to_skip))
 
         minimum_line_width = int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
-
         update_canvas = bool(self.settings.value("update_canvas", default_settings["update_canvas"]))
         update_canvas_end = bool(self.settings.value("update_canvas_end", default_settings["update_canvas_end"]))
-
         show_info = bool(self.settings.value("show_information", default_settings["show_information"]))
         hide_preview_paint = bool(self.settings.value("hide_preview_paint", default_settings["hide_preview_paint"]))
-
         use_hidden_colors = bool(self.settings.value("hidden_colors", default_settings["hidden_colors"]))
         use_brush_opacities = bool(self.settings.value("brush_opacities", default_settings["brush_opacities"]))
 
         # Boolean reset
         self.is_paused = False
         self.is_skip_color = False
-        self.is_exit = False
+        self.is_abort = False
         
         # Locate canvas, convert image, calculate tools positioning, statistics and estimated time
         if not self.locate_canvas_area(): return
         if not self.convert_img(): return
 
+        # Clear the log
         self.parent.ui.log_TextEdit.clear()
         self.parent.ui.log_TextEdit.append("Calculating statistics...")
         QApplication.processEvents()
@@ -822,7 +819,6 @@ class rustDaVinci():
         if hide_preview_paint and self.parent.is_expanded:
             self.parent.preview_clicked()
 
-
         self.parent.ui.log_TextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
         QApplication.processEvents()
 
@@ -836,7 +832,6 @@ class rustDaVinci():
         self.hotkey_label.setGeometry(QRect(10, 425, 221, 21))
         self.hotkey_label.setText(self.pause_key + " = Pause        " + self.skip_key + " = Skip        " + self.abort_key + " = Abort")
         self.hotkey_label.show()
-
 
         pixel_arr = self.quantized_img.load()
 
@@ -909,7 +904,7 @@ class rustDaVinci():
 
                     while self.is_paused: None
                     if self.is_skip_color: break
-                    if self.is_exit:
+                    if self.is_abort:
                         listener.stop()
                         elapsed_time = int(time.time() - start_time)
                         self.parent.ui.log_TextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
@@ -1000,9 +995,7 @@ class rustDaVinci():
             self.click_pixel(self.ctrl_update)
     
         listener.stop()
-
         self.parent.ui.progress_ProgressBar.setValue(100)
-
         elapsed_time = int(time.time() - start_time)
 
         self.parent.ui.log_TextEdit.append("Elapsed time: " + str(time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))

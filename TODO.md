@@ -1,13 +1,10 @@
 # TODO
 
 ## Coding
-- Cleanup in rustDaVinci.py
-- Settings: add a button that will open a dialog with all the possible colors
 - Add help tags to all the modules in the gui?
 - Create build script to make it easy to create windows executable.
 - Setup CI travis yml
 - Paint background with background color setting
-- Make so that the application redither the images depending on what's in the "skip colors"
 
 
 ## Testing
