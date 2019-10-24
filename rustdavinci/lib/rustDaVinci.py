@@ -818,8 +818,10 @@ class rustDaVinci():
 
         if hide_preview_paint and self.parent.is_expanded:
             self.parent.preview_clicked()
-
-        self.parent.ui.log_TextEdit.append("Est. time finished: " + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
+        
+        self.parent.ui.log_TextEdit.append("Start time:\t" + str((datetime.datetime.now()).time().strftime("%H:%M:%S")))
+        self.parent.ui.log_TextEdit.append("Est. time:\t" + str(time.strftime("%H:%M:%S", time.gmtime(self.estimated_time))))
+        self.parent.ui.log_TextEdit.append("Est. finished:\t" + str((datetime.datetime.now() + datetime.timedelta(seconds=self.estimated_time)).time().strftime("%H:%M:%S")))
         QApplication.processEvents()
 
         start_time = time.time()
