@@ -1,7 +1,6 @@
 # TODO
 
 ## Coding
-- Add help tags to all the modules in the gui?
 - Create build script to make it easy to create windows executable.
 - Setup CI travis yml
 - Paint background with background color setting

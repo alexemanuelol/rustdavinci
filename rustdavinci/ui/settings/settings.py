@@ -72,6 +72,7 @@ class Settings(QDialog):
         self.ui.show_info_CheckBox.stateChanged.connect(self.enableApply)
         self.ui.show_preview_CheckBox.stateChanged.connect(self.enableApply)
         self.ui.hide_preview_CheckBox.stateChanged.connect(self.enableApply)
+        self.ui.paint_background_CheckBox.stateChanged.connect(self.enableApply)
         self.ui.opacities_CheckBox.stateChanged.connect(self.enableApply)
         self.ui.hidden_colors_CheckBox.stateChanged.connect(self.enableApply)
 
@@ -112,13 +113,14 @@ class Settings(QDialog):
         self.setting_to_checkbox("show_information", self.ui.show_info_CheckBox, default_settings["show_information"])
         self.setting_to_checkbox("show_preview_load", self.ui.show_preview_CheckBox, default_settings["show_preview_load"])
         self.setting_to_checkbox("hide_preview_paint", self.ui.hide_preview_CheckBox, default_settings["hide_preview_paint"])
+        self.setting_to_checkbox("paint_background", self.ui.paint_background_CheckBox, default_settings["paint_background"])
         self.setting_to_checkbox("brush_opacities", self.ui.opacities_CheckBox, default_settings["brush_opacities"])
         self.setting_to_checkbox("hidden_colors", self.ui.hidden_colors_CheckBox, default_settings["hidden_colors"])
 
         # Comboboxes
         index = self.settings.value("quality", default_settings["quality"])
         self.ui.quality_ComboBox.setCurrentIndex(index)
-        index = self.settings.value("brush", default_settings["brush"])
+        index = self.settings.value("brush_type", default_settings["brush_type"])
         self.ui.brush_type_ComboBox.setCurrentIndex(index)
 
         # Lineedits
@@ -189,12 +191,13 @@ class Settings(QDialog):
         self.checkbox_to_setting("show_information", self.ui.show_info_CheckBox.isChecked())
         self.checkbox_to_setting("show_preview_load", self.ui.show_preview_CheckBox.isChecked())
         self.checkbox_to_setting("hide_preview_paint", self.ui.hide_preview_CheckBox.isChecked())
+        self.checkbox_to_setting("paint_background", self.ui.paint_background_CheckBox.isChecked())
         self.checkbox_to_setting("brush_opacities", self.ui.opacities_CheckBox.isChecked())
         self.checkbox_to_setting("hidden_colors", self.ui.hidden_colors_CheckBox.isChecked())
 
         # Comboboxes
         self.settings.setValue("quality", self.ui.quality_ComboBox.currentIndex())
-        self.settings.setValue("brush", self.ui.brush_type_ComboBox.currentIndex())
+        self.settings.setValue("brush_type", self.ui.brush_type_ComboBox.currentIndex())
 
         #  Lineedits
         self.settings.setValue("ctrl_x", self.ui.ctrl_x_LineEdit.text())
@@ -248,12 +251,13 @@ class Settings(QDialog):
         self.ui.show_info_CheckBox.setCheckState(Qt.Checked)
         self.ui.show_preview_CheckBox.setCheckState(Qt.Unchecked)
         self.ui.hide_preview_CheckBox.setCheckState(Qt.Unchecked)
+        self.ui.paint_background_CheckBox.setCheckState(Qt.Unchecked)
         self.ui.opacities_CheckBox.setCheckState(Qt.Checked)
         self.ui.hidden_colors_CheckBox.setCheckState(Qt.Unchecked)
 
         # Comboboxes
         self.ui.quality_ComboBox.setCurrentIndex(default_settings["quality"])
-        self.ui.brush_type_ComboBox.setCurrentIndex(default_settings["brush"])
+        self.ui.brush_type_ComboBox.setCurrentIndex(default_settings["brush_type"])
 
         # Lineedits
         self.ui.ctrl_x_LineEdit.setText(str(default_settings["ctrl_x"]))

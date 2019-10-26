@@ -72,11 +72,14 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>The painting quality</string>
+     </property>
      <property name="currentText">
-      <string>High</string>
+      <string>Normal</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <item>
       <property name="text">
@@ -150,6 +153,9 @@
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>The y-coordinate for the topleft corner of the painting control area</string>
+     </property>
      <property name="text">
       <string>0</string>
      </property>
@@ -165,6 +171,9 @@
      </property>
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>Clear the painting controls area coordinates &amp; ratio</string>
      </property>
      <property name="text">
       <string>Clear Coordinates</string>
@@ -182,6 +191,9 @@
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>The height of the painting control area</string>
+     </property>
      <property name="text">
       <string>0</string>
      </property>
@@ -194,6 +206,9 @@
        <width>101</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>The width of the painting control area</string>
      </property>
      <property name="text">
       <string>0</string>
@@ -247,6 +262,9 @@
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>The x-coordinate for the topleft corner of the painting control area</string>
+     </property>
      <property name="text">
       <string>0</string>
      </property>
@@ -286,8 +304,11 @@
        <height>17</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This will set RustDaVinci app topmost property to true and will appear above all windows while painting</string>
+     </property>
      <property name="text">
-      <string>Set the rustDaVinci window on topmost while painting</string>
+      <string>Set the RustDaVinci window on topmost while painting</string>
      </property>
      <property name="checked">
       <bool>true</bool>
@@ -314,6 +335,9 @@
        <width>341</width>
        <height>17</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This will ignore painting the set default background color</string>
      </property>
      <property name="text">
       <string>Skip painting the default background color</string>
@@ -344,6 +368,9 @@
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>Use the color finder</string>
+     </property>
      <property name="text">
       <string>...</string>
      </property>
@@ -356,6 +383,9 @@
        <width>131</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This is the set default background HEX color</string>
      </property>
      <property name="text">
       <string>#ECF0F1</string>
@@ -376,6 +406,9 @@
        <height>111</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>A list full of the colors that will be ignored when painting</string>
+     </property>
     </widget>
     <widget class="QPushButton" name="add_skip_color_PushButton">
      <property name="geometry">
@@ -385,6 +418,9 @@
        <width>81</width>
        <height>23</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>Add colors to the list of colors to ignore when painting</string>
      </property>
      <property name="text">
       <string>Add</string>
@@ -398,6 +434,9 @@
        <width>81</width>
        <height>23</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>Remove selected color from the colors to ignore when painting</string>
      </property>
      <property name="text">
       <string>Remove</string>
@@ -428,6 +467,9 @@
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
+     <property name="toolTip">
+      <string>Show where on the screen the painting controls area is located according to the coordinates &amp; ratio</string>
+     </property>
      <property name="text">
       <string>Show Controls</string>
      </property>
@@ -443,6 +485,9 @@
        <width>81</width>
        <height>51</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>Opens a dialog window showing all the possible colors in RustDaVinci</string>
      </property>
      <property name="text">
       <string>Available
@@ -462,6 +507,9 @@ Colors</string>
        <width>171</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This is the hotkey for pausing and resumeing the painting process</string>
      </property>
      <property name="text">
       <string>f10</string>
@@ -502,6 +550,9 @@ Colors</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This is the hotkey for skipping the current color being painted</string>
+     </property>
      <property name="text">
       <string>f11</string>
      </property>
@@ -527,6 +578,9 @@ Colors</string>
        <width>171</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This is the hotkey for aborting the painting process</string>
      </property>
      <property name="text">
       <string>esc</string>
@@ -554,6 +608,9 @@ Colors</string>
        <height>17</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This will automatically update the canvas when switching a color while painting</string>
+     </property>
      <property name="text">
       <string>Automatically update the canvas while painting</string>
      </property>
@@ -569,6 +626,9 @@ Colors</string>
        <width>341</width>
        <height>17</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This will automatically update the canvas when the painting process is completed</string>
      </property>
      <property name="text">
       <string>Automatically save the painting when completed</string>
@@ -586,6 +646,9 @@ Colors</string>
        <height>17</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This will improve paintings by utilizing different brush opacities</string>
+     </property>
      <property name="text">
       <string>Improve paintings by utilizing different brush opacities</string>
      </property>
@@ -601,6 +664,9 @@ Colors</string>
        <width>341</width>
        <height>17</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This causes grouped pixels to be drawn as a line instead of painting each pixel (speeds up painting)</string>
      </property>
      <property name="text">
       <string>Draw lines if calculated to be faster</string>
@@ -620,19 +686,6 @@ Colors</string>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="double_click_CheckBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>200</y>
-       <width>341</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Double-click the mouse for improved painting accuracy</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_24">
@@ -658,6 +711,9 @@ the paint control area is automatically found)</string>
        <height>16</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This will improve paintings by utilizing hidden colors (colors hidden between the visible color circles)</string>
+     </property>
      <property name="text">
       <string>Use the hidden color palette</string>
      </property>
@@ -666,10 +722,13 @@ the paint control area is automatically found)</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>220</y>
+       <y>200</y>
        <width>341</width>
        <height>17</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This will display painting information such as colors, total pixels and lines before the painting process starts</string>
      </property>
      <property name="text">
       <string>Show painting information before starting the painting</string>
@@ -682,17 +741,42 @@ the paint control area is automatically found)</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>240</y>
+       <y>220</y>
        <width>341</width>
        <height>31</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This will automatically show the preview based on the quality setting when loading a new image</string>
      </property>
      <property name="text">
       <string>Automatically show painting preview based on the quality setting
 when loading new image</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QCheckBox" name="hide_preview_CheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>260</y>
+       <width>341</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>This will automatically hide the preview when the painting process starts</string>
+     </property>
+     <property name="text">
+      <string>Automatically hide painting preview before painting starts</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="paint_background_CheckBox">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -701,8 +785,11 @@ when loading new image</string>
        <height>16</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This will automatically paint the background with the set background color before the painting process begins</string>
+     </property>
      <property name="text">
-      <string>Automatically hide painting preview before painting starts</string>
+      <string>Automatically paint the background at start</string>
      </property>
     </widget>
    </widget>
@@ -745,8 +832,11 @@ when loading new image</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This is the delay when releasing the mouse button during a click event. Increasing this improves painting accuracy at the cost of speed.</string>
+     </property>
      <property name="text">
-      <string>5</string>
+      <string>15</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_20">
@@ -783,6 +873,9 @@ when loading new image</string>
        <width>91</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>This is the delay when painting a line. Increasing this improves painting accuracy at the cost of speed.</string>
      </property>
      <property name="text">
       <string>25</string>
@@ -849,6 +942,9 @@ when loading new image</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This is the minimum of grouped pixels requred before drawing a line. Changing this may affect the overall painting time.</string>
+     </property>
      <property name="text">
       <string>10</string>
      </property>
@@ -862,8 +958,11 @@ when loading new image</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>This is the delay between the clicks on different painting controls</string>
+     </property>
      <property name="text">
-      <string>100</string>
+      <string>150</string>
      </property>
     </widget>
     <widget class="Line" name="line_5">
@@ -887,6 +986,9 @@ when loading new image</string>
        <width>141</width>
        <height>22</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>The default brush type used for painting</string>
      </property>
      <property name="currentText">
       <string>Heavy Round</string>
@@ -957,6 +1059,22 @@ when loading new image</string>
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
+    <widget class="QCheckBox" name="double_click_CheckBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>230</y>
+       <width>341</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>This will automatically click the mouse button twice during the painting process eliminating any dead pixels</string>
+     </property>
+     <property name="text">
+      <string>Double-click the mouse for improved painting accuracy</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="aboutTab">
     <attribute name="title">
@@ -970,6 +1088,9 @@ when loading new image</string>
        <width>221</width>
        <height>16</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>https://github.com/alexemanuelol/RustDaVinci</string>
      </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/alexemanuelol/RustDaVinci&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#000000;&quot;&gt;The GitHub Repository&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1048,7 +1169,7 @@ when loading new image</string>
       </rect>
      </property>
      <property name="text">
-      <string>Oktober 23, 2019</string>
+      <string>Oktober 26, 2019</string>
      </property>
     </widget>
     <widget class="QLabel" name="licenseLabel">
@@ -1109,6 +1230,9 @@ Developed by AlexEmanuelol</string>
        <height>16</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>https://github.com/alexemanuelol/RustDaVinci/blob/master/docs/FAQ.md</string>
+     </property>
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/alexemanuelol/RustDaVinci/blob/master/docs/FAQ.md&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#000000;&quot;&gt;Frequently Asked Questions&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -1138,6 +1262,9 @@ Developed by AlexEmanuelol</string>
      <width>75</width>
      <height>23</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>Revert all settings to their default value</string>
    </property>
    <property name="text">
     <string>Defaults</string>

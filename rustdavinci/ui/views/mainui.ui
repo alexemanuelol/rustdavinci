@@ -49,11 +49,26 @@
       <kerning>true</kerning>
      </font>
     </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
+    <property name="tabletTracking">
+     <bool>false</bool>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
+    </property>
     <property name="contextMenuPolicy">
      <enum>Qt::DefaultContextMenu</enum>
     </property>
     <property name="acceptDrops">
      <bool>false</bool>
+    </property>
+    <property name="toolTip">
+     <string>Load Image from File or URL</string>
+    </property>
+    <property name="toolTipDuration">
+     <number>-1</number>
     </property>
     <property name="layoutDirection">
      <enum>Qt::LeftToRight</enum>
@@ -63,6 +78,9 @@
     </property>
     <property name="styleSheet">
      <string notr="true"/>
+    </property>
+    <property name="inputMethodHints">
+     <set>Qt::ImhNone</set>
     </property>
     <property name="text">
      <string>         Load Image...        </string>
@@ -108,6 +126,9 @@
       <strikeout>false</strikeout>
      </font>
     </property>
+    <property name="toolTip">
+     <string>Capture the painting control area manually or automatically</string>
+    </property>
     <property name="text">
      <string> Capture Control Area...</string>
     </property>
@@ -145,6 +166,12 @@
       <underline>false</underline>
      </font>
     </property>
+    <property name="toolTip">
+     <string>Paint the Image</string>
+    </property>
+    <property name="inputMethodHints">
+     <set>Qt::ImhNone</set>
+    </property>
     <property name="text">
      <string>         Paint Image           </string>
     </property>
@@ -178,6 +205,9 @@
       <bold>true</bold>
       <underline>false</underline>
      </font>
+    </property>
+    <property name="toolTip">
+     <string>Show RustDaVinci Settings</string>
     </property>
     <property name="text">
      <string>            Settings              </string>
@@ -220,6 +250,9 @@
       <width>221</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Show Original Image and Preview of the Quantized Images</string>
     </property>
     <property name="text">
      <string>Show Image &gt;&gt;</string>
