@@ -18,8 +18,8 @@ REQUIRED = [
     "pynput==1.4.2",
     "numpy==1.16.2",
     "opencv-python==4.0.0.21",
-    "PyQt5==5.13.0",
-    "pyqt5-tools==5.13.0.1.5"
+    "pyqt5-tools==5.13.0.1.5",
+    "PyQt5==5.13.1"
 ]
 
 with open("README.md") as file:
