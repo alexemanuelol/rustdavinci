@@ -892,10 +892,11 @@ class rustDaVinci():
         if bool(self.settings.value("paint_background", default_settings["paint_background"])):
             self.parent.ui.log_TextEdit.append("Painting background for you...")
             self.choose_painting_controls(5, 3, self.background_color)
-
-
-
-
+            x_start = self.canvas_x + 10
+            x_end = self.canvas_x + self.canvas_w - 10
+            loops = int((self.canvas_h - 10) / 10)
+            for i in range(1, loops+1):
+                self.draw_line((x_start, self.canvas_y + (10 * i)), (x_end, self.canvas_y + (10 * i)))
 
 
         # Print out the start time, estimated time and estimated finish time
