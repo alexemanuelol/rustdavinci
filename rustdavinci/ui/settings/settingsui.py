@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'settingsui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -263,6 +263,9 @@ class Ui_SettingsUI(object):
         self.double_click_CheckBox = QtWidgets.QCheckBox(self.experimentalTab)
         self.double_click_CheckBox.setGeometry(QtCore.QRect(20, 230, 341, 17))
         self.double_click_CheckBox.setObjectName("double_click_CheckBox")
+        self.click_color_PushButton = QtWidgets.QPushButton(self.experimentalTab)
+        self.click_color_PushButton.setGeometry(QtCore.QRect(220, 390, 141, 31))
+        self.click_color_PushButton.setObjectName("click_color_PushButton")
         self.tabWidget.addTab(self.experimentalTab, "")
         self.aboutTab = QtWidgets.QWidget()
         self.aboutTab.setObjectName("aboutTab")
@@ -439,6 +442,8 @@ class Ui_SettingsUI(object):
         self.label_23.setText(_translate("SettingsUI", "Painting brush type:"))
         self.double_click_CheckBox.setToolTip(_translate("SettingsUI", "This will automatically click the mouse button twice during the painting process eliminating any dead pixels"))
         self.double_click_CheckBox.setText(_translate("SettingsUI", "Double-click the mouse for improved painting accuracy"))
+        self.click_color_PushButton.setToolTip(_translate("SettingsUI", "Opens a dialog where you can select a color that the application will click in the in-game palette"))
+        self.click_color_PushButton.setText(_translate("SettingsUI", "Click Color"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.experimentalTab), _translate("SettingsUI", "Experimental"))
         self.gitRepoLinkLabel.setToolTip(_translate("SettingsUI", "https://github.com/alexemanuelol/RustDaVinci"))
         self.gitRepoLinkLabel.setText(_translate("SettingsUI", "<html><head/><body><p><a href=\"https://github.com/alexemanuelol/RustDaVinci\"><span style=\" font-weight:600; text-decoration: underline; color:#000000;\">The GitHub Repository</span></a></p></body></html>"))

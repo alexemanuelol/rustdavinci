@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-from PyQt5.QtCore import QRect, QSettings, pyqtSignal, QSize, Qt
-from PyQt5.QtGui import QPixmap, QImage, QCloseEvent
+from PyQt5.QtCore import QRect, QSettings, QSize, Qt
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMenu, QLabel, QFrame, QMainWindow, QMenu, QPushButton
 
 from PIL import Image
@@ -15,8 +14,6 @@ from lib.rustDaVinci import rustDaVinci
 import ui.resources.icons_rc
 
 class MainWindow(QMainWindow):
-
-    closeEventSignal = pyqtSignal(QCloseEvent)
 
     def __init__(self, parent=None):
         """ Main window init """
@@ -138,7 +135,7 @@ class MainWindow(QMainWindow):
 
 
     def expand_window(self):
-        """"""
+        """ Expand the mainwindow to show preview images """
         self.is_expanded = True
 
         self.ui.preview_PushButton.setText("<< Hide Image")
@@ -181,7 +178,7 @@ class MainWindow(QMainWindow):
 
 
     def show_original_pixmap(self):
-        """"""
+        """ Show the original quality pixmap"""
         self.rustDaVinci.pixmap_on_display = 0
         self.label.hide()
         self.show_original_PushButton.hide()
@@ -191,7 +188,7 @@ class MainWindow(QMainWindow):
 
 
     def show_normal_pixmap(self):
-        """"""
+        """ Show the normal quality pixmap"""
         self.rustDaVinci.pixmap_on_display = 1
         self.label.hide()
         self.show_original_PushButton.hide()
@@ -201,7 +198,7 @@ class MainWindow(QMainWindow):
 
 
     def show_high_pixmap(self):
-        """"""
+        """ Show the high quality pixmap """
         self.rustDaVinci.pixmap_on_display = 2
         self.label.hide()
         self.show_original_PushButton.hide()
@@ -218,9 +215,3 @@ class MainWindow(QMainWindow):
     def hide(self):
         """ Hide the main window """
         super(MainWindow, self).hide()
-
-
-    def closeEvent(self, closeEvent):
-        """ Close the main window """
-        super(MainWindow, self).closeEvent(closeEvent)
-        self.closeEventSignal.emit(closeEvent)

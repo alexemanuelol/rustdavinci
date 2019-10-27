@@ -12,6 +12,7 @@ from ui.settings.settingsui import Ui_SettingsUI
 from lib.color_functions import hex_to_rgb, rgb_to_hex, closest_color
 from lib.captureArea import show_area
 from ui.dialogs.colors.colors import Colors
+from ui.dialogs.click_color.click_color import Click_Color
 
 
 class Settings(QDialog):
@@ -31,9 +32,13 @@ class Settings(QDialog):
         self.isSettingsChanged = False
         self.isColorsOpened = False
 
-        if int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0:
+        if not (int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0):
+            self.parent.rustDaVinci.calculate_ctrl_tools_positioning()
+            self.ui.show_ctrl_PushButton.setEnabled(True)
+            self.ui.click_color_PushButton.setEnabled(True)
+        else:
             self.ui.show_ctrl_PushButton.setEnabled(False)
-        else: self.ui.show_ctrl_PushButton.setEnabled(True)
+            self.ui.click_color_PushButton.setEnabled(False)
 
         self.qpalette = QPalette()
 
@@ -60,6 +65,7 @@ class Settings(QDialog):
         self.ui.add_skip_color_PushButton.clicked.connect(self.add_skip_color_clicked)
         self.ui.remove_skip_color_PushButton.clicked.connect(self.remove_skip_color_clicked)
         self.ui.available_colors_PushButton.clicked.connect(self.available_colors_clicked)
+        self.ui.click_color_PushButton.clicked.connect(self.click_color_clicked)
 
         # Checkboxes
         self.ui.topmost_CheckBox.stateChanged.connect(self.enableApply)
@@ -231,6 +237,17 @@ class Settings(QDialog):
             self.parent.label.hide()
             self.parent.expand_window()
 
+        print(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
+        print(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
+
+        if not (int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0):
+            self.parent.rustDaVinci.calculate_ctrl_tools_positioning()
+            self.ui.show_ctrl_PushButton.setEnabled(True)
+            self.ui.click_color_PushButton.setEnabled(True)
+        else:
+            self.ui.show_ctrl_PushButton.setEnabled(False)
+            self.ui.click_color_PushButton.setEnabled(False)
+
 
     def checkbox_to_setting(self, name, val):
         """ Settings save checkbox to integer """
@@ -383,6 +400,12 @@ class Settings(QDialog):
         """ Opens a dialog with all available colors """
         if not self.availableColors.isVisible():
             self.availableColors.show()
+
+
+    def click_color_clicked(self):
+        """ Opens a dialog in which you can select a color to be clicked in-game """
+        clickColor = Click_Color(self)
+        clickColor.exec_()
 
 
     def closeEvent(self, event):

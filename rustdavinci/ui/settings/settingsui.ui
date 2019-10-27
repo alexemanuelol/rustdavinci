@@ -1075,6 +1075,22 @@ when loading new image</string>
       <string>Double-click the mouse for improved painting accuracy</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="click_color_PushButton">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>390</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Opens a dialog where you can select a color that the application will click in the in-game palette</string>
+     </property>
+     <property name="text">
+      <string>Click Color</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="aboutTab">
     <attribute name="title">

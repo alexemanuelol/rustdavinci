@@ -94,6 +94,11 @@ class rustDaVinci():
         self.hotkey_label = None
 
 
+        # Init functions
+        if not (int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"]))):
+            self.calculate_ctrl_tools_positioning()
+
+
     def update(self):
         """ Updates pyauogui delays, booleans and paint image button"""
         self.click_delay = float(int(self.settings.value("click_delay", default_settings["click_delay"]))/1000)
@@ -296,38 +301,38 @@ class rustDaVinci():
         # Choose how many colors in the palette
         if use_hidden_colors:
             if use_brush_opacities:
-                for i, data in enumerate(rust_palette):
+                for i, color in enumerate(rust_palette):
                     if i in background_opacities:
                         palette = palette + rgb_background
                     else:
-                        palette = palette + data
+                        palette = palette + color
             else:
-                for i, data in enumerate(rust_palette):
+                for i, color in enumerate(rust_palette):
                     if i == 64:
                         palette = palette + (2, 2, 2) * 192
                         break
                     if i in background_opacities:
                         palette = palette + rgb_background
                     else:
-                        palette = palette + data
+                        palette = palette + color
         else:
             if use_brush_opacities:
-                for i, data in enumerate(rust_palette):
+                for i, color in enumerate(rust_palette):
                     if (i >= 0 and i <= 19) or (i >= 64 and i <= 83) or (i >= 128 and i <= 147) or (i >= 192 and i <= 211):
                         if i in background_opacities:
                             palette = palette + rgb_background
                         else:
-                            palette = palette + data
+                            palette = palette + color
                 palette = palette + (2, 2, 2) * 176
             else:
-                for i, data in enumerate(rust_palette):
+                for i, color in enumerate(rust_palette):
                     if i == 20:
                         palette = palette + (2, 2, 2) * 236
                         break
                     if i in background_opacities:
                         palette = palette + rgb_background
                     else:
-                        palette = palette + data
+                        palette = palette + color
 
         self.palette_data.putpalette(palette)
         self.palette_data.load()
@@ -523,12 +528,6 @@ class rustDaVinci():
                     self.ctrl_opacity
                     self.ctrl_color
         """
-        # Clear the log
-        self.parent.ui.progress_ProgressBar.setValue(0)
-        self.parent.ui.log_TextEdit.clear()
-        self.parent.ui.log_TextEdit.append("Calculating statistics...")
-        QApplication.processEvents()
-
         ctrl_x = int(self.settings.value("ctrl_x", default_settings["ctrl_x"]))
         ctrl_y = int(self.settings.value("ctrl_y", default_settings["ctrl_y"]))
         ctrl_w = int(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
@@ -869,6 +868,13 @@ class rustDaVinci():
         self.update_skip_colors()                   # Update self.skip_colors variable
         if not self.locate_canvas_area(): return    # Locate the canvas
         if not self.convert_img(): return           # Quantize the image
+
+        # Clear the log
+        self.parent.ui.progress_ProgressBar.setValue(0)
+        self.parent.ui.log_TextEdit.clear()
+        self.parent.ui.log_TextEdit.append("Calculating statistics...")
+        QApplication.processEvents()
+
         self.calculate_ctrl_tools_positioning()     # Calculate the control tools positioning
         self.calculate_statistics()                 # Calculate statistics (colors, total pixels, lines)
         self.calculate_estimated_time()             # Calculate the estimated time
