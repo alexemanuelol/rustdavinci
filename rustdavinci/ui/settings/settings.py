@@ -9,7 +9,6 @@ import sys
 
 from ui.settings.default_settings import default_settings
 from ui.settings.settingsui import Ui_SettingsUI
-from lib.rustPaletteData import rust_palette
 from lib.color_functions import hex_to_rgb, rgb_to_hex, closest_color
 from lib.captureArea import show_area
 from ui.dialogs.colors.colors import Colors

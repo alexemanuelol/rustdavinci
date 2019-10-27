@@ -35,6 +35,7 @@ class rustDaVinci():
         self.org_img_template = None
         self.org_img = None
         self.quantized_img = None
+        self.palette_data = None
 
         # Pixmaps
         self.pixmap_on_display = 0
@@ -280,41 +281,65 @@ class rustDaVinci():
         return True
 
 
-    def quantize_to_palette(self, image, pixmap = False, pixmap_q = 0):
-        """ Convert an RGB, RGBA or L mode image to use a given P image's palette.
-        Returns:    The quantized image
-        """
+    def update_palette(self, rgb_background):
+        """  """
+        use_hidden_colors = bool(self.settings.value("hidden_colors", default_settings["hidden_colors"]))
+        use_brush_opacities = bool(self.settings.value("brush_opacities", default_settings["brush_opacities"]))
+
+        background_index = rust_palette.index(rgb_background)
+        background_opacities = [background_index+(64*1), background_index+(64*2), background_index+(64*3)]
+
         # Select the palette to be used
-        palette_data = Image.new("P", (1, 1))
+        self.palette_data = Image.new("P", (1, 1))
         palette = ()
 
         # Choose how many colors in the palette
-        if bool(self.settings.value("hidden_colors", default_settings["hidden_colors"])):
-            if bool(self.settings.value("brush_opacities", default_settings["brush_opacities"])):
-                for data in rust_palette:
-                    palette = palette + data
+        if use_hidden_colors:
+            if use_brush_opacities:
+                for i, data in enumerate(rust_palette):
+                    if i in background_opacities:
+                        palette = palette + rgb_background
+                    else:
+                        palette = palette + data
             else:
                 for i, data in enumerate(rust_palette):
                     if i == 64:
                         palette = palette + (2, 2, 2) * 192
                         break
-                    palette = palette + data
+                    if i in background_opacities:
+                        palette = palette + rgb_background
+                    else:
+                        palette = palette + data
         else:
-            if bool(self.settings.value("brush_opacities", default_settings["brush_opacities"])):
+            if use_brush_opacities:
                 for i, data in enumerate(rust_palette):
                     if (i >= 0 and i <= 19) or (i >= 64 and i <= 83) or (i >= 128 and i <= 147) or (i >= 192 and i <= 211):
-                        palette = palette + data
+                        if i in background_opacities:
+                            palette = palette + rgb_background
+                        else:
+                            palette = palette + data
                 palette = palette + (2, 2, 2) * 176
             else:
                 for i, data in enumerate(rust_palette):
                     if i == 20:
                         palette = palette + (2, 2, 2) * 236
                         break
-                    palette = palette + data
+                    if i in background_opacities:
+                        palette = palette + rgb_background
+                    else:
+                        palette = palette + data
 
-        palette_data.putpalette(palette)
+        self.palette_data.putpalette(palette)
+        self.palette_data.load()
 
-        palette_data.load()
+
+    def quantize_to_palette(self, image, pixmap = False, pixmap_q = 0):
+        """ Convert an RGB, RGBA or L mode image to use a given P image's palette.
+        Returns:    The quantized image
+        """
+        rgb = hex_to_rgb(self.settings.value("background_color", default_settings["background_color"]))
+        self.update_palette(rgb)
+
         self.org_img = image
         self.org_img.load()
 
@@ -324,11 +349,11 @@ class rustDaVinci():
         if not pixmap:
             quality = int(self.settings.value("quality", default_settings["quality"]))
             if quality == 0:
-                im = image.im.convert("P", 0, palette_data.im)
+                im = image.im.convert("P", 0, self.palette_data.im)
             elif quality == 1:
-                im = image.im.convert("P", 1, palette_data.im) # Dithering
+                im = image.im.convert("P", 1, self.palette_data.im) # Dithering
         else:
-            im = image.im.convert("P", pixmap_q, palette_data.im)
+            im = image.im.convert("P", pixmap_q, self.palette_data.im)
     
         try: return image._new(im)
         except AttributeError: return image._makeself(im)
