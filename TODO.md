@@ -3,6 +3,7 @@
 ## Coding
 - Create build script to make it easy to create windows executable.
 - Setup CI travis yml (When repo public)
+- Create a script that gather all coordinates for all different colors in the palette
 
 
 ## Testing
@@ -24,3 +25,4 @@
 
 # Known errors
 - On the shotgun picture, it does not show the original picture... shows: "QPixmap::scaled: Pixmap is a null pixmap" when clicking "Show Image" when clicking "Show Image"
+- Sometimes when trying to click "paint image" and is about to capture canvas it aborts...
