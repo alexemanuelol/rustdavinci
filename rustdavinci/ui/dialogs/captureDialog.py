@@ -17,7 +17,7 @@ class CaptureAreaDialog(QDialog):
 
         self.label = QLabel(self)
         self.label.setWordWrap(True)
-        self.label.setFont(QFont("Times", 10, QFont.Bold))
+        self.label.setFont(QFont("MS Shell Dlg 2", 10, QFont.Bold))
         self.label.setGeometry(20, 357, 390, 53)
 
         if dialog == 0:
