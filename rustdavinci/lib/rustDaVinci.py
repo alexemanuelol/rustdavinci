@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtCore import QSettings, Qt, QRect
+from PyQt5.QtCore import QSettings, Qt, QRect, QDir
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMessageBox, QInputDialog, QFileDialog, QApplication, QLabel
 
@@ -119,10 +119,16 @@ class rustDaVinci():
         """ Load image from a file """
         title = "Select the image to be painted"
         fileformats = "Images (*.png *.jpg *.jpeg *.gif *.bmp)"
-        path = QFileDialog.getOpenFileName(self.parent, title, None, fileformats)[0]
+        folder_path = self.settings.value("folder_path", QDir.homePath())
+        folder_path = os.path.dirname(os.path.abspath(folder_path))
+        if not os.path.exists(folder_path):
+            folder_path = QDir.homePath()
+
+        path = QFileDialog.getOpenFileName(self.parent, title, folder_path, fileformats)[0]
 
         if path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
             try:
+                self.settings.setValue("folder_path", path)
                 # Pixmap for original image
                 self.org_img_pixmap = QPixmap(path, "1")
 
