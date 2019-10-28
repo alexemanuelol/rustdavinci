@@ -237,9 +237,6 @@ class Settings(QDialog):
             self.parent.label.hide()
             self.parent.expand_window()
 
-        print(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
-        print(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
-
         if not (int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"])) == 0):
             self.parent.rustDaVinci.calculate_ctrl_tools_positioning()
             self.ui.show_ctrl_PushButton.setEnabled(True)
