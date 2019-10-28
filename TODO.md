@@ -24,5 +24,4 @@
 
 
 # Known errors
-- On the shotgun picture, it does not show the original picture... shows: "QPixmap::scaled: Pixmap is a null pixmap" when clicking "Show Image" when clicking "Show Image"
 - Sometimes when trying to click "paint image" and is about to capture canvas it aborts...

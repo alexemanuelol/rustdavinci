@@ -124,7 +124,7 @@ class rustDaVinci():
         if path.endswith(('.png', '.jpg', 'jpeg', '.gif', '.bmp')):
             try:
                 # Pixmap for original image
-                self.org_img_pixmap = QPixmap(path)
+                self.org_img_pixmap = QPixmap(path, "1")
 
                 # The original PIL.Image object
                 self.org_img_template = Image.open(path).convert("RGBA")
