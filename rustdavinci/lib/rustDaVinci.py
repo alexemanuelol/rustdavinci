@@ -448,6 +448,7 @@ class rustDaVinci():
             "Would you like to update the painting controls area coordinates?",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
         if btn == QMessageBox.Yes:
+            self.parent.ui.log_TextEdit.append("Controls area position updated...")
             self.settings.setValue("ctrl_x", str(ctrl_area[0]))
             self.settings.setValue("ctrl_y", str(ctrl_area[1]))
             self.settings.setValue("ctrl_w", str(ctrl_area[2]))
@@ -477,6 +478,7 @@ class rustDaVinci():
                 "Would you like to update the painting controls area coordinates?",
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if btn == QMessageBox.Yes:
+                self.parent.ui.log_TextEdit.append("Controls area position updated...")
                 self.settings.setValue("ctrl_x", str(ctrl_area[0]))
                 self.settings.setValue("ctrl_y", str(ctrl_area[1]))
                 self.settings.setValue("ctrl_w", str(ctrl_area[2]))
