@@ -21,3 +21,5 @@
 
 
 # Known errors
+- Control area does not save until restart application (First click in palette is in the correct area, other are way away)
+- Colors skip does not work properly?
