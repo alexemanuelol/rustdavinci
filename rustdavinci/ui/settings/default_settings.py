@@ -25,9 +25,9 @@ default_settings = {
     "paint_background":  0,
     "brush_opacities": 1,
     "hidden_colors": 0,
-    "click_delay": 15,
-    "ctrl_area_delay": 150,
-    "line_delay": 25,
+    "click_delay": 20,
+    "ctrl_area_delay": 180,
+    "line_delay": 30,
     "minimum_line_width": 10,
     "brush_type": 1
 }
