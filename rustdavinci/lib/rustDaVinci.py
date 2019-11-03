@@ -536,6 +536,14 @@ class rustDaVinci():
                     self.ctrl_opacity
                     self.ctrl_color
         """
+        # Reset
+        self.ctrl_remove = 0
+        self.ctrl_update = 0
+        self.ctrl_size = []
+        self.ctrl_brush = []
+        self.ctrl_opacity = []
+        self.ctrl_color = []
+
         ctrl_x = int(self.settings.value("ctrl_x", default_settings["ctrl_x"]))
         ctrl_y = int(self.settings.value("ctrl_y", default_settings["ctrl_y"]))
         ctrl_w = int(self.settings.value("ctrl_w", default_settings["ctrl_w"]))

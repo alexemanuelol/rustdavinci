@@ -21,5 +21,4 @@
 
 
 # Known errors
-- Control area does not save until restart application (First click in palette is in the correct area, other are way away)
-- Colors skip does not work properly?
+- Colors skip does not work properly? Showing the wrong color in the log, color not in the converted image? Wrong sync in the palette colors data?
