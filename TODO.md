@@ -21,7 +21,4 @@
 
 
 # Known errors
-- Colors skip does not work properly? Showing the wrong color in the log, color not in the converted image? Wrong sync in the palette colors data?
-- Log display wrong color, need to sync correctly with rustPaletteData, currently taking index of all...
-- Handle if you take a default background color that is beyond the normal, not opacities...
-- Sometimes it chooses the item far away in control area... something wrong with size/ brush and color index
+- Sometimes it chooses the item far away in control area... something wrong with size/ brush and color index (TEST!!!!! I've implemented printouts so it will be easier to detect)

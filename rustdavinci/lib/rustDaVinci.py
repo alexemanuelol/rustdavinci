@@ -36,6 +36,7 @@ class rustDaVinci():
         self.org_img = None
         self.quantized_img = None
         self.palette_data = None
+        self.updated_palette = None
 
         # Pixmaps
         self.pixmap_on_display = 0
@@ -133,10 +134,11 @@ class rustDaVinci():
                 self.org_img_pixmap = QPixmap(path, "1")
 
                 # The original PIL.Image object
-                self.org_img_template = Image.open(path).convert("RGBA")
+                #self.org_img_template = Image.open(path).convert("RGBA")
+                self.org_img_template = Image.open(path)
                 self.org_img = self.org_img_template
 
-                self.convert_transparency()
+                #self.convert_transparency()
                 self.create_pixmaps()
 
                 if bool(self.settings.value("show_preview_load", default_settings["show_preview_load"])):
@@ -298,11 +300,16 @@ class rustDaVinci():
         use_brush_opacities = bool(self.settings.value("brush_opacities", default_settings["brush_opacities"]))
 
         background_index = rust_palette.index(rgb_background)
-        background_opacities = [background_index+(64*1), background_index+(64*2), background_index+(64*3)]
+
+        if self.settings.value("skip_background_color", default_settings["skip_background_color"]):
+            background_opacities = [background_index % 256, (background_index+(64*1)) % 256, (background_index+(64*2)) % 256, (background_index+(64*3)) % 256]
+        else:
+            background_opacities = []
 
         # Select the palette to be used
         self.palette_data = Image.new("P", (1, 1))
         palette = ()
+        self.updated_palette = []
 
         # Choose how many colors in the palette
         if use_hidden_colors:
@@ -310,8 +317,10 @@ class rustDaVinci():
                 for i, color in enumerate(rust_palette):
                     if i in background_opacities:
                         palette = palette + rgb_background
+                        self.updated_palette.append(rgb_background)
                     else:
                         palette = palette + color
+                        self.updated_palette.append(color)
             else:
                 for i, color in enumerate(rust_palette):
                     if i == 64:
@@ -319,16 +328,20 @@ class rustDaVinci():
                         break
                     if i in background_opacities:
                         palette = palette + rgb_background
+                        self.updated_palette.append(rgb_background)
                     else:
                         palette = palette + color
+                        self.updated_palette.append(color)
         else:
             if use_brush_opacities:
                 for i, color in enumerate(rust_palette):
                     if (i >= 0 and i <= 19) or (i >= 64 and i <= 83) or (i >= 128 and i <= 147) or (i >= 192 and i <= 211):
                         if i in background_opacities:
                             palette = palette + rgb_background
+                            self.updated_palette.append(rgb_background)
                         else:
                             palette = palette + color
+                            self.updated_palette.append(color)
                 palette = palette + (2, 2, 2) * 176
             else:
                 for i, color in enumerate(rust_palette):
@@ -337,8 +350,19 @@ class rustDaVinci():
                         break
                     if i in background_opacities:
                         palette = palette + rgb_background
+                        self.updated_palette.append(rgb_background)
                     else:
                         palette = palette + color
+                        self.updated_palette.append(color)
+
+
+        if rgb_background in self.updated_palette:
+            if use_hidden_colors:
+                self.background_color = self.updated_palette.index(rgb_background) % 64
+            else:
+                self.background_color = self.updated_palette.index(rgb_background) % 20
+        else:
+            self.background_color = None
 
         self.palette_data.putpalette(palette)
         self.palette_data.load()
@@ -811,33 +835,42 @@ class rustDaVinci():
     def choose_painting_controls(self, size, brush, color):
         """ Choose the paint controls """
         if self.current_ctrl_size != size:
+            print("SIZE:    " + str(size) + " :\t", end="")
             self.current_ctrl_size = size
             self.click_pixel(self.ctrl_size[size])
             time.sleep(self.ctrl_area_delay)
+            print(self.ctrl_size[size])
 
         if self.current_ctrl_brush != brush:
+            print("BRUSH:   " + str(brush) + " :\t", end="")
             self.current_ctrl_brush = brush
             self.click_pixel(self.ctrl_brush[brush])
             time.sleep(self.ctrl_area_delay)
+            print(self.ctrl_brush[brush])
 
+        print("OPACITY: ", end="")
         if self.use_hidden_colors:
-            if   color >= 0  and color < 64: self.click_pixel(self.ctrl_opacity[5])
-            elif color >= 64 and color < 128: self.click_pixel(self.ctrl_opacity[4])
-            elif color >= 128 and color < 192: self.click_pixel(self.ctrl_opacity[3])
-            elif color >= 192 and color < 256: self.click_pixel(self.ctrl_opacity[2])
+            if   color >= 0  and color < 64: self.click_pixel(self.ctrl_opacity[5]); print("5 :\t" + str(self.ctrl_opacity[5]))
+            elif color >= 64 and color < 128: self.click_pixel(self.ctrl_opacity[4]); print("4 :\t" + str(self.ctrl_opacity[4]))
+            elif color >= 128 and color < 192: self.click_pixel(self.ctrl_opacity[3]); print("3 :\t" + str(self.ctrl_opacity[3]))
+            elif color >= 192 and color < 256: self.click_pixel(self.ctrl_opacity[2]); print("2 :\t" + str(self.ctrl_opacity[2]))
         else:
-            if   color >= 0  and color < 20: self.click_pixel(self.ctrl_opacity[5])
-            elif color >= 20 and color < 40: self.click_pixel(self.ctrl_opacity[4])
-            elif color >= 40 and color < 60: self.click_pixel(self.ctrl_opacity[3])
-            elif color >= 60 and color < 80: self.click_pixel(self.ctrl_opacity[2])
+            if   color >= 0  and color < 20: self.click_pixel(self.ctrl_opacity[5]); print("5 :\t" + str(self.ctrl_opacity[5]))
+            elif color >= 20 and color < 40: self.click_pixel(self.ctrl_opacity[4]); print("4 :\t" + str(self.ctrl_opacity[4]))
+            elif color >= 40 and color < 60: self.click_pixel(self.ctrl_opacity[3]); print("3 :\t" + str(self.ctrl_opacity[3]))
+            elif color >= 60 and color < 80: self.click_pixel(self.ctrl_opacity[2]); print("2 :\t" + str(self.ctrl_opacity[2]))
         time.sleep(self.ctrl_area_delay)
 
         if self.current_ctrl_color != color:
+            print("COLOR:   ", end="")
             if self.use_hidden_colors:
                 self.click_pixel(self.ctrl_color[color%64])
+                print(str(color%64) + " :\t" + str(self.ctrl_color[color%64]))
             else:
                 self.click_pixel(self.ctrl_color[color%20])
+                print(str(color%20) + " :\t" + str(self.ctrl_color[color%20]))
             time.sleep(self.ctrl_area_delay)
+        print("#### END")
 
 
     def update_skip_colors(self):
@@ -846,15 +879,34 @@ class rustDaVinci():
         temp_skip_colors = self.settings.value("skip_colors", default_settings["skip_colors"], "QStringList")
         if len(temp_skip_colors) != 0:
             for color in temp_skip_colors:
-                self.skip_colors.append(rust_palette.index(hex_to_rgb(color)))
+                if hex_to_rgb(color) in self.updated_palette:
+                    self.skip_colors.append(self.updated_palette.index(hex_to_rgb(color)))
 
-        self.background_color = rust_palette.index(hex_to_rgb(  self.settings.value("background_color",
-                                                                default_settings["background_color"])))
-        # Append background color to self.skip_colors
-        if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
-            self.skip_colors.append(self.background_color)
+        skip_background_color = bool(self.settings.value("skip_background_color", default_settings["skip_background_color"]))
+        if skip_background_color:
+            bg_color_rgb = hex_to_rgb(self.settings.value("background_color", default_settings["background_color"]))
+            use_hidden_colors = bool(self.settings.value("hidden_colors", default_settings["hidden_colors"]))
+            use_opacities = bool(self.settings.value("brush_opacities", default_settings["brush_opacities"]))
+
+            bg_colors = []
+
+            if bg_color_rgb in self.updated_palette:
+                if use_hidden_colors:
+                    if use_opacities:
+                        bg_index = self.updated_palette.index(bg_color_rgb) % 64
+                        bg_colors = [bg_index, bg_index+(64*1), bg_index+(64*2), bg_index+(64*3)]
+                    else:
+                        bg_colors = [self.updated_palette.index(bg_color_rgb) % 64]
+                else:
+                    if use_opacities:
+                        bg_index = self.updated_palette.index(bg_color_rgb) % 20
+                        bg_colors = [bg_index, bg_index+(20*1), bg_index+(20*2), bg_index+(20*3)]
+                    else:
+                        bg_colors = [self.updated_palette.index(bg_color_rgb) % 20]
+
+            self.skip_colors = self.skip_colors + bg_colors
+
         self.skip_colors = list(map(int, self.skip_colors))
-
 
 
     def start_painting(self):
@@ -933,10 +985,10 @@ class rustDaVinci():
         self.hotkey_label.show()
 
         # Paint the background with the default background color
-        self.click_pixel(self.ctrl_size[5]) # To set focus on the rust window
+        self.click_pixel(self.ctrl_size[0]) # To set focus on the rust window
         time.sleep(.5)
-        self.click_pixel(self.ctrl_size[5])
-        if bool(self.settings.value("paint_background", default_settings["paint_background"])):
+        self.click_pixel(self.ctrl_size[0])
+        if bool(self.settings.value("paint_background", default_settings["paint_background"])) and self.background_color != None:
             self.parent.ui.log_TextEdit.append("Painting background for you...")
             self.choose_painting_controls(5, 3, self.background_color)
             x_start = self.canvas_x + 10
@@ -969,7 +1021,7 @@ class rustDaVinci():
         for counter, color in enumerate(self.img_colors):
             self.skip_current_color = False
             # Print current color to the log
-            color_hex = rgb_to_hex(rust_palette[color])
+            color_hex = rgb_to_hex(self.updated_palette[color])
             self.parent.ui.log_TextEdit.append( "(" + str((counter+1)) + "/" +
                                                 str((len(self.img_colors))) +
                                                 ") Current color: " + str(color_hex))
