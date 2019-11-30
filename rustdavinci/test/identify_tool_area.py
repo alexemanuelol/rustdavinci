@@ -31,7 +31,7 @@ def locate_palette():
             x_coordinate = int(sum(x_list) / len(x_list))
             y_coordinate = int(sum(y_list) / len(y_list))
             return x_coordinate, y_coordinate, template_width, template_height
-    
+
         template_width, template_height = int(template.shape[1]*1.035), int(template.shape[0]*1.035)
         template = cv2.resize(template, (int(template_width), int(template_height)))
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         pyautogui.moveTo(tool_area_TL)
         time.sleep(3)
         pyautogui.moveTo(tool_area_TL[0] + tool_area_width, tool_area_TL[1] + tool_area_height)
-    
+
 
 
 # Youtube video

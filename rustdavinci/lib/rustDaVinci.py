@@ -30,7 +30,7 @@ class rustDaVinci():
         """ RustDaVinci class init """
         self.parent = parent
         self.settings = QSettings()
-        
+
         # PIL.Image images original/ quantized
         self.org_img_template = None
         self.org_img = None
@@ -103,9 +103,9 @@ class rustDaVinci():
         """ Updates pyauogui delays, booleans and paint image button"""
         self.click_delay = float(int(self.settings.value("click_delay", default_settings["click_delay"]))/1000)
         self.line_delay = float(int(self.settings.value("line_delay", default_settings["line_delay"]))/1000)
-        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", default_settings["ctrl_area_delay"]))/1000) 
+        self.ctrl_area_delay = float(int(self.settings.value("ctrl_area_delay", default_settings["ctrl_area_delay"]))/1000)
         self.use_double_click = bool(self.settings.value("double_click", default_settings["double_click"]))
-        
+
         # Update the pyautogui delay
         pyautogui.PAUSE = self.click_delay
 
@@ -259,25 +259,25 @@ class rustDaVinci():
         """
         org_img_w = self.org_img.size[0]
         org_img_h = self.org_img.size[1]
-            
+
         wpercent = (self.canvas_w / float(org_img_w))
         hpercent = (self.canvas_h / float(org_img_h))
-    
+
         hsize = int((float(org_img_h) * float(wpercent)))
         wsize = int((float(org_img_w) * float(hpercent)))
-    
+
         x_correction = 0
         y_correction = 0
-    
-        if hsize <= self.canvas_h: 
+
+        if hsize <= self.canvas_h:
             resized_img = self.org_img.resize((self.canvas_w, hsize), Image.ANTIALIAS)
             y_correction = int((self.canvas_h - hsize)/2)
-        elif wsize <= self.canvas_w: 
+        elif wsize <= self.canvas_w:
             resized_img = self.org_img.resize((wsize, self.canvas_h), Image.ANTIALIAS)
             x_correction = int((self.canvas_w - wsize)/2)
-        else: 
+        else:
             resized_img = self.org_img.resize((self.canvas_w, self.canvas_h), Image.ANTIALIAS)
-    
+
         self.quantized_img = self.quantize_to_palette(resized_img)
         if self.quantized_img == False:
             self.org_img = None
@@ -365,7 +365,7 @@ class rustDaVinci():
                 im = image.im.convert("P", 1, self.palette_data.im) # Dithering
         else:
             im = image.im.convert("P", pixmap_q, self.palette_data.im)
-    
+
         try: return image._new(im)
         except AttributeError: return image._makeself(im)
 
@@ -404,7 +404,7 @@ class rustDaVinci():
 
         msg = QMessageBox(self.parent)
         msg.setIcon(QMessageBox.Information)
-        msg.setText("Coordinates:\n" + 
+        msg.setText("Coordinates:\n" +
                     "X =\t\t" + str(canvas_area[0]) + "\n" +
                     "Y =\t\t" + str(canvas_area[1]) + "\n" +
                     "Width =\t" + str(canvas_area[2]) + "\n" +
@@ -440,7 +440,7 @@ class rustDaVinci():
             return False
 
         btn = QMessageBox.question(self.parent, None,
-            "Coordinates:\n" + 
+            "Coordinates:\n" +
             "X =\t\t" + str(ctrl_area [0]) + "\n" +
             "Y =\t\t" + str(ctrl_area [1]) + "\n" +
             "Width =\t" + str(ctrl_area [2]) + "\n" +
@@ -470,7 +470,7 @@ class rustDaVinci():
             msg.exec_()
         else:
             btn = QMessageBox.question(self.parent, None,
-                "Coordinates:\n" + 
+                "Coordinates:\n" +
                 "X =\t\t" + str(ctrl_area [0]) + "\n" +
                 "Y =\t\t" + str(ctrl_area [1]) + "\n" +
                 "Width =\t" + str(ctrl_area [2]) + "\n" +
@@ -483,7 +483,7 @@ class rustDaVinci():
                 self.settings.setValue("ctrl_y", str(ctrl_area[1]))
                 self.settings.setValue("ctrl_w", str(ctrl_area[2]))
                 self.settings.setValue("ctrl_h", str(ctrl_area[3]))
-            
+
             self.update()
 
 
@@ -519,7 +519,7 @@ class rustDaVinci():
                 x_coord = int(sum(x_list) / len(x_list))
                 y_coord = int(sum(y_list) / len(y_list))
                 return x_coord, y_coord, tmpl_w, tmpl_h
-    
+
             tmpl_w, tmpl_h = int(tmpl.shape[1]*1.035), int(tmpl.shape[0]*1.035)
             tmpl = cv2.resize(tmpl, (int(tmpl_w), int(tmpl_h)))
 
@@ -553,42 +553,42 @@ class rustDaVinci():
         first_x_coord_of_six_v1 = ctrl_x + (ctrl_w/6.5454)
         second_x_coord_of_six_v1 = ctrl_x + (ctrl_w/3.4285)
         dist_btwn_x_coords_of_six_v1 = second_x_coord_of_six_v1 - first_x_coord_of_six_v1
-    
+
         # Calculate the distance between two items on a row of six items (Opacity)
         first_x_coord_of_six_v2 = ctrl_x + (ctrl_w/7.5789)
         second_x_coord_of_six_v2 = ctrl_x + (ctrl_w/3.5555)
         dist_btwn_x_coords_of_six_v2 = second_x_coord_of_six_v2 - first_x_coord_of_six_v2
-    
+
         # Calculate the distance between two items on a row of four items (Colors width)
         first_x_coord_of_four = ctrl_x + (ctrl_w/6)
         second_x_coord_of_four = ctrl_x + (ctrl_w/2.5714)
         dist_btwn_x_coords_of_four = second_x_coord_of_four - first_x_coord_of_four
-    
+
         # Calculate the distance between two items on a column of eight items (Colors height)
         first_y_coord_of_eight = ctrl_y + (ctrl_h/2.3220)
         second_y_coord_of_eight = ctrl_y + (ctrl_h/1.9855)
         dist_btwn_y_coords_of_eight = second_y_coord_of_eight - first_y_coord_of_eight
-    
+
         # Set the point location of the remove & update buttons
         self.ctrl_remove = ((ctrl_x + (ctrl_w/2.7692)), (ctrl_y + (ctrl_h/19.5714)))
         self.ctrl_update = ((ctrl_x + (ctrl_w/1.5652)), (ctrl_y + (ctrl_h/19.5714)))
-    
-    
+
+
         for size in range(6):
-            self.ctrl_size.append((  first_x_coord_of_six_v1 + 
-                                     (size * dist_btwn_x_coords_of_six_v1), 
+            self.ctrl_size.append((  first_x_coord_of_six_v1 +
+                                     (size * dist_btwn_x_coords_of_six_v1),
                                      (ctrl_y + (ctrl_h/6.9661))))
-    
+
         for brush in range(4):
-            self.ctrl_brush.append(( first_x_coord_of_four + 
-                                     (brush * dist_btwn_x_coords_of_four), 
+            self.ctrl_brush.append(( first_x_coord_of_four +
+                                     (brush * dist_btwn_x_coords_of_four),
                                      (ctrl_y + (ctrl_h/4.2371))))
-    
+
         for opacity in range(6):
-            self.ctrl_opacity.append((   first_x_coord_of_six_v2 + 
-                                         (opacity * dist_btwn_x_coords_of_six_v2), 
+            self.ctrl_opacity.append((   first_x_coord_of_six_v2 +
+                                         (opacity * dist_btwn_x_coords_of_six_v2),
                                          (ctrl_y + (ctrl_h/3.0332))))
-    
+
         for row in range(8):
             for column in range(4):
                 if (row == 0 or row == 4) and column == 3: continue
@@ -599,7 +599,7 @@ class rustDaVinci():
                 if row == 7 and (column == 1 or column == 2): continue
                 self.ctrl_color.append(  (first_x_coord_of_four + (column * dist_btwn_x_coords_of_four),
                                          (first_y_coord_of_eight + (row * dist_btwn_y_coords_of_eight))))
-        
+
         # Hidden colors location
         if bool(self.settings.value("hidden_colors", default_settings["hidden_colors"])):
             self.ctrl_color.append((ctrl_x + (ctrl_w/18.0000), ctrl_y + (ctrl_h/2.1518)))
@@ -650,7 +650,7 @@ class rustDaVinci():
 
     def calculate_statistics(self):
         """ Calculate what colors, how many pixels and lines for the painting
-        Updates:    self.img_colors, 
+        Updates:    self.img_colors,
                     self.tot_pixels,
                     self.pixels,
                     self.lines
@@ -675,24 +675,24 @@ class rustDaVinci():
             is_previous_color = False
             is_line = False
             pixels_in_line = 0
-    
+
             for y in range(self.canvas_h):
                 is_first_point_of_row = True
                 is_last_point_of_row = False
                 is_previous_color = False
                 is_line = False
                 pixels_in_line = 0
-    
+
                 for x in range(self.canvas_w):
                     if x == (self.canvas_w - 1): is_last_point_of_row = True
-    
+
                     if is_first_point_of_row:
                         is_first_point_of_row = False
                         if pixel_arr[x, y] == color:
                             is_previous_color = True
                             pixels_in_line = 1
                         continue
-    
+
                     if pixel_arr[x, y] == color:
                         if is_previous_color:
                             if is_last_point_of_row:
@@ -709,13 +709,13 @@ class rustDaVinci():
                         if is_previous_color:
                             if is_line:
                                 is_line = False
-    
+
                                 if is_last_point_of_row:
                                     if pixels_in_line >= minimum_line_width: self.lines += 1
-                                    else: 
+                                    else:
                                         self.pixels += (pixels_in_line + 1)
                                     continue
-    
+
                                 if pixels_in_line >= minimum_line_width: self.lines += 1
                                 else: self.pixels += (pixels_in_line + 1)
                                 pixels_in_line = 0
@@ -748,7 +748,7 @@ class rustDaVinci():
             self.prefer_lines = False
             self.estimated_time = est_time_click
 
-    
+
     def click_pixel(self, x = 0, y = 0):
         """ Click the pixel """
         if isinstance(x, tuple):
@@ -854,7 +854,7 @@ class rustDaVinci():
         if bool(self.settings.value("skip_background_color", default_settings["skip_background_color"])):
             self.skip_colors.append(self.background_color)
         self.skip_colors = list(map(int, self.skip_colors))
-        
+
 
 
     def start_painting(self):
@@ -970,7 +970,7 @@ class rustDaVinci():
             self.skip_current_color = False
             # Print current color to the log
             color_hex = rgb_to_hex(rust_palette[color])
-            self.parent.ui.log_TextEdit.append( "(" + str((counter+1)) + "/" + 
+            self.parent.ui.log_TextEdit.append( "(" + str((counter+1)) + "/" +
                                                 str((len(self.img_colors))) +
                                                 ") Current color: " + str(color_hex))
             QApplication.processEvents()
@@ -1044,7 +1044,7 @@ class rustDaVinci():
                         if is_previous_color:
                             if is_line:
                                 is_line = False
-                        
+
                                 if is_last_point_of_row:
                                     if pixels_in_line >= minimum_line_width:
                                         self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
@@ -1054,7 +1054,7 @@ class rustDaVinci():
                                             self.click_pixel(first_point[0] + index, self.canvas_y + y)
                                         pixel_counter += pixels_in_line
                                     continue
-    
+
                                 if pixels_in_line >= minimum_line_width:
                                     self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
                                     pixel_counter += pixels_in_line
@@ -1063,7 +1063,7 @@ class rustDaVinci():
                                         self.click_pixel(first_point[0] + index, self.canvas_y + y)
                                     pixel_counter += pixels_in_line
                                 pixels_in_line = 0
-    
+
                             else:
                                 self.click_pixel(self.canvas_x + (x-1), self.canvas_y + y)
                                 pixel_counter += 1
@@ -1071,10 +1071,10 @@ class rustDaVinci():
                         else:
                             is_line = False
                             pixels_in_line = 0
-    
+
             if update_canvas:
                 self.click_pixel(self.ctrl_update)
-    
+
         if update_canvas_end:
             self.click_pixel(self.ctrl_update)
 

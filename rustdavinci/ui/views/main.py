@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
 
         # Clear Image action
         self.action_clearImage = None
-        
+
         # Connect UI modules
         self.connectAll()
 

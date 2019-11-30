@@ -46,7 +46,7 @@ palette = (
 
 # Load the source image as numpy array and convert to Lab colorspace
 imnp = np.array(Image.open('C:\\Users\\Alexander\\Downloads\\aaa.png').convert('RGB'))
-imLab = color.rgb2lab(imnp) 
+imLab = color.rgb2lab(imnp)
 h,w = imLab.shape[:2]
 
 # Load palette as numpy array, truncate unused palette entries, and convert to Lab colourspace

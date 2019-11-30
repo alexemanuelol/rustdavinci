@@ -19,11 +19,11 @@ class Settings(QDialog):
     def __init__(self, parent):
         """ Settings init module """
         QDialog.__init__(self, parent)
-        
+
         # Setup UI
         self.ui = Ui_SettingsUI()
         self.ui.setupUi(self)
-        
+
         # Setup parent object
         self.parent = parent
 
@@ -182,7 +182,7 @@ class Settings(QDialog):
         val = int(self.settings.value(name, default))
         if val: checkBox.setCheckState(Qt.Checked)
         else: checkBox.setCheckState(Qt.Unchecked)
-        
+
 
     def saveSettings(self):
         """ Save settings. """
