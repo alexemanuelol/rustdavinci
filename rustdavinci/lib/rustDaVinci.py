@@ -134,11 +134,10 @@ class rustDaVinci():
                 self.org_img_pixmap = QPixmap(path, "1")
 
                 # The original PIL.Image object
-                #self.org_img_template = Image.open(path).convert("RGBA")
-                self.org_img_template = Image.open(path)
+                self.org_img_template = Image.open(path).convert("RGBA")
                 self.org_img = self.org_img_template
 
-                #self.convert_transparency()
+                self.convert_transparency()
                 self.create_pixmaps()
 
                 if bool(self.settings.value("show_preview_load", default_settings["show_preview_load"])):
