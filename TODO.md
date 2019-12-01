@@ -7,7 +7,6 @@
 
 
 ## Testing
-- Test different settings for paintings (click_delay, line_delay etc...). See what settings is the most optimal.
 
 
 ## Other
@@ -21,4 +20,3 @@
 
 
 # Known errors
-- Sometimes it chooses the item far away in control area... something wrong with size/ brush and color index (TEST!!!!! I've implemented printouts so it will be easier to detect)

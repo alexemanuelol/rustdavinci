@@ -834,42 +834,33 @@ class rustDaVinci():
     def choose_painting_controls(self, size, brush, color):
         """ Choose the paint controls """
         if self.current_ctrl_size != size:
-            print("SIZE:    " + str(size) + " :\t", end="")
             self.current_ctrl_size = size
             self.click_pixel(self.ctrl_size[size])
             time.sleep(self.ctrl_area_delay)
-            print(self.ctrl_size[size])
 
         if self.current_ctrl_brush != brush:
-            print("BRUSH:   " + str(brush) + " :\t", end="")
             self.current_ctrl_brush = brush
             self.click_pixel(self.ctrl_brush[brush])
             time.sleep(self.ctrl_area_delay)
-            print(self.ctrl_brush[brush])
 
-        print("OPACITY: ", end="")
         if self.use_hidden_colors:
-            if   color >= 0  and color < 64: self.click_pixel(self.ctrl_opacity[5]); print("5 :\t" + str(self.ctrl_opacity[5]))
-            elif color >= 64 and color < 128: self.click_pixel(self.ctrl_opacity[4]); print("4 :\t" + str(self.ctrl_opacity[4]))
-            elif color >= 128 and color < 192: self.click_pixel(self.ctrl_opacity[3]); print("3 :\t" + str(self.ctrl_opacity[3]))
-            elif color >= 192 and color < 256: self.click_pixel(self.ctrl_opacity[2]); print("2 :\t" + str(self.ctrl_opacity[2]))
+            if   color >= 0  and color < 64: self.click_pixel(self.ctrl_opacity[5])
+            elif color >= 64 and color < 128: self.click_pixel(self.ctrl_opacity[4])
+            elif color >= 128 and color < 192: self.click_pixel(self.ctrl_opacity[3])
+            elif color >= 192 and color < 256: self.click_pixel(self.ctrl_opacity[2])
         else:
-            if   color >= 0  and color < 20: self.click_pixel(self.ctrl_opacity[5]); print("5 :\t" + str(self.ctrl_opacity[5]))
-            elif color >= 20 and color < 40: self.click_pixel(self.ctrl_opacity[4]); print("4 :\t" + str(self.ctrl_opacity[4]))
-            elif color >= 40 and color < 60: self.click_pixel(self.ctrl_opacity[3]); print("3 :\t" + str(self.ctrl_opacity[3]))
-            elif color >= 60 and color < 80: self.click_pixel(self.ctrl_opacity[2]); print("2 :\t" + str(self.ctrl_opacity[2]))
+            if   color >= 0  and color < 20: self.click_pixel(self.ctrl_opacity[5])
+            elif color >= 20 and color < 40: self.click_pixel(self.ctrl_opacity[4])
+            elif color >= 40 and color < 60: self.click_pixel(self.ctrl_opacity[3])
+            elif color >= 60 and color < 80: self.click_pixel(self.ctrl_opacity[2])
         time.sleep(self.ctrl_area_delay)
 
         if self.current_ctrl_color != color:
-            print("COLOR:   ", end="")
             if self.use_hidden_colors:
                 self.click_pixel(self.ctrl_color[color%64])
-                print(str(color%64) + " :\t" + str(self.ctrl_color[color%64]))
             else:
                 self.click_pixel(self.ctrl_color[color%20])
-                print(str(color%20) + " :\t" + str(self.ctrl_color[color%20]))
             time.sleep(self.ctrl_area_delay)
-        print("#### END")
 
 
     def update_skip_colors(self):
