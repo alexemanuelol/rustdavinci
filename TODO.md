@@ -1,7 +1,6 @@
 # TODO
 
 ## Coding
-- Create build script to make it easy to create windows executable.
 - Setup CI travis yml (When repo public)
 - Create a script that gather all coordinates for all different colors in the palette
 
