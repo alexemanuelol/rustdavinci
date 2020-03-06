@@ -1172,7 +1172,7 @@ when loading new image</string>
       </rect>
      </property>
      <property name="text">
-      <string>v1.0</string>
+      <string>v0.4.0</string>
      </property>
     </widget>
     <widget class="QLabel" name="versionLabel_2">
@@ -1185,7 +1185,7 @@ when loading new image</string>
       </rect>
      </property>
      <property name="text">
-      <string>Oktober 26, 2019</string>
+      <string>March 6, 2020</string>
      </property>
     </widget>
     <widget class="QLabel" name="licenseLabel">
