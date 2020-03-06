@@ -1,6 +1,6 @@
 ![RustDaVinci logo](images/RustDaVinci-logo-2.png)
 
-## **WARNING!** This application have not yet been approved by Facepunch nor EAC. According to Facepunch, the only way for the application to get white-listed with EAC is to publish it on steam. Publishing it on steam comes with a fee of 100$ which I'm not prepared to pay. With this said, I leave the application/ code free and open-source for anyone that is interested to see I did or potentially contribute.
+## **WARNING!** This application have not yet been approved by Facepunch nor EAC. According to Facepunch, the only way for the application to get white-listed with EAC is to publish it on steam. Publishing it on steam comes with a fee of 100$ which I'm not prepared to pay. With this said, I leave the application/ code free and open-source for anyone that is interested to see how I did or potentially contribute.
 
 # RustDaVinci - An automatic sign painter for Rust Facepunch
 

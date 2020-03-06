@@ -448,8 +448,8 @@ class Ui_SettingsUI(object):
         self.gitRepoLinkLabel.setToolTip(_translate("SettingsUI", "https://github.com/alexemanuelol/RustDaVinci"))
         self.gitRepoLinkLabel.setText(_translate("SettingsUI", "<html><head/><body><p><a href=\"https://github.com/alexemanuelol/RustDaVinci\"><span style=\" font-weight:600; text-decoration: underline; color:#000000;\">The GitHub Repository</span></a></p></body></html>"))
         self.aboutLabel.setText(_translate("SettingsUI", "RustDaVinci is an automatic sign painter for the game Rust by Facepunch. The application is completely free and open-source. For those who would like to contribute to the application please visit the GitHub page in the link below. For those who just want to use the application as it is, it is strongly recommended to only use the released version of the application to avoid trouble with EAC/ Facepunch. The latest releases can be found on the Github page."))
-        self.versionLabel.setText(_translate("SettingsUI", "v1.0"))
-        self.versionLabel_2.setText(_translate("SettingsUI", "Oktober 26, 2019"))
+        self.versionLabel.setText(_translate("SettingsUI", "v0.4.0"))
+        self.versionLabel_2.setText(_translate("SettingsUI", "March 6, 2020"))
         self.licenseLabel.setText(_translate("SettingsUI", "RustDaVinci is licensed under GNU GPL3\n"
 "Developed by AlexEmanuelol"))
         self.faqLinkLabel_2.setToolTip(_translate("SettingsUI", "https://github.com/alexemanuelol/RustDaVinci/blob/master/docs/FAQ.md"))
