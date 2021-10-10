@@ -1012,9 +1012,11 @@ class rustDaVinci():
             self.skip_current_color = False
             # Print current color to the log
             color_hex = rgb_to_hex(self.updated_palette[color])
-            self.parent.ui.log_TextEdit.append( "(" + str((counter+1)) + "/" +
-                                                str((len(self.img_colors))) +
-                                                ") Current color: " + str(color_hex))
+            self.parent.ui.log_TextEdit.append(
+                "(" + str((counter+1)) + "/" + str((len(self.img_colors))) + ") Current color: " +
+                "<span style=\" font-size:8pt; font-weight:600; color:" + str(color_hex) + ";\" >█" +
+                str(color_hex) + "█</span>")
+
             QApplication.processEvents()
 
             # Choose painting controls
