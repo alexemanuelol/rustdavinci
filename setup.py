@@ -10,7 +10,7 @@ AUTHOR = "Alexander Emanuelsson"
 EMAIL = "Alexander.Emanuelsson94@gmail.com"
 URL = "https://github.com/alexemanuelol/RustDaVinci"
 REQUIRED = [
-    "Pillow==8.3.2",
+    "Pillow==9.0.0",
     "PyAutoGUI==0.9.41",
     "pypiwin32==223",
     "colorama==0.4.1",
