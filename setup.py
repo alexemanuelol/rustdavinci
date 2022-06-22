@@ -16,7 +16,7 @@ REQUIRED = [
     "colorama==0.4.1",
     "termcolor==1.1.0",
     "pynput==1.4.2",
-    "numpy==1.16.2",
+    "numpy==1.22.0",
     "opencv-python==4.0.0.21",
     "pyqt5-tools==5.13.0.1.5",
     "PyQt5==5.13.1"
