@@ -4,8 +4,11 @@ from modules.canvasController.canvasController import CanvasController
 
 def main():
     canvasController = CanvasController()
-    result = canvasController.update_controls_coordinates()
-    print(result)
+    updated, failed = canvasController.update_controls_coordinates()
+    if len(failed) == 0:
+        if canvasController.calibrate_controls():
+            print('SUCCESS')
+
 
 if __name__ == '__main__':
     main()
