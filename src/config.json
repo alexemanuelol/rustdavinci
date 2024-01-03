@@ -1,0 +1,17 @@
+{
+    "canvas_controls_template_coordinates": {
+        "clear_canvas_template": null,
+        "save_to_desktop_template": null,
+        "save_changes_continue_template": null,
+        "undo_template": null,
+        "redo_template": null,
+        "reset_camera_position_template": null,
+        "toggle_light_template": null,
+        "toggle_chat_template": null,
+        "tools_menu_template": null,
+        "brush_menu_template": null,
+        "colour_menu_template": null,
+        "save_changes_cancel_template": null,
+        "colour_display_template": null
+    }
+}
