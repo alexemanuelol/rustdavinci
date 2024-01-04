@@ -91,8 +91,7 @@ class CanvasController:
         """
         Init of CanvasController.
         """
-        self._screen_width = 0
-        self._screen_height = 0
+        self._screen_width, self._screen_height = pyautogui.size()
 
         self.is_calibrated = False
 
@@ -396,29 +395,35 @@ class CanvasController:
         return True
 
 
-    def get_pixel_rgb(self, x: int, y: int) -> Tuple[int, int, int]:
+    def get_pixel_rgb(self, x: int, y: int, screenshot: np.ndarray = None) -> Tuple[int, int, int]:
         """
         Retrieve the RGB value of a pixel at the specified coordinates.
 
         Args:
             x (int): X-coordinate of the pixel.
             y (int): Y-coordinate of the pixel.
+            screenshot (np.ndarray): Screenshot to get the RGB from.
 
         Returns:
             Tuple[int, int, int]: RGB value of the pixel at (x, y).
         """
-        screenshot = self._get_screenshot(False)
-        return screenshot[y, x]
+        if screenshot is None:
+            screenshot = self._get_screenshot(False)
+        return screenshot[y, x].tolist()
 
 
     def update_calibrate_colours(self) -> bool:
         """
+        Update and calibrate color settings.
+
+        Returns:
+            bool: True if calibration is successful, False otherwise.
         """
         if not self.is_calibrated:
             return False
 
         config = self._read_config()
-        sleep_time_s = .5
+        sleep_time_s = config['colour_settings']['calibration_timeout_s']
 
         self.click_tools(Tools.PAINT_BRUSH)
         time.sleep(sleep_time_s)
@@ -442,9 +447,9 @@ class CanvasController:
                     self.click_colour(i, j)
                     time.sleep(sleep_time_s)
 
-                    x, y = self._colour_display_coord
-                    colour = self.get_pixel_rgb(x, y)
-                    print(colour)
+                    x1, y1, x2, y2 = config['canvas_controls_template_coordinates']['colour_display_template']
+                    screenshot = self._get_screenshot_box(x1, y1, x2, y2, False)
+                    colour = self.get_pixel_rgb((x2 - x1) // 2, (y2 - y1) // 2, screenshot)
                     colours.append(colour)
                     time.sleep(sleep_time_s)
 
@@ -558,11 +563,30 @@ class CanvasController:
         Returns:
             np.ndarray: Containing the screenshot.
         """
-        # Get screen width/height
-        self._screen_width, self._screen_height = pyautogui.size()
-
         # Take a screenshot
         screenshot = np.array(ImageGrab.grab(bbox=(0, 0, self._screen_width, self._screen_height)))
+
+        if gray:
+            screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+
+        return screenshot
+
+
+    def _get_screenshot_box(self, x1: int, y1: int, x2: int, y2: int, gray: bool = True) -> np.ndarray:
+        """
+        Take a screenshot of the defined region specified by the bounding box coordinates (x1, y1, x2, y2)
+        and return it.
+
+        Args:
+            x1, y1 (int): Coordinates of the top-left corner.
+            x2, y2 (int): Coordinates of the bottom-right corner.
+            gray (bool): Should the screenshot be gray?
+
+        Returns:
+            np.ndarray: Containing the screenshot of the defined region.
+        """
+        # Take a screenshot of the defined region
+        screenshot = np.array(ImageGrab.grab(bbox=(x1, y1, x2, y2)))
 
         if gray:
             screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
