@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from modules.canvasController.canvasController import CanvasController
+from modules.canvasController.canvasController import Tools, BrushType, CanvasController
 
 def main():
     canvasController = CanvasController()

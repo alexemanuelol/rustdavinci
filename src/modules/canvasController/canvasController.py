@@ -67,6 +67,19 @@ class BrushType(Enum):
     TYPE_6 = 5
     TYPE_7 = 6
 
+class Buttons(Enum):
+    CLEAR_CANVAS = 0
+    SAVE_TO_DESKTOP = 1
+    SAVE_CHANGES_CONTINUE = 2
+    UNDO = 3
+    REDO = 4
+    RESET_CAMERA_POSITION = 5
+    TOGGLE_LIGHT = 6
+    TOGGLE_CHAT = 7
+    SAVE_CHANGES_EXIT = 8
+    CANCEL = 9
+    COLOUR_DISPLAY = 10
+
 
 class CanvasController:
 
@@ -105,7 +118,7 @@ class CanvasController:
         # Colour
         self._colour_coord = [[None for _ in range(COLOUR_NUMBER_OF_COLUMNS)] for _ in range(COLOUR_NUMBER_OF_ROWS)]
 
-        self._save_changes_coord = None
+        self._save_changes_exit_coord = None
         self._cancel_coord = None
         self._colour_display_coord = None
 
@@ -190,6 +203,195 @@ class CanvasController:
         for control, coordinates in config['canvas_controls_template_coordinates'].items():
             if coordinates == None:
                 return False
+
+        return True
+
+
+    def click_button(self, button: Buttons) -> bool:
+        """
+        Performs a click action on a specific button within the application interface.
+
+        Args:
+            button (Buttons): An enumeration representing the button to be clicked.
+
+        Returns:
+            bool: True if the action was successful, False otherwise.
+        """
+        if not self._is_calibrated:
+            return False
+
+        x, y = None, None
+        if button.value == Buttons.CLEAR_CANVAS.value:
+            x, y = self._clear_canvas_coord
+        elif button.value == Buttons.SAVE_TO_DESKTOP.value:
+            x, y = self._save_to_desktop_coord
+        elif button.value == Buttons.SAVE_CHANGES_CONTINUE.value:
+            x, y = self._save_changes_continue_coord
+        elif button.value == Buttons.UNDO.value:
+            x, y = self._undo_coord
+        elif button.value == Buttons.REDO.value:
+            x, y = self._redo_coord
+        elif button.value == Buttons.RESET_CAMERA_POSITION.value:
+            x, y = self._reset_camera_position_coord
+        elif button.value == Buttons.TOGGLE_LIGHT.value:
+            x, y = self._toggle_light_coord
+        elif button.value == Buttons.TOGGLE_CHAT.value:
+            x, y = self._toggle_chat_coord
+        elif button.value == Buttons.SAVE_CHANGES_EXIT.value:
+            x, y = self._save_changes_exit_coord
+        elif button.value == Buttons.CANCEL.value:
+            x, y = self._cancel_coord
+        elif button.value == Buttons.COLOUR_DISPLAY.value:
+            x, y = self._colour_display_coord
+
+        if x == None or y == None:
+            return False
+
+        pyautogui.click(x=x, y=y)
+
+        return True
+
+
+    def click_tools(self, tool: Tools) -> bool:
+        """
+        Click on a tool.
+
+        Args:
+            tool (Tools): The tool to click on.
+
+        Returns:
+            bool: True if successful, else False.
+        """
+        if not self._is_calibrated:
+            return False
+
+        x, y = self._tools_coord[tool.value]
+        pyautogui.click(x=x, y=y)
+
+        return True
+
+
+    def click_brush_type(self, brush_type: BrushType) -> bool:
+        """
+        Click on a brush type.
+
+        Args:
+            brush_type (BrushType): The brush type to click.
+
+        Returns:
+            bool: True if successful, else False.
+        """
+        if not self._is_calibrated:
+            return False
+
+        x, y = self._brush_types_coord[brush_type.value]
+        pyautogui.click(x=x, y=y)
+
+        return True
+
+
+    def set_brush_size(self, size: float) -> bool:
+        """
+        Sets the size of the brush used within the application.
+
+        Args:
+            size (float): The desired size of the brush.
+
+        Returns:
+            bool: True if the brush size is successfully set within the acceptable range, False otherwise.
+
+        """
+        if not self._is_calibrated:
+            return False
+
+        if size < BRUSH_SIZE_MIN or size > BRUSH_SIZE_MAX:
+            return False
+
+        size = round(size, 2)
+
+        x, y = self._brush_size_coord
+        pyautogui.click(x=x, y=y)
+        pyautogui.write(str(size))
+        pyautogui.press('enter')
+
+        return True
+
+
+    def set_brush_spacing(self, spacing: float) -> bool:
+        """
+        Sets the spacing of the brush used within the application.
+
+        Args:
+            spacing (float): The desired spacing of the brush.
+
+        Returns:
+            bool: True if the brush spacing is successfully set within the acceptable range, False otherwise.
+
+        """
+        if not self._is_calibrated:
+            return False
+
+        if spacing < BRUSH_SPACING_MIN or spacing > BRUSH_SPACING_MAX:
+            return False
+
+        spacing = round(spacing, 2)
+
+        x, y = self._brush_spacing_coord
+        pyautogui.click(x=x, y=y)
+        pyautogui.write(str(spacing))
+        pyautogui.press('enter')
+
+        return True
+
+
+    def set_brush_opacity(self, opacity: float) -> bool:
+        """
+        Sets the opacity of the brush used within the application.
+
+        Args:
+            opacity (float): The desired opacity of the brush.
+
+        Returns:
+            bool: True if the brush opacity is successfully set within the acceptable range, False otherwise.
+
+        """
+        if not self._is_calibrated:
+            return False
+
+        if opacity < BRUSH_OPACITY_MIN or spacing > BRUSH_OPACITY_MAX:
+            return False
+
+        opacity = round(opacity, 2)
+
+        x, y = self._brush_opacity_coord
+        pyautogui.click(x=x, y=y)
+        pyautogui.write(str(opacity))
+        pyautogui.press('enter')
+
+        return True
+
+
+    def click_colour(self, row: int, column: int) -> bool:
+        """
+        Click on a color within a grid of colors on the application interface.
+
+        Args:
+            row (int): The row index of the color in the grid.
+            column (int): The column index of the color in the grid.
+
+        Returns:
+            bool: True if the click action is successfully performed on the specified color, False otherwise.
+        """
+        if not self._is_calibrated:
+            return False
+
+        if row < 0 or row >= COLOUR_NUMBER_OF_ROWS:
+            return False
+        if column < 0 or column >= COLOUR_NUMBER_OF_COLUMNS:
+            return False
+
+        x, y = self._colour_coord[row][column]
+        pyautogui.click(x=x, y=y)
 
         return True
 
@@ -483,7 +685,7 @@ class CanvasController:
         y_corr0 = 0.22413
         y_corr1 = 0.77586
 
-        self._save_changes_coord = self._get_coordinate(x1, y1, x2, y2, x_corr, y_corr0)
+        self._save_changes_exit_coord = self._get_coordinate(x1, y1, x2, y2, x_corr, y_corr0)
         self._cancel_coord = self._get_coordinate(x1, y1, x2, y2, x_corr, y_corr1)
 
 
