@@ -7,6 +7,7 @@ def main():
     updated, failed = canvasController.update_controls_coordinates()
     if len(failed) == 0:
         if canvasController.calibrate_controls():
+            canvasController.update_calibrate_colours()
             print('SUCCESS')
 
 

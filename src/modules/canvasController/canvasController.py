@@ -23,7 +23,7 @@ TOGGLE_CHAT_TEMPLATE = ('toggle_chat_template', .9)
 
 TOOLS_MENU_TEMPLATE = ('tools_menu_template', .8)
 BRUSH_MENU_TEMPLATE = ('brush_menu_template', .8)
-COLOUR_MENU_TEMPLATE = ('colour_menu_template', .8)
+COLOUR_MENU_TEMPLATE = ('colour_menu_template', .9)
 SAVE_CHANGES_CANCEL_TEMPLATE = ('save_changes_cancel_template', .8)
 COLOUR_DISPLAY_TEMPLATE = ('colour_display_template', .8)
 
@@ -94,7 +94,7 @@ class CanvasController:
         self._screen_width = 0
         self._screen_height = 0
 
-        self._is_calibrated = False
+        self.is_calibrated = False
 
         # Top Bar
         self._clear_canvas_coord = None
@@ -217,7 +217,7 @@ class CanvasController:
         Returns:
             bool: True if the action was successful, False otherwise.
         """
-        if not self._is_calibrated:
+        if not self.is_calibrated:
             return False
 
         x, y = None, None
@@ -262,7 +262,7 @@ class CanvasController:
         Returns:
             bool: True if successful, else False.
         """
-        if not self._is_calibrated:
+        if not self.is_calibrated:
             return False
 
         x, y = self._tools_coord[tool.value]
@@ -281,7 +281,7 @@ class CanvasController:
         Returns:
             bool: True if successful, else False.
         """
-        if not self._is_calibrated:
+        if not self.is_calibrated:
             return False
 
         x, y = self._brush_types_coord[brush_type.value]
@@ -301,7 +301,7 @@ class CanvasController:
             bool: True if the brush size is successfully set within the acceptable range, False otherwise.
 
         """
-        if not self._is_calibrated:
+        if not self.is_calibrated:
             return False
 
         if size < BRUSH_SIZE_MIN or size > BRUSH_SIZE_MAX:
@@ -328,7 +328,7 @@ class CanvasController:
             bool: True if the brush spacing is successfully set within the acceptable range, False otherwise.
 
         """
-        if not self._is_calibrated:
+        if not self.is_calibrated:
             return False
 
         if spacing < BRUSH_SPACING_MIN or spacing > BRUSH_SPACING_MAX:
@@ -355,10 +355,10 @@ class CanvasController:
             bool: True if the brush opacity is successfully set within the acceptable range, False otherwise.
 
         """
-        if not self._is_calibrated:
+        if not self.is_calibrated:
             return False
 
-        if opacity < BRUSH_OPACITY_MIN or spacing > BRUSH_OPACITY_MAX:
+        if opacity < BRUSH_OPACITY_MIN or opacity > BRUSH_OPACITY_MAX:
             return False
 
         opacity = round(opacity, 2)
@@ -382,7 +382,7 @@ class CanvasController:
         Returns:
             bool: True if the click action is successfully performed on the specified color, False otherwise.
         """
-        if not self._is_calibrated:
+        if not self.is_calibrated:
             return False
 
         if row < 0 or row >= COLOUR_NUMBER_OF_ROWS:
@@ -392,6 +392,67 @@ class CanvasController:
 
         x, y = self._colour_coord[row][column]
         pyautogui.click(x=x, y=y)
+
+        return True
+
+
+    def get_pixel_rgb(self, x: int, y: int) -> Tuple[int, int, int]:
+        """
+        Retrieve the RGB value of a pixel at the specified coordinates.
+
+        Args:
+            x (int): X-coordinate of the pixel.
+            y (int): Y-coordinate of the pixel.
+
+        Returns:
+            Tuple[int, int, int]: RGB value of the pixel at (x, y).
+        """
+        screenshot = self._get_screenshot(False)
+        return screenshot[y, x]
+
+
+    def update_calibrate_colours(self) -> bool:
+        """
+        """
+        if not self.is_calibrated:
+            return False
+
+        config = self._read_config()
+        sleep_time_s = .5
+
+        self.click_tools(Tools.PAINT_BRUSH)
+        time.sleep(sleep_time_s)
+        self.click_brush_type(BrushType.TYPE_3)
+        time.sleep(sleep_time_s)
+        self.set_brush_size(1)
+        time.sleep(sleep_time_s)
+
+        colours = []
+        number_of_opacity_jumps = config['colour_settings']['number_of_opacity_jumps_calibration']
+        opacity_jump_length = config['colour_settings']['opacity_jump_length_calibration']
+        current_opacity = 1
+
+        # Start with highest opacity and then go downwards
+        for i in range(number_of_opacity_jumps):
+            self.set_brush_opacity(current_opacity)
+            time.sleep(sleep_time_s)
+
+            for i in range(COLOUR_NUMBER_OF_ROWS):
+                for j in range(COLOUR_NUMBER_OF_COLUMNS):
+                    self.click_colour(i, j)
+                    time.sleep(sleep_time_s)
+
+                    x, y = self._colour_display_coord
+                    colour = self.get_pixel_rgb(x, y)
+                    print(colour)
+                    colours.append(colour)
+                    time.sleep(sleep_time_s)
+
+            current_opacity = current_opacity - opacity_jump_length
+
+        config['colours'] = colours
+
+        self._write_config(config)
 
         return True
 

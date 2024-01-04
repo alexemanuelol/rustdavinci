@@ -1,4 +1,5 @@
 {
+    "general": {},
     "canvas_controls_template_coordinates": {
         "clear_canvas_template": null,
         "save_to_desktop_template": null,
@@ -13,5 +14,10 @@
         "colour_menu_template": null,
         "save_changes_cancel_template": null,
         "colour_display_template": null
-    }
+    },
+    "colour_settings": {
+        "number_of_opacity_jumps_calibration": 8,
+        "opacity_jump_length_calibration": 0.1
+    },
+    "colours": []
 }
