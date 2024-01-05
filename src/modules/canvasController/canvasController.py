@@ -11,6 +11,9 @@ from PIL import ImageGrab
 from enum import Enum
 from typing import Optional, Tuple, List, Dict
 
+
+CANVAS_CONTROLS_TIMEOUT_S = 0.5
+
 # Tuple: control name, similarity threashold
 CLEAR_CANVAS_TEMPLATE = ('clear_canvas_template', .9)
 SAVE_TO_DESKTOP_TEMPLATE = ('save_to_desktop_template', .9)
@@ -247,6 +250,8 @@ class CanvasController:
             return False
 
         pyautogui.click(x=x, y=y)
+        time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
+        pyautogui.click(x=x, y=y)
 
         return True
 
@@ -266,6 +271,8 @@ class CanvasController:
 
         x, y = self._tools_coord[tool.value]
         pyautogui.click(x=x, y=y)
+        time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
+        pyautogui.click(x=x, y=y)
 
         return True
 
@@ -284,6 +291,8 @@ class CanvasController:
             return False
 
         x, y = self._brush_types_coord[brush_type.value]
+        pyautogui.click(x=x, y=y)
+        time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
         pyautogui.click(x=x, y=y)
 
         return True
@@ -310,8 +319,8 @@ class CanvasController:
 
         x, y = self._brush_size_coord
         pyautogui.click(x=x, y=y)
+        time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
         pyautogui.write(str(size))
-        pyautogui.press('enter')
 
         return True
 
@@ -337,8 +346,8 @@ class CanvasController:
 
         x, y = self._brush_spacing_coord
         pyautogui.click(x=x, y=y)
+        time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
         pyautogui.write(str(spacing))
-        pyautogui.press('enter')
 
         return True
 
@@ -364,8 +373,8 @@ class CanvasController:
 
         x, y = self._brush_opacity_coord
         pyautogui.click(x=x, y=y)
+        time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
         pyautogui.write(str(opacity))
-        pyautogui.press('enter')
 
         return True
 
@@ -427,11 +436,9 @@ class CanvasController:
         sleep_time_s = config['colour_settings']['calibration_timeout_s']
 
         self.click_tools(Tools.PAINT_BRUSH)
-        time.sleep(sleep_time_s)
         self.click_brush_type(BrushType.TYPE_3)
-        time.sleep(sleep_time_s)
-        self.set_brush_size(1)
-        time.sleep(sleep_time_s)
+        self.set_brush_size(BRUSH_SIZE_MAX)
+        time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
 
         colours = []
         number_of_opacity_jumps = config['colour_settings']['number_of_opacity_jumps_calibration']
@@ -441,7 +448,7 @@ class CanvasController:
         # Start with highest opacity and then go downwards
         for i in range(number_of_opacity_jumps):
             self.set_brush_opacity(current_opacity)
-            time.sleep(sleep_time_s)
+            time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
 
             for i in range(COLOUR_NUMBER_OF_ROWS):
                 for j in range(COLOUR_NUMBER_OF_COLUMNS):
@@ -454,7 +461,9 @@ class CanvasController:
                     colours.append(colour)
                     time.sleep(sleep_time_s)
 
-            current_opacity = current_opacity - opacity_jump_length
+            current_opacity = round(current_opacity - opacity_jump_length, 2)
+            if current_opacity < BRUSH_OPACITY_MIN:
+                current_opacity = BRUSH_OPACITY_MIN
 
         colours_file['colours'] = colours
 

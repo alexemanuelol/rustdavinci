@@ -17,7 +17,7 @@
     },
     "colour_settings": {
         "calibration_timeout_s": 0.05,
-        "number_of_opacity_jumps_calibration": 8,
+        "number_of_opacity_jumps_calibration": 11,
         "opacity_jump_length_calibration": 0.1
     }
 }
