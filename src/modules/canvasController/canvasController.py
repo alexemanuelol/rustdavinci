@@ -422,6 +422,7 @@ class CanvasController:
         if not self.is_calibrated:
             return False
 
+        colours_file = self._read_colours_file()
         config = self._read_config()
         sleep_time_s = config['colour_settings']['calibration_timeout_s']
 
@@ -455,9 +456,9 @@ class CanvasController:
 
             current_opacity = current_opacity - opacity_jump_length
 
-        config['colours'] = colours
+        colours_file['colours'] = colours
 
-        self._write_config(config)
+        self._write_colours_file(colours_file)
 
         return True
 
@@ -468,7 +469,7 @@ class CanvasController:
 
     def _read_config(self) -> Dict[str, Dict[str, Optional[str]]]:
         """
-        Get the config.
+        Read the config.
 
         Returns:
             (Dict[str, Dict[str, Optional[str]]]): The config.
@@ -485,7 +486,7 @@ class CanvasController:
 
     def _write_config(self, config: Dict[str, Dict[str, Optional[str]]]):
         """
-        Set the config.
+        Write the config.
 
         Args:
             config (Dict[str, Dict[str, Optional[str]]]): The config.
@@ -495,6 +496,37 @@ class CanvasController:
 
         with open(config_path, 'w') as f:
             json.dump(config, f, indent=4)
+
+
+    def _read_colours_file(self) -> Dict[str, List[Tuple[int, int, int]]]:
+        """
+        Read the colours file.
+
+        Returns:
+            (Dict[str, List[Tuple[int, int, int]]]): The colours file.
+        """
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        colours_path = os.path.join(current_dir, '..', '..', 'colours.json')
+
+        colours = None
+        with open(colours_path, 'r') as f:
+            colours = json.load(f)
+
+        return colours
+
+
+    def _write_colours_file(self, colours: Dict[str, List[Tuple[int, int, int]]]):
+        """
+        Write the colours file.
+
+        Args:
+            colours (Dict[str, List[Tuple[int, int, int]]]): The colours file.
+        """
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        colours_path = os.path.join(current_dir, '..', '..', 'colours.json')
+
+        with open(colours_path, 'w') as f:
+            json.dump(colours, f, indent=4)
 
 
     def _get_template_path(self, template: str) -> str:
