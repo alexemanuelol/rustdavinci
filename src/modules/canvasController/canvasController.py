@@ -2,6 +2,7 @@
 
 import cv2
 import json
+import keyboard
 import numpy as np
 import os
 import pyautogui
@@ -423,13 +424,21 @@ class CanvasController:
 
     def update_calibrate_colours(self) -> bool:
         """
-        Update and calibrate color settings.
+        Update and calibrate color settings. Press ESC to abort calibration.
 
         Returns:
             bool: True if calibration is successful, False otherwise.
         """
         if not self.is_calibrated:
             return False
+
+        def on_key_press(event):
+            nonlocal stop_calibration
+            if event.name == 'esc':
+                stop_calibration = True
+
+        stop_calibration = False
+        keyboard.on_press(on_key_press)
 
         colours_file = self._read_colours_file()
         config = self._read_config()
@@ -452,6 +461,10 @@ class CanvasController:
 
             for i in range(COLOUR_NUMBER_OF_ROWS):
                 for j in range(COLOUR_NUMBER_OF_COLUMNS):
+                    if stop_calibration:
+                        keyboard.unhook_all()
+                        return False
+
                     self.click_colour(i, j)
                     time.sleep(sleep_time_s)
 
@@ -469,6 +482,7 @@ class CanvasController:
 
         self._write_colours_file(colours_file)
 
+        keyboard.unhook_all()
         return True
 
 
