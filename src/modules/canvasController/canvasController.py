@@ -475,8 +475,6 @@ class CanvasController:
                     time.sleep(sleep_time_s)
 
             current_opacity = round(current_opacity - opacity_jump_length, 2)
-            if current_opacity < BRUSH_OPACITY_MIN:
-                current_opacity = BRUSH_OPACITY_MIN
 
         colours_file['colours'] = colours
 
@@ -484,6 +482,16 @@ class CanvasController:
 
         keyboard.unhook_all()
         return True
+
+
+    def reset_colours_to_default(self):
+        """
+        Reset the colours in colours.json to default colours.
+        """
+        colours = self._read_colours_file()
+        colours['colours'] = colours['default_colours']
+        self._write_colours_file(colours)
+
 
 
     """
