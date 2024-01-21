@@ -161,7 +161,7 @@ class CanvasController:
             controls = controls + TEMPLATES
 
         for control, threshold in controls:
-            if force or config['canvas_controls_template_coordinates'][control] == None:
+            if force or config['canvas_controls_template_coordinates'][control] is None:
                 match = self._identify_template(self._get_template_path(control), screenshot, threshold)
                 if match != None:
                     config['canvas_controls_template_coordinates'][control] = match
@@ -204,7 +204,7 @@ class CanvasController:
         config = self._read_config()
 
         for control, coordinates in config['canvas_controls_template_coordinates'].items():
-            if coordinates == None:
+            if coordinates is None:
                 return False
 
         return True
@@ -247,7 +247,7 @@ class CanvasController:
         elif button.value == Buttons.COLOUR_DISPLAY.value:
             x, y = self._colour_display_coord
 
-        if x == None or y == None:
+        if x is None or y is None:
             return False
 
         pyautogui.click(x=x, y=y)
@@ -442,7 +442,7 @@ class CanvasController:
 
         colours_file = self._read_colours_file()
         config = self._read_config()
-        sleep_time_s = config['colour_settings']['calibration_timeout_s']
+        sleep_time_s = config['colour_calibration_settings']['calibration_timeout_s']
 
         self.click_tools(Tools.PAINT_BRUSH)
         self.click_brush_type(BrushType.TYPE_3)
@@ -450,8 +450,8 @@ class CanvasController:
         time.sleep(CANVAS_CONTROLS_TIMEOUT_S)
 
         colours = []
-        number_of_opacity_jumps = config['colour_settings']['number_of_opacity_jumps_calibration']
-        opacity_jump_length = config['colour_settings']['opacity_jump_length_calibration']
+        number_of_opacity_jumps = config['colour_calibration_settings']['number_of_opacity_jumps_calibration']
+        opacity_jump_length = config['colour_calibration_settings']['opacity_jump_length_calibration']
         current_opacity = 1
 
         # Start with highest opacity and then go downwards
@@ -482,16 +482,6 @@ class CanvasController:
 
         keyboard.unhook_all()
         return True
-
-
-    def reset_colours_to_default(self):
-        """
-        Reset the colours in colours.json to default colours.
-        """
-        colours = self._read_colours_file()
-        colours['colours'] = colours['default_colours']
-        self._write_colours_file(colours)
-
 
 
     """
