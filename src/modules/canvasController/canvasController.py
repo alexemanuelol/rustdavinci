@@ -7,9 +7,12 @@ import numpy as np
 import os
 import pyautogui
 import time
+import tkinter
+import win32api
 
 from PIL import ImageGrab
 from enum import Enum
+from pynput import keyboard as kb
 from typing import Optional, Tuple, List, Dict
 
 
@@ -98,6 +101,9 @@ class CanvasController:
         self._screen_width, self._screen_height = pyautogui.size()
 
         self.is_calibrated = False
+
+        # Canvas painting area
+        self._canvas_painting_area = 0, 0, 0, 0
 
         # Top Bar
         self._clear_canvas_coord = None
@@ -482,6 +488,140 @@ class CanvasController:
 
         keyboard.unhook_all()
         return True
+
+
+    def select_canvas_painting_area(self) -> bool:
+        """
+        Enables the user to interactively define a rectangular area on the screen for canvas painting.
+
+        Returns:
+            bool: True if the selection process is successful, False if canceled or unsuccessful.
+        """
+        def key_event(key):
+            """
+            Event handler for key presses during the selection process.
+            """
+            nonlocal stop_selection
+            if key == kb.Key.esc:
+                stop_selection = True
+
+        # Initialization
+        stop_selection = False
+        listener = kb.Listener(on_press=key_event)
+        listener.start()
+
+        # Set up the GUI window for area selection
+        root = tkinter.Tk()
+        root.withdraw()
+
+        area = tkinter.Toplevel(root)
+        area.overrideredirect(1)
+        area.wm_attributes('-alpha', .5)
+        area.geometry("0x0")
+
+        # Initialize variables for tracking mouse and selection state
+        prev_state = win32api.GetKeyState(0x01)
+        pressed, active = False, False
+
+        # Main loop for the selection process
+        while True:
+            if stop_selection:
+                listener.stop()
+                return False
+
+            current_state = win32api.GetKeyState(0x01)
+            mouse = pyautogui.position()
+
+            # Check for mouse click events
+            if current_state != prev_state:
+                prev_state = current_state
+                pressed = True if current_state < 0 else False
+
+            try:
+                if pressed:
+                    # Update the selection area dynamically while mouse button is pressed
+                    if not active:
+                        top_left_xy = mouse
+                        active = True
+                    area.geometry(str(mouse[0] - top_left_xy[0]) + "x" + str(mouse[1] - top_left_xy[1]))
+                elif not pressed:
+                    # Finalize the selection when mouse button is released
+                    if active:
+                        area.destroy()
+                        if top_left_xy[0] >= mouse[0] or top_left_xy[1] >= mouse[1]:
+                            listener.stop()
+                            return False
+
+                        listener.stop()
+                        self._canvas_painting_area = (
+                            top_left_xy[0],
+                            top_left_xy[1],
+                            mouse[0] - top_left_xy[0],
+                            mouse[1] - top_left_xy[1]
+                        )
+                        return True
+                    area.geometry("+" + str(mouse[0]) + "+" + str(mouse[1]))
+
+            except Exception:
+                pass
+
+            area.update_idletasks()
+            area.update()
+
+
+    def get_canvas_painting_area(self) -> Tuple[int, int, int, int]:
+        """
+        Retrieves the coordinates and dimensions of the canvas painting area.
+
+        Returns:
+            Tuple[int, int, int, int]: A tuple containing four values representing the canvas painting area.
+            The values are (x & y-coordinates of top-left corner, width, height).
+        """
+        return self._canvas_painting_area
+
+
+    def display_area(self, x: int, y: int, w: int, h: int, timeout_s: float = 3) -> None:
+        """
+        Display a semi-transparent rectangular area on the screen for a specified duration,
+        with the ability to interrupt the display by pressing the 'Esc' key.
+
+        Parameters:
+            x (int): x-coordinate of the top-left corner of the area.
+            y (int): y-coordinate of the top-left corner of the area.
+            w (int): Width of the display area.
+            h (int): Height of the display area.
+            timeout_s (float): Maximum duration (in seconds) to display the area.
+        """
+        root = tkinter.Tk()
+        root.withdraw()
+
+        area = tkinter.Toplevel(root)
+        area.overrideredirect(1)
+        area.wm_attributes('-alpha', .5)
+        area.geometry(f'{w}x{h}+{x}+{y}')
+
+        area.update_idletasks()
+        area.update()
+
+        def key_event(key):
+            """
+            Event handler for key presses during the display process.
+            """
+            nonlocal stop_display
+            if key == kb.Key.esc:
+                stop_display = True
+
+        stop_display = False
+        listener = kb.Listener(on_press=key_event)
+        listener.start()
+
+        start_time = time.time()
+        while (time.time() - start_time) < timeout_s:
+            if stop_display:
+                break
+
+        listener.stop()
+        area.destroy()
 
 
     """
