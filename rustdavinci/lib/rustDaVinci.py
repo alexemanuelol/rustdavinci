@@ -16,8 +16,10 @@ import numpy
 import time
 import cv2
 import os
+from collections import defaultdict
 
 from lib.rustPaletteData import rust_palette
+from lib.rust_ui_layout import layout_painting_controls
 from lib.captureArea import capture_area
 from lib.color_functions import hex_to_rgb, rgb_to_hex
 from ui.dialogs.captureDialog import CaptureAreaDialog
@@ -94,6 +96,8 @@ class rustDaVinci():
         # Hotkey display QLabel
         self.hotkey_label = None
 
+        # Painting: last opacity slider slot used (2–5); avoids redundant clicks between colours
+        self._last_opacity_action = None
 
         # Init functions
         if not (int(self.settings.value("ctrl_w", default_settings["ctrl_w"])) == 0 or int(self.settings.value("ctrl_h", default_settings["ctrl_h"]))):
@@ -572,103 +576,14 @@ class rustDaVinci():
         ctrl_w = int(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
         ctrl_h = int(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
 
-        # Calculate the distance between two items on a row of six items (Size)
-        first_x_coord_of_six_v1 = ctrl_x + (ctrl_w/6.5454)
-        second_x_coord_of_six_v1 = ctrl_x + (ctrl_w/3.4285)
-        dist_btwn_x_coords_of_six_v1 = second_x_coord_of_six_v1 - first_x_coord_of_six_v1
-
-        # Calculate the distance between two items on a row of six items (Opacity)
-        first_x_coord_of_six_v2 = ctrl_x + (ctrl_w/7.5789)
-        second_x_coord_of_six_v2 = ctrl_x + (ctrl_w/3.5555)
-        dist_btwn_x_coords_of_six_v2 = second_x_coord_of_six_v2 - first_x_coord_of_six_v2
-
-        # Calculate the distance between two items on a row of four items (Colors width)
-        first_x_coord_of_four = ctrl_x + (ctrl_w/6)
-        second_x_coord_of_four = ctrl_x + (ctrl_w/2.5714)
-        dist_btwn_x_coords_of_four = second_x_coord_of_four - first_x_coord_of_four
-
-        # Calculate the distance between two items on a column of eight items (Colors height)
-        first_y_coord_of_eight = ctrl_y + (ctrl_h/2.3220)
-        second_y_coord_of_eight = ctrl_y + (ctrl_h/1.9855)
-        dist_btwn_y_coords_of_eight = second_y_coord_of_eight - first_y_coord_of_eight
-
-        # Set the point location of the remove & update buttons
-        self.ctrl_remove = ((ctrl_x + (ctrl_w/2.7692)), (ctrl_y + (ctrl_h/19.5714)))
-        self.ctrl_update = ((ctrl_x + (ctrl_w/1.5652)), (ctrl_y + (ctrl_h/19.5714)))
-
-
-        for size in range(6):
-            self.ctrl_size.append((  first_x_coord_of_six_v1 +
-                                     (size * dist_btwn_x_coords_of_six_v1),
-                                     (ctrl_y + (ctrl_h/6.9661))))
-
-        for brush in range(4):
-            self.ctrl_brush.append(( first_x_coord_of_four +
-                                     (brush * dist_btwn_x_coords_of_four),
-                                     (ctrl_y + (ctrl_h/4.2371))))
-
-        for opacity in range(6):
-            self.ctrl_opacity.append((   first_x_coord_of_six_v2 +
-                                         (opacity * dist_btwn_x_coords_of_six_v2),
-                                         (ctrl_y + (ctrl_h/3.0332))))
-
-        for row in range(8):
-            for column in range(4):
-                if (row == 0 or row == 4) and column == 3: continue
-                if (row == 1 or row == 5) and (column == 2 or column == 3): continue
-                if row == 2 and column == 0: continue
-                if row == 3 and (column == 0 or column == 1): continue
-                if row == 6 and column == 2: continue
-                if row == 7 and (column == 1 or column == 2): continue
-                self.ctrl_color.append(  (first_x_coord_of_four + (column * dist_btwn_x_coords_of_four),
-                                         (first_y_coord_of_eight + (row * dist_btwn_y_coords_of_eight))))
-
-        # Hidden colors location
-        if bool(self.settings.value("hidden_colors", default_settings["hidden_colors"])):
-            self.ctrl_color.append((ctrl_x + (ctrl_w/18.0000), ctrl_y + (ctrl_h/2.1518)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/4.2353), ctrl_y + (ctrl_h/2.1406)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/13.0909), ctrl_y + (ctrl_h/1.8430)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.6923), ctrl_y + (ctrl_h/1.9116)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.8228), ctrl_y + (ctrl_h/1.8853)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.3714), ctrl_y + (ctrl_h/1.8348)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0746), ctrl_y + (ctrl_h/1.9116)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0667), ctrl_y + (ctrl_h/1.8430)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.8947), ctrl_y + (ctrl_h/1.6440)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.3333), ctrl_y + (ctrl_h/1.6181)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.2857), ctrl_y + (ctrl_h/1.6440)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0827), ctrl_y + (ctrl_h/1.6506)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0588), ctrl_y + (ctrl_h/1.6310)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0588), ctrl_y + (ctrl_h/1.6118)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.8462), ctrl_y + (ctrl_h/1.4472)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.4545), ctrl_y + (ctrl_h/1.4784)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.3846), ctrl_y + (ctrl_h/1.4838)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.3333), ctrl_y + (ctrl_h/1.4784)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.1803), ctrl_y + (ctrl_h/1.4523)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.1077), ctrl_y + (ctrl_h/1.4421)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0746), ctrl_y + (ctrl_h/1.4731)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/18.0000), ctrl_y + (ctrl_h/1.4679)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.7895), ctrl_y + (ctrl_h/1.4371)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/16.0000), ctrl_y + (ctrl_h/1.3258)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.8919), ctrl_y + (ctrl_h/1.3258)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.4286), ctrl_y + (ctrl_h/1.3301)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/16.0000), ctrl_y + (ctrl_h/1.2088)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.6923), ctrl_y + (ctrl_h/1.2342)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/4.0000), ctrl_y + (ctrl_h/1.2018)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.2000), ctrl_y + (ctrl_h/1.1983)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.9200), ctrl_y + (ctrl_h/1.2342)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.4845), ctrl_y + (ctrl_h/1.1844)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.3714), ctrl_y + (ctrl_h/1.1844)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0746), ctrl_y + (ctrl_h/1.2053)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/16.0000), ctrl_y + (ctrl_h/1.1048)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/4.2353), ctrl_y + (ctrl_h/1.1078)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.3333), ctrl_y + (ctrl_h/1.1078)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.0667), ctrl_y + (ctrl_h/1.1048)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.3488), ctrl_y + (ctrl_h/1.0327)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/3.4286), ctrl_y + (ctrl_h/1.0512)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.4694), ctrl_y + (ctrl_h/1.0327)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/2.7692), ctrl_y + (ctrl_h/1.1982)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/2.0571), ctrl_y + (ctrl_h/1.2160)))
-            self.ctrl_color.append((ctrl_x + (ctrl_w/1.3211), ctrl_y + (ctrl_h/1.4784)))
+        # New Rust painting UI (sliders + 4×16 colour grid). See lib/rust_ui_layout.py.
+        r = layout_painting_controls(ctrl_x, ctrl_y, ctrl_w, ctrl_h)
+        self.ctrl_remove = r["ctrl_remove"]
+        self.ctrl_update = r["ctrl_update"]
+        self.ctrl_size = r["ctrl_size"]
+        self.ctrl_brush = r["ctrl_brush"]
+        self.ctrl_opacity = r["ctrl_opacity"]
+        self.ctrl_color = r["ctrl_color"]
 
 
     def calculate_statistics(self):
@@ -757,7 +672,8 @@ class rustDaVinci():
         one_click_time = self.click_delay + 0.001
         one_click_time = one_click_time * 2 if self.use_double_click else one_click_time
         one_line_time = (self.line_delay * 5) + 0.0035
-        set_paint_controls_time =   (len(self.img_colors) * ((2 * self.click_delay) + (2 * self.ctrl_area_delay))) + ((2 * self.click_delay) + (2 * self.ctrl_area_delay))
+        # Per colour: size/brush usually cached; opacity tier often repeats → ~1 click_delay + ~1.5 ctrl_area_delay
+        set_paint_controls_time =   (len(self.img_colors) * (self.click_delay + (1.5 * self.ctrl_area_delay))) + ((2 * self.click_delay) + (2 * self.ctrl_area_delay))
         est_time_lines = int((self.pixels * one_click_time) + (self.lines * one_line_time) + set_paint_controls_time)
         est_time_click = int((self.tot_pixels * one_click_time) + set_paint_controls_time)
 
@@ -794,6 +710,59 @@ class rustDaVinci():
         pyautogui.mouseUp(button="left")
         pyautogui.PAUSE = self.click_delay
 
+    @staticmethod
+    def _sorted_x_runs(xs):
+        """Merge sorted x positions into inclusive contiguous runs (horizontal segments)."""
+        if not xs:
+            return []
+        xs = sorted(xs)
+        runs = []
+        a = b = xs[0]
+        for x in xs[1:]:
+            if x == b + 1:
+                b = x
+            elif x == b:
+                continue
+            else:
+                runs.append((a, b))
+                a = b = x
+        runs.append((a, b))
+        return runs
+
+    def _opacity_action_index(self, color):
+        """Which ctrl_opacity index (2–5) would be used for this palette index, or None."""
+        if self.use_hidden_colors:
+            if 0 <= color < 64:
+                return 5
+            if 64 <= color < 128:
+                return 4
+            if 128 <= color < 192:
+                return 3
+            if 192 <= color < 256:
+                return 2
+            return None
+        if 0 <= color < 20:
+            return 5
+        if 20 <= color < 40:
+            return 4
+        if 40 <= color < 60:
+            return 3
+        if 60 <= color < 80:
+            return 2
+        return None
+
+    def _build_coords_by_color(self):
+        """Single pass over the canvas: map palette index -> [(x,y), ...]. Avoids O(colors×w×h) rescans."""
+        arr = numpy.asarray(self.quantized_img)
+        wanted = frozenset(self.img_colors)
+        m = defaultdict(list)
+        for y in range(self.canvas_h):
+            row = arr[y]
+            for x in range(self.canvas_w):
+                c = int(row[x])
+                if c in wanted:
+                    m[c].append((x, y))
+        return m
 
     def key_event(self, key):
         """ Key-press thread during painting. """
@@ -843,17 +812,14 @@ class rustDaVinci():
             self.click_pixel(self.ctrl_brush[brush])
             time.sleep(self.ctrl_area_delay)
 
-        if self.use_hidden_colors:
-            if   color >= 0  and color < 64: self.click_pixel(self.ctrl_opacity[5])
-            elif color >= 64 and color < 128: self.click_pixel(self.ctrl_opacity[4])
-            elif color >= 128 and color < 192: self.click_pixel(self.ctrl_opacity[3])
-            elif color >= 192 and color < 256: self.click_pixel(self.ctrl_opacity[2])
+        op_idx = self._opacity_action_index(color)
+        if op_idx is not None:
+            if op_idx != self._last_opacity_action:
+                self.click_pixel(self.ctrl_opacity[op_idx])
+                time.sleep(self.ctrl_area_delay)
+                self._last_opacity_action = op_idx
         else:
-            if   color >= 0  and color < 20: self.click_pixel(self.ctrl_opacity[5])
-            elif color >= 20 and color < 40: self.click_pixel(self.ctrl_opacity[4])
-            elif color >= 40 and color < 60: self.click_pixel(self.ctrl_opacity[3])
-            elif color >= 60 and color < 80: self.click_pixel(self.ctrl_opacity[2])
-        time.sleep(self.ctrl_area_delay)
+            self._last_opacity_action = None
 
         if self.current_ctrl_color != color:
             if self.use_hidden_colors:
@@ -910,7 +876,7 @@ class rustDaVinci():
         # Update local variables
         minimum_line_width =    int(self.settings.value("minimum_line_width", default_settings["minimum_line_width"]))
         ctrl_x =                int(self.settings.value("ctrl_x", default_settings["ctrl_x"]))
-        ctrl_y =                int(self.settings.value("ctrl_h", default_settings["ctrl_y"]))
+        ctrl_y =                int(self.settings.value("ctrl_y", default_settings["ctrl_y"]))
         ctrl_w =                int(self.settings.value("ctrl_w", default_settings["ctrl_w"]))
         ctrl_h =                int(self.settings.value("ctrl_h", default_settings["ctrl_h"]))
         brush_type =            int(self.settings.value("brush_type", default_settings["brush_type"]))
@@ -974,6 +940,8 @@ class rustDaVinci():
                                     self.abort_key + " = Abort")
         self.hotkey_label.show()
 
+        self._last_opacity_action = None
+
         # Paint the background with the default background color
         self.click_pixel(self.ctrl_size[0]) # To set focus on the rust window
         time.sleep(.5)
@@ -1002,7 +970,9 @@ class rustDaVinci():
         previous_progress_percent = None
 
         start_time = time.time()
-        pixel_arr = self.quantized_img.load()
+        self.quantized_img.load()
+        coords_by_color = self._build_coords_by_color()
+        progress_den = max(1, int(self.tot_pixels / 100))
 
         # Start keyboard listener
         listener = keyboard.Listener(on_press=self.key_event)
@@ -1022,99 +992,87 @@ class rustDaVinci():
             # Choose painting controls
             self.choose_painting_controls(0, brush_type, color)
 
-            for y in range(self.canvas_h):
-                if self.skip_current_color: break
+            coords = coords_by_color.get(color, [])
+            if not coords:
+                if update_canvas:
+                    self.click_pixel(self.ctrl_update)
+                continue
 
-                # Calculate percentage for progress bar
-                progress_percent = int(pixel_counter/int(self.tot_pixels/100))
-                if progress_percent != previous_progress_percent:
-                    previous_progress_percent = progress_percent
-                    self.parent.ui.progress_ProgressBar.setValue(progress_percent)
+            cx0, cy0 = self.canvas_x, self.canvas_y
+            evt_tick = 0
 
-                # Reset variables
-                is_first_point_of_row = True
-                is_last_point_of_row = False
-                is_previous_color = False
-                is_line = False
-                pixels_in_line = 0
-
-                for x in range(self.canvas_w):
-
-                    while self.paused: QApplication.processEvents()
-                    if self.skip_current_color: break
+            if not self.prefer_lines:
+                for cx, cy in coords:
+                    while self.paused:
+                        QApplication.processEvents()
+                    if self.skip_current_color:
+                        break
                     if self.abort:
                         self.parent.ui.log_TextEdit.append("Aborted...")
                         return self.shutdown(listener, start_time, 1)
 
-                    if x == (self.canvas_w - 1):
-                        is_last_point_of_row = True
+                    self.click_pixel(cx0 + cx, cy0 + cy)
+                    pixel_counter += 1
+                    evt_tick += 1
 
-                    if is_first_point_of_row and self.prefer_lines:
-                        is_first_point_of_row = False
-                        if pixel_arr[x, y] == color:
-                            first_point = (self.canvas_x + x, self.canvas_y + y)
-                            is_previous_color = True
-                            pixels_in_line = 1
-                        continue
+                    progress_percent = int(pixel_counter / progress_den)
+                    if progress_percent != previous_progress_percent:
+                        previous_progress_percent = progress_percent
+                        self.parent.ui.progress_ProgressBar.setValue(progress_percent)
+                    if evt_tick >= 128:
+                        evt_tick = 0
+                        QApplication.processEvents()
+            else:
+                by_row = defaultdict(list)
+                for cx, cy in coords:
+                    by_row[cy].append(cx)
+                for cy in sorted(by_row.keys()):
+                    while self.paused:
+                        QApplication.processEvents()
+                    if self.skip_current_color:
+                        break
+                    if self.abort:
+                        self.parent.ui.log_TextEdit.append("Aborted...")
+                        return self.shutdown(listener, start_time, 1)
 
-                    if pixel_arr[x, y] == color:
-                        if not self.prefer_lines:
-                            self.click_pixel(self.canvas_x + x, self.canvas_y + y)
-                            pixel_counter += 1
-                            continue
-                        if is_previous_color:
-                            if is_last_point_of_row:
-                                if pixels_in_line >= minimum_line_width:
-                                    self.draw_line(first_point, (self.canvas_x + x, self.canvas_y + y))
-                                    pixel_counter += pixels_in_line
-                                else:
-                                    for index in range(pixels_in_line):
-                                        self.click_pixel(first_point[0] + index, self.canvas_y + y)
-                                    self.click_pixel(self.canvas_x + x, self.canvas_y + y)
-                                    pixel_counter += pixels_in_line + 1
-                            else:
-                                is_line = True
-                                pixels_in_line += 1
+                    for xa, xb in self._sorted_x_runs(by_row[cy]):
+                        while self.paused:
+                            QApplication.processEvents()
+                        if self.skip_current_color:
+                            break
+                        if self.abort:
+                            self.parent.ui.log_TextEdit.append("Aborted...")
+                            return self.shutdown(listener, start_time, 1)
+
+                        seg_len = xb - xa + 1
+                        if seg_len >= minimum_line_width:
+                            self.draw_line((cx0 + xa, cy0 + cy), (cx0 + xb, cy0 + cy))
+                            pixel_counter += seg_len
                         else:
-                            if is_last_point_of_row:
-                                self.click_pixel(self.canvas_x + x, self.canvas_y + y)
+                            for x in range(xa, xb + 1):
+                                while self.paused:
+                                    QApplication.processEvents()
+                                if self.skip_current_color:
+                                    break
+                                if self.abort:
+                                    self.parent.ui.log_TextEdit.append("Aborted...")
+                                    return self.shutdown(listener, start_time, 1)
+                                self.click_pixel(cx0 + x, cy0 + cy)
                                 pixel_counter += 1
-                            else:
-                                first_point = (self.canvas_x + x, self.canvas_y + y)
-                                is_previous_color = True
-                                pixels_in_line = 1
-                    else:
-                        if not self.prefer_lines: continue
-                        if is_previous_color:
-                            if is_line:
-                                is_line = False
+                            if self.skip_current_color:
+                                break
+                        evt_tick += 1
 
-                                if is_last_point_of_row:
-                                    if pixels_in_line >= minimum_line_width:
-                                        self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
-                                        pixel_counter += pixels_in_line
-                                    else:
-                                        for index in range(pixels_in_line):
-                                            self.click_pixel(first_point[0] + index, self.canvas_y + y)
-                                        pixel_counter += pixels_in_line
-                                    continue
+                        progress_percent = int(pixel_counter / progress_den)
+                        if progress_percent != previous_progress_percent:
+                            previous_progress_percent = progress_percent
+                            self.parent.ui.progress_ProgressBar.setValue(progress_percent)
+                        if evt_tick >= 64:
+                            evt_tick = 0
+                            QApplication.processEvents()
 
-                                if pixels_in_line >= minimum_line_width:
-                                    self.draw_line(first_point, (self.canvas_x + (x-1), self.canvas_y + y))
-                                    pixel_counter += pixels_in_line
-                                else:
-                                    for index in range(pixels_in_line):
-                                        self.click_pixel(first_point[0] + index, self.canvas_y + y)
-                                    pixel_counter += pixels_in_line
-                                pixels_in_line = 0
-
-                            else:
-                                self.click_pixel(self.canvas_x + (x-1), self.canvas_y + y)
-                                pixel_counter += 1
-                            is_previous_color = False
-                        else:
-                            is_line = False
-                            pixels_in_line = 0
+                    if self.skip_current_color:
+                        break
 
             if update_canvas:
                 self.click_pixel(self.ctrl_update)

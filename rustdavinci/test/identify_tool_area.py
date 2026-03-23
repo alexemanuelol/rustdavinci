@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
+import os
+
 import cv2
 import numpy as np
 import pyautogui
 import time
+
+# Full-panel screenshot used for matchTemplate (same file as the app’s opencv_template).
+_RUSTDAVINCI_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+TEMPLATE_PATH = os.path.join(_RUSTDAVINCI_ROOT, "opencv_template", "rust_palette_template.png")
 
 
 def locate_palette():
@@ -12,7 +18,9 @@ def locate_palette():
 
     image_gray = cv2.cvtColor(np.array(image_screenshot), cv2.COLOR_BGR2GRAY)
 
-    template = cv2.imread("rust_palette_template.png", 0)
+    template = cv2.imread(TEMPLATE_PATH, cv2.IMREAD_GRAYSCALE)
+    if template is None:
+        raise FileNotFoundError("Missing template: " + TEMPLATE_PATH)
     template_width, template_height = template.shape[::-1]
 
     x_coordinate, y_coordinate = 0, 0

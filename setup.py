@@ -3,23 +3,22 @@
 
 from setuptools import setup
 
-NAME = "RustDaVinci"
+NAME = "RustPicasso"
 VERSION = "0.1"
 DESCRIPTION = "Automatic Sign Art Painter for the game Rust by Facepunch"
-AUTHOR = "Alexander Emanuelsson"
-EMAIL = "Alexander.Emanuelsson94@gmail.com"
-URL = "https://github.com/alexemanuelol/RustDaVinci"
+AUTHOR = "Vance Strazzeri"
+EMAIL = "init.d.httpd@gmail.com"
+URL = "https://github.com/vstrazz/RustPicasso"
 REQUIRED = [
-    "Pillow==8.3.2",
-    "PyAutoGUI==0.9.41",
-    "pypiwin32==223",
-    "colorama==0.4.1",
-    "termcolor==1.1.0",
-    "pynput==1.4.2",
-    "numpy==1.16.2",
-    "opencv-python==4.0.0.21",
-    "pyqt5-tools==5.13.0.1.5",
-    "PyQt5==5.13.1"
+    "Pillow==11.3.0",
+    "PyAutoGUI==0.9.54",
+    "pypiwin32==223; sys_platform == 'win32'",
+    "colorama==0.4.6",
+    "termcolor==3.1.0",
+    "pynput==1.8.1",
+    "numpy==2.0.2",
+    "opencv-python==4.13.0.92",
+    "PyQt5==5.15.11",
 ]
 
 with open("README.md") as file:
@@ -39,9 +38,14 @@ setup(
     url=URL,
     license=license,
     install_requires=REQUIRED,
+    python_requires=">=3.9",
     classifiers=[
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
-        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"
-    ]
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    ],
 )
